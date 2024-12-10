@@ -135,6 +135,7 @@ h2{
     font-family: "adapter-mono-pe-variable", sans-serif;
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 200;
     margin-left: 20vw;
+    font-size: 4vh;
 }
 
 p{
@@ -199,4 +200,66 @@ p{
 #carousel-buttons .button-link {
     margin: 0; 
     padding: 10px 10px; 
+}
+
+img {
+    width: 30vw;
+    border-radius: 25px;
+}
+
+#content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+
+#content p {
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
+    color: white;
+    text-align: justify;
+    width: 40%; /* Increase the width of the paragraph */
+    margin-left: 14vw; /* Reduce the left margin to make it wider */
+    margin-right: 0; /* Remove or adjust the right margin */
+    padding: 10px; /* Optional: Add padding for better spacing */
+    box-sizing: border-box; /* Ensures padding doesn't affect the width */
+}
+
+#content, #content2 {
+    display: flex;
+    flex-direction: row; /* Default for content */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+
+#content2 {
+    flex-direction: row-reverse; /* Reverse the order for content2 */
+}
+
+#content p, #content2 p {
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
+    color: white;
+    text-align: justify;
+    width: 60%; /* Same width as before */
+    margin: 0; /* Reset margins for better alignment */
+    padding: 10px; /* Add spacing inside the paragraph */
+    box-sizing: border-box;
+}
+
+#content img, #content2 img {
+    width: 30vw;
+    border-radius: 25px;
+    margin: 0; /* Reset margins for consistency */
 }
