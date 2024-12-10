@@ -125,7 +125,7 @@ h1 {
     font-family: "adapter-mono-pe-variable", sans-serif;
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
     color: white;
-    margin-left: 20vw;
+    text-align: center;
 }
 
 h2{
@@ -134,8 +134,8 @@ h2{
     font-style: italic;
     font-family: "adapter-mono-pe-variable", sans-serif;
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 200;
-    margin-left: 20vw;
     font-size: 4vh;
+    text-align: center;
 }
 
 p{
