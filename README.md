@@ -1,3 +1,1 @@
-# hi :3
-
-low effort portfolio site
+my portfolio :3
