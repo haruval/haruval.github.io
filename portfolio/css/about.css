@@ -1,0 +1,202 @@
+body {
+    /* background-image: url('../../portfolio/images/macbg3.png'); */
+    background-color: black;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh;
+    width: 100vw;
+}
+#projects { 
+    display: flex;
+    flex-direction: column;
+    margin: 0 20vw;
+}
+
+.project{
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    padding: 15px 20px;
+    background-color: rgba(0, 0, 0, 0.4); 
+    backdrop-filter: blur(5px); 
+    width: 900px;
+    height: 300px;
+    border-radius: 25px;
+    border: 2px solid transparent; 
+    box-sizing: border-box;
+    overflow: hidden;
+    color: white;
+    transition: border-color 0.3s ease; 
+}
+
+.project:hover {
+    
+    border-color:white;
+}
+
+.project img{
+   width:20vw; 
+   border-radius: 15px;
+}
+
+.project h2,
+.project h3 {
+    font-family: Helvetica, sans-serif;
+    margin: 0; 
+}
+
+h2{
+    margin-bottom: 5px;
+    padding: 10px;
+    font-size: 20px;
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
+    color: white;
+}
+
+
+
+#buttons {
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center; 
+    margin-bottom: 5px; 
+    padding-left: 20vw; 
+    margin-top: 10px;
+}
+
+#buttons button {
+    background-color: transparent; 
+    border: 2px solid white; 
+    border-radius: 25px;
+    color: white; 
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 100;
+    padding: 10px 20px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    margin: 10px; 
+    transition: background-color 0.3s ease, color 0.3s ease; 
+}
+
+
+#buttons button:hover {
+    background-color: rgba(255, 255, 255, 1); 
+    color: black; 
+}
+
+.navbar{
+    font-family: Helvetica, sans-serif;
+}
+
+.navbar-brand{
+    font-weight: 700;
+}
+
+/* nav links */
+.button-link {
+    display: inline-block;
+    background-color: transparent;
+    border: 2px solid black;
+    border-radius: 25px;
+    color: white;
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 100;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    margin: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-left: 20vw;
+    margin-top: 2vh;
+}
+
+.button-link:hover {
+    background-color: rgba(255, 255, 255, 1);
+    color: black;
+}
+
+h1 {
+    margin-bottom: 5px;
+    padding: 10px;
+    font-size: 60px;
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
+    color: white;
+    margin-left: 20vw;
+}
+
+h2{
+    margin-top: 0;
+    padding: 10px;
+    font-style: italic;
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 200;
+    margin-left: 20vw;
+}
+
+p{
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
+    padding: 10px;
+    color: white;
+    margin-left: 20vw;
+    margin-right: 20vw;
+}
+
+/* carousel stuff */
+.carousel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.carousel-container {
+    position: relative;
+    width: 60vw; 
+    height: auto;
+    overflow: hidden;
+    margin: 20px auto;
+}
+
+.displayed-img {
+    width: 100%; 
+    border-radius: 10px; 
+}
+
+#carousel-buttons {
+    display: flex;
+    justify-content: center; 
+    gap: 10px; 
+    margin-top: 10px;
+    width: 100%; 
+}
+
+.button-link {
+    display: inline-block;
+    background-color: transparent;
+    border: 2px solid black;
+    border-radius: 25px;
+    color: white;
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 100;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button-link:hover {
+    background-color: rgba(255, 255, 255, 1);
+    color: black;
+}
+
+#carousel-buttons .button-link {
+    margin: 0; 
+    padding: 10px 10px; 
+}

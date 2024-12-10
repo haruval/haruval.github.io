@@ -134,6 +134,10 @@ h1 {
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 800;
     text-align: center;
     margin-top: 30vh;
+    min-height: 10vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
 }
 
 h2 {
@@ -141,7 +145,7 @@ h2 {
     font-family: "adapter-mono-pe-variable", sans-serif;
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 200;
     text-align: center;
-    
+    position: relative;
 }
 
 img {
@@ -196,6 +200,21 @@ h1,h2 {
 @keyframes blink-caret {
     from, to { border-color: transparent; }
     50% { border-color: orange; }
+}
+
+.typewriter h1 {
+    font-size: 10vh;
+    font-family: "adapter-mono-pe-variable", sans-serif;
+    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 800;
+    text-align: center;
+    margin: 0 auto; /* Center horizontally */
+    margin-top: 30vh; /* Maintain consistent top spacing */
+    height: 10vh; /* Fix the height to avoid shifting */
+    line-height: 10vh; /* Ensure consistent vertical alignment */
+    overflow: hidden; /* Prevent content overflow during animations */
+    display: flex; /* Center the text vertically within the fixed height */
+    align-items: center;
+    justify-content: center;
 }
 
 

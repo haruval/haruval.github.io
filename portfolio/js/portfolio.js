@@ -104,3 +104,48 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+/*alternate typewriter text*/
+document.addEventListener("DOMContentLoaded", () => {
+    const textElement = document.getElementById("typewriter-text");
+    const texts = ["ARI GLADSTONE", "haru"];
+    let index = 0;
+
+    function typeWriterAnimation() {
+        let text = texts[index];
+        let charIndex = 0;
+        textElement.textContent = ""; //clear
+
+        // Typing effect
+        const typingInterval = setInterval(() => {
+            if (charIndex < text.length) {
+                textElement.textContent += text[charIndex];
+                charIndex++;
+            } else {
+                clearInterval(typingInterval);
+                //pause
+                setTimeout(() => deleteText(), 1000);
+            }
+        }, 150);
+    }
+
+    function deleteText() {
+        let text = textElement.textContent;
+        let charIndex = text.length;
+
+        //delete effect
+        const deletingInterval = setInterval(() => {
+            if (charIndex > 0) {
+                textElement.textContent = text.slice(0, charIndex - 1);
+                charIndex--;
+            } else {
+                clearInterval(deletingInterval);
+                //move to next text
+                index = (index + 1) % texts.length; //cycle to prev text
+                setTimeout(() => typeWriterAnimation(), 500); //pause
+            }
+        }, 100);
+    }
+
+    typeWriterAnimation();
+});
