@@ -3,8 +3,8 @@ const prevButton = document.querySelector('.prev');
 const nextButton = document.querySelector('.next');
 
 /* Declaring the array of image filenames and alt texts */
-const filenames = ["../../portfolio/images/proj2_1.png", "../../portfolio/images/proj2_2.png", "../../portfolio/images/proj2_3.png", "../../portfolio/images/proj2_4.png"];
-const altTexts = ["Typography Image 1", "Typography Image 2", "Typography Image 3", "Typography Image 4"];
+const filenames = ["../../portfolio/images/proj2_1.png", "../../portfolio/images/proj2_2.png", "../../portfolio/images/proj2_3.png"];
+const altTexts = ["Render 1", "Render 2", "Render 3"];
 
 
 let currentIndex = 0;
