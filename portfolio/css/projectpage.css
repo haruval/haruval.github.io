@@ -200,3 +200,41 @@ p{
     margin: 0; 
     padding: 10px 10px; 
 }
+
+/* projectpage.css changes */
+@media screen and (max-width: 768px) {
+    .carousel-container {
+      width: 90vw;
+    }
+  
+    h1 {
+      font-size: 40px;
+      margin-left: 5vw;
+      text-align: center;
+    }
+  
+    h2 {
+      margin-left: 5vw;
+      text-align: center;
+    }
+  
+    p {
+      margin-left: 5vw;
+      margin-right: 5vw;
+    }
+  
+    #carousel-buttons {
+      flex-direction: row;
+      justify-content: center;
+    }
+  
+    #carousel-buttons .button-link {
+      margin: 5px;
+      font-size: 16px;
+    }
+  
+    .button-link {
+      margin-left: 5vw;
+    }
+  }
+  
