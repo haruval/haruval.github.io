@@ -129,23 +129,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 150);
     }
 
-    function deleteText() {
-        let text = textElement.textContent;
-        let charIndex = text.length;
+    // function deleteText() {
+    //     let text = textElement.textContent;
+    //     let charIndex = text.length;
 
-        //delete effect
-        const deletingInterval = setInterval(() => {
-            if (charIndex > 0) {
-                textElement.textContent = text.slice(0, charIndex - 1);
-                charIndex--;
-            } else {
-                clearInterval(deletingInterval);
-                //move to next text
-                index = (index + 1) % texts.length; //cycle to prev text
-                setTimeout(() => typeWriterAnimation(), 500); //pause
-            }
-        }, 100);
-    }
+    //     //delete effect
+    //     const deletingInterval = setInterval(() => {
+    //         if (charIndex > 0) {
+    //             textElement.textContent = text.slice(0, charIndex - 1);
+    //             charIndex--;
+    //         } else {
+    //             clearInterval(deletingInterval);
+    //             //move to next text
+    //             index = (index + 1) % texts.length; //cycle to prev text
+    //             setTimeout(() => typeWriterAnimation(), 500); //pause
+    //         }
+    //     }, 100);
+    // }
 
     typeWriterAnimation();
 });
