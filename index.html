@@ -22,5 +22,16 @@
         <a href="https://www.twitch.tv/harumilktea" class="button-link">Twitch</a>
     </div>
 <script src="./portfolio/js/portfolio.js"></script>
+<script>
+    // Function to detect mobile devices
+    function isMobileDevice() {
+        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
+    // Show alert ONLY on index.html if on a mobile device
+    if (isMobileDevice()) {
+        alert("mobile!");
+    }
+</script>
 </body>
 </html>

@@ -150,13 +150,3 @@ document.addEventListener("DOMContentLoaded", () => {
     typeWriterAnimation();
 });
 
-//apologies
-// Function to detect mobile devices
-function isMobileDevice() {
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
-// Show alert if on a mobile device
-if (isMobileDevice()) {
-    alert("Mobile version is a work in progress. Please view this on a desktop in the meantime.");
-}
