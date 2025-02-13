@@ -11,11 +11,5 @@
         "abstract": "This project explores branding, design, and product mockup for a (fictional) boba tea kit inspired by my cultural heritage.",
         "category": "CTD",
         "subdomain": "project2",
-        "link": "../../portfolio/projectpages/project2.html"},
-        {"name": "WebVR + WebAR",
-        "subtitle": "created small webVR + webAR demos with a-frame and glitch",
-        "abstract": "Practiced creating WebVR and WebAR worlds using web-based rendering library A-Frame, put together using glitch.com.",
-        "category": "CTD",
-        "subdomain": "project3",
-        "link":"../../portfolio/projectpages/project3.html"}]
+        "link": "../../portfolio/projectpages/project2.html"}]
 }
