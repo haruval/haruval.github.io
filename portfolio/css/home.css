@@ -241,5 +241,26 @@ h1,h2 {
     }
   }
   
+/* Additional adjustments for very small screens */
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 5vh;
+        margin-top: 15vh;
+    }
 
+    .project {
+        width: 95%;
+        padding: 10px;
+    }
 
+    .project img {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .button-link {
+        width: 100%;
+        text-align: center;
+    }
+}
+ 
