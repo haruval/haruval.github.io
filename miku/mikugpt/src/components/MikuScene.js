@@ -1,0 +1,264 @@
+// src/components/MikuScene.js
+import React, { useRef, useEffect } from 'react';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+
+function MikuScene() {
+  const mountRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
+  const boxRef = useRef(null);
+  const animationFrameRef = useRef(null);
+
+  // Cleanup function to properly dispose resources
+  const cleanupThreeJS = () => {
+    console.log('Cleaning up Three.js resources');
+    
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    
+    if (boxRef.current) {
+      if (sceneRef.current) {
+        sceneRef.current.remove(boxRef.current);
+      }
+      boxRef.current = null;
+    }
+    
+    if (rendererRef.current && rendererRef.current.domElement) {
+      rendererRef.current.dispose();
+      if (mountRef.current && mountRef.current.contains(rendererRef.current.domElement)) {
+        mountRef.current.removeChild(rendererRef.current.domElement);
+      }
+      rendererRef.current = null;
+    }
+    
+    // Remove event listeners
+    if (mountRef.current && mountRef.current.mouseMoveListener) {
+      window.removeEventListener('mousemove', mountRef.current.mouseMoveListener);
+      mountRef.current.mouseMoveListener = null;
+    }
+    
+    // Clear scene and camera references
+    sceneRef.current = null;
+    cameraRef.current = null;
+  };
+
+  // Create a simple box
+  const createBox = () => {
+    if (!sceneRef.current) return;
+    
+    console.log('Creating 3D box');
+    const geometry = new THREE.BoxGeometry(2, 2, 2);
+    const material = new THREE.MeshPhongMaterial({ 
+      color: 0x44aadd,
+      specular: 0x333333,
+      shininess: 30
+    });
+    const box = new THREE.Mesh(geometry, material);
+    sceneRef.current.add(box);
+    boxRef.current = box;
+  };
+
+  // Initialize the Three.js scene
+  const initializeScene = () => {
+    if (!mountRef.current) return;
+    
+    console.log('Initializing 3D scene');
+    
+    // Clean up previous scene if it exists
+    cleanupThreeJS();
+    
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = null; // Transparent background
+    sceneRef.current = scene;
+
+    // Create fixed dimensions for the 3D scene area - INCREASED SIZE
+    const width = 600; 
+    const height = 600;
+
+    // Camera setup - moved further back to accommodate larger model
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 10);
+    camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
+
+    // Renderer setup with alpha (transparency)
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true,
+      alpha: true
+    });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(0x000000, 0); // Set clear color with 0 alpha (fully transparent)
+    
+    // Clear any previous content
+    while (mountRef.current.firstChild) {
+      mountRef.current.removeChild(mountRef.current.firstChild);
+    }
+    mountRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    // Store mouse position for tracking
+    const mouse = { x: 0, y: 0 };
+    
+    // Mouse move event handler
+    const onMouseMove = (event) => {
+      // Calculate mouse position in normalized device coordinates
+      const rect = mountRef.current.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / height) * 2 + 1;
+    };
+    
+    // Add mouse move event listener
+    window.addEventListener('mousemove', onMouseMove, false);
+    
+    // Store the event listener reference for cleanup
+    mountRef.current.mouseMoveListener = onMouseMove;
+
+    // Enhanced lighting for better model visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    
+    // Add directional light for better visibility
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+    
+    // Add a second directional light from another angle
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight2.position.set(-1, 0.5, -1);
+    scene.add(directionalLight2);
+
+    // Try to load the 3D model
+    try {
+      console.log('Attempting to load GLTF model');
+      const gltfLoader = new GLTFLoader();
+      gltfLoader.load('./models/scene.gltf', 
+        // onLoad callback
+        (gltf) => {
+          console.log('✅ GLTF model loaded successfully!');
+          
+          // The model is in gltf.scene
+          const model = gltf.scene;
+          
+          // Position and scale the model
+          model.position.set(0, 0, 0); 
+          model.scale.set(20, 20, 20); // Keeping your scale setting
+          
+          // Center the model
+          const box = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          model.position.sub(center);
+          
+          // Get model dimensions for debugging
+          const size = new THREE.Vector3();
+          box.getSize(size);
+          console.log('Model dimensions:', size);
+          
+          // Remove any existing model if one existed
+          if (boxRef.current && sceneRef.current) {
+            sceneRef.current.remove(boxRef.current);
+          }
+          
+          // Add the new model to the scene
+          sceneRef.current.add(model);
+          boxRef.current = model;
+        },
+        // onProgress callback
+        (xhr) => {
+          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        // onError callback
+        (error) => {
+          console.error('Error loading GLTF:', error);
+          createBox();
+        }
+      );
+    } catch (error) {
+      console.error('Error in 3D setup:', error);
+      createBox();
+    }
+
+    // Fallback - if no box is created after 3 seconds, create one
+    setTimeout(() => {
+      if (!boxRef.current && sceneRef.current) {
+        console.log('No 3D object loaded after timeout, creating fallback box');
+        createBox();
+      }
+    }, 3000);
+    
+    // Animation function that includes mouse following
+    const animate = () => {
+      animationFrameRef.current = requestAnimationFrame(animate);
+      
+      if (boxRef.current) {
+        // Calculate target rotation based on mouse position
+        // Limit rotation range with Math.max/min to prevent full spins
+        const targetRotationY = Math.max(-0.8, Math.min(0.8, mouse.x * 1.5)); // Limit horizontal rotation
+        const targetRotationX = Math.max(-0.5, Math.min(0.5, -mouse.y * 0.8)); // Limit vertical rotation
+        
+        // Smooth rotation transition (lerp)
+        boxRef.current.rotation.y += (targetRotationY - boxRef.current.rotation.y) * 0.1;
+        boxRef.current.rotation.x += (targetRotationX - boxRef.current.rotation.x) * 0.1;
+      }
+      
+      renderer.render(scene, camera);
+    };
+    
+    // Start animation
+    animate();
+  };
+
+  // Initialize and handle component lifecycle
+  useEffect(() => {
+    console.log('MikuScene component mounted');
+    
+    // Initialize everything
+    initializeScene();
+    
+    // Handle window resize
+    const handleResize = () => {
+      if (mountRef.current && rendererRef.current && cameraRef.current) {
+        const width = 600;  // INCREASED SIZE
+        const height = 600; // INCREASED SIZE
+        
+        // Update camera aspect ratio
+        cameraRef.current.aspect = width / height;
+        cameraRef.current.updateProjectionMatrix();
+        
+        // Update renderer size
+        rendererRef.current.setSize(width, height);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup function
+    return () => {
+      console.log('MikuScene component unmounting');
+      window.removeEventListener('resize', handleResize);
+      cleanupThreeJS();
+    };
+  }, []);
+
+  return (
+    <div 
+      ref={mountRef} 
+      style={{ 
+        position: 'absolute', 
+        left: '55%', // Adjusted left position for better centering with larger container
+        top: '50%',
+        transform: 'translateY(-50%)', 
+        width: '600px', // INCREASED WIDTH
+        height: '600px', // INCREASED HEIGHT
+        zIndex: 10
+      }} 
+    />
+  );
+}
+
+export default MikuScene;
