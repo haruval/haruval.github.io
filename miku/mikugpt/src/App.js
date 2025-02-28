@@ -182,7 +182,7 @@ function App() {
     if (input.includes('hello') || input.includes('hi')) {
       response = "hai :33";
     } else {
-      response = "im figuring out how to limit the api so it doesn't cost me a ton of money let me cook";
+      response = "the api key is off rn >:3";
     }
     
     setIsLoading(false);
