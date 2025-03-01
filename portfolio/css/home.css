@@ -1,36 +1,37 @@
 body {
-    /* background-image: url('../../portfolio/images/macbg3.png'); */
     background-color: black;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     height: 100vh;
     width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
+
 #projects { 
     display: flex;
     flex-direction: column;
-    margin: 0 20vw;
+    margin: 0 auto;
+    max-width: 900px;
+    width: 90%;
 }
 
-.project{
-    display:flex;
+.project {
+    display: flex;
     flex-direction: row;
-    margin-top:10px;
+    margin-top: 10px;
     padding: 15px 20px;
     background-color: rgba(0, 0, 0, 0.4); 
     backdrop-filter: blur(5px); 
-    width: 900px; 
-    height: 300px; 
     border-radius: 25px; 
     box-sizing: border-box; 
     overflow: hidden; 
     color: white; 
-
     width: 100%; 
     max-width: 900px; 
     height: auto; 
-
     transition: background-color 0.3s ease;
 }
 
@@ -38,8 +39,9 @@ body {
     background-color: rgba(255, 255, 255, 0.4); 
 }
 
-.project img{
-   width:20vw; 
+.project img {
+   width: 20vw; 
+   max-width: 250px;
    border-radius: 15px;
 }
 
@@ -49,19 +51,19 @@ body {
     margin: 0; 
 }
 
-.project h2{
+.project h2 {
     margin-bottom: 5px;
     padding: 10px;
     font-size: 60px;
 }
 
-.project h3{
+.project h3 {
     margin-top: 0;
     padding: 10px;
     font-style: italic;
 }
 
-.project p{
+.project p {
     font-family: Helvetica, sans-serif;
     padding: 10px;
 }
@@ -70,9 +72,10 @@ body {
     display: flex;
     justify-content: center; 
     align-items: center; 
-    margin-bottom: 5px; 
-    padding-left: 0vw; 
-    margin-top: 5px;
+    margin: 5px 0;
+    padding: 0;
+    flex-wrap: wrap;
+    width: 100%;
 }
 
 #navbuttons button {
@@ -88,13 +91,11 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease; 
 }
 
-
 #navbuttons button:hover {
     background-color: rgba(255, 255, 255, 1); 
     color: black; 
 }
 
-/* nav links */
 .button-link {
     display: inline-block;
     background-color: transparent;
@@ -109,6 +110,7 @@ body {
     text-decoration: none;
     margin: 10px;
     transition: background-color 0.3s ease, color 0.3s ease;
+    text-align: center;
 }
 
 .button-link:hover {
@@ -116,16 +118,18 @@ body {
     color: black;
 }
 
-.navbar{
+.navbar {
     font-family: Helvetica, sans-serif;
 }
 
-.navbar-brand{
+.navbar-brand {
     font-weight: 700;
 }
 
 h1, h2 {
     color: white;
+    animation: fadeIn 1s ease-in;
+    width: 100%;
 }
 
 h1 {
@@ -134,10 +138,10 @@ h1 {
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 800;
     text-align: center;
     margin-top: 30vh;
-    min-height: 10vh; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
+    min-height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 h2 {
@@ -146,121 +150,134 @@ h2 {
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 200;
     text-align: center;
     position: relative;
+    margin: 10px auto;
+    padding: 0 15px;
 }
 
 img {
-    width: 30vw;
+    max-width: 100%;
+    height: auto;
 }
 
 /* TRANSITION STUFF */
-
-/* fade in */
-h1,h2 {
-    animation: fadeIn 1s ease-in; 
-}
-
 #navbuttons {
     animation: fadeIn 1s ease-in; 
 }
-
-
 
 /* Keyframes for fade-in */
 @keyframes fadeIn {
     from {
         opacity: 0;
-        background-color: black;
     }
     to {
         opacity: 1;
     }
 }
-/* effect copied from internet: */
+
 /* Typewriter effect for h1 */
-.typewriter h1 {
-    overflow: hidden;
-    border-right: 0.15em solid orange;
-    white-space: nowrap;
-    margin: 0 auto;
-    margin-top: 30vh;
-    letter-spacing: 0.15em;
-    max-width: fit-content;
-    animation: blink-caret 0.75s step-end infinite;
-}
-
-
-
-/* Cursor blink effect */
-@keyframes blink-caret {
-    from, to { border-color: transparent; }
-    50% { border-color: orange; }
-}
-
 .typewriter h1 {
     font-size: 10vh;
     font-family: "adapter-mono-pe-variable", sans-serif;
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 800;
     text-align: center;
-    margin: 0 auto; /* Center horizontally */
-    margin-top: 30vh; /* Maintain consistent top spacing */
-    height: 10vh; /* Fix the height to avoid shifting */
-    line-height: 10vh; /* Ensure consistent vertical alignment */
-    overflow: hidden; /* Prevent content overflow during animations */
-    display: flex; /* Center the text vertically within the fixed height */
-    align-items: center;
-    justify-content: center;
+    margin: 0 auto;
+    margin-top: 30vh;
+    max-width: 95%;
+    height: auto;
+    line-height: 1.2;
 }
 
-/* home.css changes */
+/* Responsive styles */
+@media screen and (max-width: 900px) {
+    .project {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .project img {
+        width: 80%;
+        max-width: 300px;
+        margin-bottom: 15px;
+    }
+}
+
 @media screen and (max-width: 768px) {
+    body {
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+    
     h1 {
-      font-size: 6vh;
-      margin-top: 20vh;
+        font-size: 6vh;
+        margin-top: 20vh;
+        word-break: break-word;
+        width: 100%;
     }
   
     h2 {
-      font-size: 3vh;
+        font-size: 3vh;
+        padding: 0 10px;
+        width: 100%;
+        box-sizing: border-box;
     }
   
     #navbuttons {
-      flex-direction: column;
-      align-items: center;
-      padding-left: 0;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
     }
   
     .button-link {
-      width: 80%;
-      margin: 5px auto;
-      text-align: center;
+        width: 80%;
+        max-width: 300px;
+        margin: 5px auto;
+        box-sizing: border-box;
     }
   
     .typewriter h1 {
-      font-size: 6vh;
-      margin-top: 20vh;
-      height: auto;
+        font-size: 6vh;
+        margin-top: 20vh;
+        white-space: normal;
+        max-width: 100%;
+        overflow-wrap: break-word;
     }
-  }
+}
   
 /* Additional adjustments for very small screens */
 @media screen and (max-width: 480px) {
     h1 {
         font-size: 5vh;
         margin-top: 15vh;
+        padding: 0 5px;
+    }
+    
+    h2 {
+        font-size: 2.5vh;
+    }
+
+    .typewriter h1 {
+        font-size: 5vh;
+        margin-top: 15vh;
+        letter-spacing: 0.1em;
     }
 
     .project {
-        width: 95%;
         padding: 10px;
+        width: 100%;
+        margin: 10px auto;
+    }
+
+    .project h2 {
+        font-size: 7vw;
     }
 
     .project img {
-        width: 100%;
-        max-width: 250px;
+        width: 90%;
     }
 
     .button-link {
-        width: 100%;
-        text-align: center;
+        width: 90%;
+        padding: 8px 15px;
+        font-size: 16px;
     }
 }
- 

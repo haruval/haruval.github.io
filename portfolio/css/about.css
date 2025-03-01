@@ -1,42 +1,48 @@
 body {
-    /* background-image: url('../../portfolio/images/macbg3.png'); */
     background-color: black;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    height: 100vh;
-    width: 100vw;
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
+
 #projects { 
     display: flex;
     flex-direction: column;
-    margin: 0 20vw;
+    margin: 0 auto;
+    max-width: 900px;
+    width: 90%;
 }
 
-.project{
+.project {
     display: flex;
     flex-direction: row;
     margin-top: 10px;
     padding: 15px 20px;
     background-color: rgba(0, 0, 0, 0.4); 
     backdrop-filter: blur(5px); 
-    width: 900px;
-    height: 300px;
     border-radius: 25px;
     border: 2px solid transparent; 
     box-sizing: border-box;
     overflow: hidden;
     color: white;
-    transition: border-color 0.3s ease; 
+    transition: border-color 0.3s ease;
+    max-width: 900px;
+    width: 100%;
 }
 
 .project:hover {
-    
-    border-color:white;
+    border-color: white;
 }
 
-.project img{
-   width:20vw; 
+.project img {
+   max-width: 300px;
+   width: 100%;
    border-radius: 15px;
 }
 
@@ -44,78 +50,6 @@ body {
 .project h3 {
     font-family: Helvetica, sans-serif;
     margin: 0; 
-}
-
-h2{
-    margin-bottom: 5px;
-    padding: 10px;
-    font-size: 20px;
-    font-family: "adapter-mono-pe-variable", sans-serif;
-    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
-    color: white;
-}
-
-
-
-#buttons {
-    display: flex;
-    justify-content: flex-start; 
-    align-items: center; 
-    margin-bottom: 5px; 
-    padding-left: 20vw; 
-    margin-top: 10px;
-}
-
-#buttons button {
-    background-color: transparent; 
-    border: 2px solid white; 
-    border-radius: 25px;
-    color: white; 
-    font-family: "adapter-mono-pe-variable", sans-serif;
-    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 100;
-    padding: 10px 20px; 
-    font-size: 16px; 
-    cursor: pointer; 
-    margin: 10px; 
-    transition: background-color 0.3s ease, color 0.3s ease; 
-}
-
-
-#buttons button:hover {
-    background-color: rgba(255, 255, 255, 1); 
-    color: black; 
-}
-
-.navbar{
-    font-family: Helvetica, sans-serif;
-}
-
-.navbar-brand{
-    font-weight: 700;
-}
-
-/* nav links */
-.button-link {
-    display: inline-block;
-    background-color: transparent;
-    border: 2px solid black;
-    border-radius: 25px;
-    color: white;
-    font-family: "adapter-mono-pe-variable", sans-serif;
-    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 100;
-    padding: 10px 20px;
-    font-size: 20px;
-    cursor: pointer;
-    text-decoration: none;
-    margin: 10px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    margin-left: 20vw;
-    margin-top: 2vh;
-}
-
-.button-link:hover {
-    background-color: rgba(255, 255, 255, 1);
-    color: black;
 }
 
 h1 {
@@ -126,9 +60,11 @@ h1 {
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
     color: white;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-h2{
+h2 {
     margin-top: 0;
     padding: 10px;
     font-style: italic;
@@ -136,51 +72,33 @@ h2{
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 200;
     font-size: 4vh;
     text-align: center;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-p{
+p {
     font-family: "adapter-mono-pe-variable", sans-serif;
     font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
     padding: 10px;
     color: white;
-    margin-left: 20vw;
-    margin-right: 20vw;
+    box-sizing: border-box;
 }
 
-/* carousel stuff */
-.carousel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-.carousel-container {
+#navbuttons {
     position: relative;
-    width: 60vw; 
-    height: auto;
-    overflow: hidden;
-    margin: 20px auto;
-}
-
-.displayed-img {
-    width: 100%; 
-    border-radius: 10px; 
-}
-
-#carousel-buttons {
     display: flex;
-    justify-content: center; 
-    gap: 10px; 
-    margin-top: 10px;
-    width: 100%; 
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .button-link {
     display: inline-block;
     background-color: transparent;
-    border: 2px solid black;
+    border: 2px solid transparent;
     border-radius: 25px;
     color: white;
     font-family: "adapter-mono-pe-variable", sans-serif;
@@ -189,111 +107,139 @@ p{
     font-size: 20px;
     cursor: pointer;
     text-decoration: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .button-link:hover {
     background-color: rgba(255, 255, 255, 1);
     color: black;
+    border-color: white;
 }
 
-#carousel-buttons .button-link {
-    margin: 0; 
-    padding: 10px 10px; 
+/* Remove purple lines for links */
+.button-link:visited {
+    text-decoration: none;
+    color: white;
+}
+
+.navbar {
+    font-family: Helvetica, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: 700;
 }
 
 img {
-    width: 30vw;
+    max-width: 100%;
+    height: auto;
     border-radius: 25px;
-}
-
-#content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px 0;
-    box-sizing: border-box;
-}
-
-#content p {
-    font-family: "adapter-mono-pe-variable", sans-serif;
-    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
-    color: white;
-    text-align: justify;
-    width: 40%; /* Increase the width of the paragraph */
-    margin-left: 14vw; /* Reduce the left margin to make it wider */
-    margin-right: 0; /* Remove or adjust the right margin */
-    padding: 10px; /* Optional: Add padding for better spacing */
-    box-sizing: border-box; /* Ensures padding doesn't affect the width */
+    object-fit: contain;
 }
 
 #content, #content2 {
     display: flex;
-    flex-direction: row; /* Default for content */
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: 90%;
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px 0;
+    margin: 20px auto;
+    padding: 0;
     box-sizing: border-box;
 }
 
 #content2 {
-    flex-direction: row-reverse; /* Reverse the order for content2 */
+    flex-direction: row-reverse;
 }
 
 #content p, #content2 p {
-    font-family: "adapter-mono-pe-variable", sans-serif;
-    font-variation-settings: "BORD" 300, "ital" 0, "slnt" 0, "wght" 400;
-    color: white;
+    width: 60%;
+    margin: 0 20px;
+    padding: 10px;
     text-align: justify;
-    width: 60%; /* Same width as before */
-    margin: 0; /* Reset margins for better alignment */
-    padding: 10px; /* Add spacing inside the paragraph */
-    box-sizing: border-box;
 }
 
 #content img, #content2 img {
-    width: 30vw;
-    border-radius: 25px;
-    margin: 0; /* Reset margins for consistency */
+    width: 30%;
+    min-width: 250px;
+    max-width: 500px;
 }
 
-/* about.css changes */
-@media screen and (max-width: 768px) {
+/* Responsive styles */
+@media screen and (max-width: 900px) {
     #content, #content2 {
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
+        width: 95%;
     }
-  
+    
     #content p, #content2 p {
-      width: 90%;
-      margin: 10px auto;
-      text-align: left;
+        width: 55%;
     }
-  
+    
     #content img, #content2 img {
-      width: 90%;
-      margin: 10px auto;
+        width: 35%;
     }
-  
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
     h1 {
-      font-size: 40px;
-      padding: 5px;
+        font-size: 40px;
+        padding: 5px;
     }
   
     h2 {
-      font-size: 3vh;
+        font-size: 3vh;
     }
   
+    #content, #content2 {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        margin: 10px auto;
+    }
+  
+    #content p, #content2 p {
+        width: 100%;
+        margin: 10px 0;
+        text-align: left;
+    }
+  
+    #content img, #content2 img {
+        width: 90%;
+        max-width: 400px;
+        margin: 10px 0;
+    }
+
     .button-link {
-      margin-left: 5vw;
+        font-size: 16px;
+        padding: 8px 15px;
     }
-  }
-  
+}
+
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 32px;
+    }
+    
+    h2 {
+        font-size: 2.5vh;
+    }
+    
+    #navbuttons {
+        padding: 5px;
+    }
+    
+    .button-link {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+    
+    #content, #content2 {
+        width: 100%;
+        padding: 5px;
+    }
+}
