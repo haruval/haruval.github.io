@@ -5,33 +5,654 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ari Gladstone</title>
     
-    <link rel="stylesheet" href="../portfolio/css/home.css">
-    <link rel="stylesheet" href="https://use.typekit.net/fia1iab.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #000000;
+            --accent-color: #ff6b6b;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--secondary-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+
+        .cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            width: 20px;
+            height: 1px;
+            background: white;
+            transform: translateY(-50%);
+        }
+
+        .cursor::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: -10px;
+            width: 1px;
+            height: 20px;
+            background: white;
+            transform: translateX(-50%);
+        }
+
+        /* Dot Matrix Background */
+        .dot-matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(100, 100, 100, 0.8);
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
+
+        /* Wireframe Wave Background */
+        .wireframe-wave {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .wave-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            bottom: 0;
+        }
+
+        .wave-path {
+            fill: none;
+            stroke: rgba(120, 120, 120, 0.4);
+            stroke-width: 1;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .wave-grid {
+            stroke: rgba(120, 120, 120, 0.2);
+            stroke-width: 0.5;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .wave-line {
+            position: absolute;
+            width: 200%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(120, 120, 120, 0.6), transparent);
+            transform-origin: left center;
+        }
+
+        .wave-line:nth-child(1) {
+            bottom: 100px;
+            animation: wave1 8s ease-in-out infinite;
+        }
+
+        .wave-line:nth-child(2) {
+            bottom: 80px;
+            animation: wave2 10s ease-in-out infinite reverse;
+        }
+
+        .wave-line:nth-child(3) {
+            bottom: 60px;
+            animation: wave3 12s ease-in-out infinite;
+        }
+
+        .wave-line:nth-child(4) {
+            bottom: 40px;
+            animation: wave4 9s ease-in-out infinite reverse;
+        }
+
+        .wave-line:nth-child(5) {
+            bottom: 20px;
+            animation: wave5 11s ease-in-out infinite;
+        }
+
+        @keyframes wave1 {
+            0%, 100% { 
+                transform: translateX(-50%) scaleY(1) rotate(0deg);
+                opacity: 0.6;
+            }
+            25% { 
+                transform: translateX(-40%) scaleY(1.5) rotate(1deg);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translateX(-30%) scaleY(0.8) rotate(0deg);
+                opacity: 0.4;
+            }
+            75% { 
+                transform: translateX(-45%) scaleY(1.2) rotate(-1deg);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes wave2 {
+            0%, 100% { 
+                transform: translateX(-60%) scaleY(1) rotate(0deg);
+                opacity: 0.5;
+            }
+            33% { 
+                transform: translateX(-50%) scaleY(1.3) rotate(2deg);
+                opacity: 0.8;
+            }
+            66% { 
+                transform: translateX(-40%) scaleY(0.7) rotate(-1deg);
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes wave3 {
+            0%, 100% { 
+                transform: translateX(-45%) scaleY(1) rotate(0deg);
+                opacity: 0.7;
+            }
+            20% { 
+                transform: translateX(-35%) scaleY(1.4) rotate(1deg);
+                opacity: 0.9;
+            }
+            40% { 
+                transform: translateX(-55%) scaleY(0.6) rotate(0deg);
+                opacity: 0.4;
+            }
+            60% { 
+                transform: translateX(-25%) scaleY(1.1) rotate(-2deg);
+                opacity: 0.6;
+            }
+            80% { 
+                transform: translateX(-65%) scaleY(0.9) rotate(1deg);
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes wave4 {
+            0%, 100% { 
+                transform: translateX(-55%) scaleY(1) rotate(0deg);
+                opacity: 0.6;
+            }
+            25% { 
+                transform: translateX(-35%) scaleY(1.6) rotate(-1deg);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translateX(-45%) scaleY(0.5) rotate(0deg);
+                opacity: 0.3;
+            }
+            75% { 
+                transform: translateX(-65%) scaleY(1.3) rotate(1deg);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes wave5 {
+            0%, 100% { 
+                transform: translateX(-40%) scaleY(1) rotate(0deg);
+                opacity: 0.5;
+            }
+            30% { 
+                transform: translateX(-60%) scaleY(1.2) rotate(2deg);
+                opacity: 0.8;
+            }
+            70% { 
+                transform: translateX(-20%) scaleY(0.8) rotate(-1deg);
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes waveFlow {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, -50px) rotate(2deg); }
+            50% { transform: translate(-50px, 100px) rotate(-1deg); }
+            75% { transform: translate(75px, -75px) rotate(1deg); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-80px, 60px) rotate(-2deg); }
+            66% { transform: translate(120px, -80px) rotate(1deg); }
+        }
+
+        @keyframes float3 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(60px, -40px) rotate(1deg); }
+            40% { transform: translate(-40px, 80px) rotate(-1deg); }
+            60% { transform: translate(100px, -60px) rotate(2deg); }
+            80% { transform: translate(-80px, 40px) rotate(-1deg); }
+        }
+
+        /* Main Content */
+        .container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .main-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+            line-height: 1.4;
+        }
+
+        .location {
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            letter-spacing: 0.05em;
+            line-height: 1.4;
+        }
+
+        .description {
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            font-weight: 200;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1.5rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .nav-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transform-origin: center;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .nav-item-title {
+            position: relative;
+            z-index: 1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .nav-item:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .nav-item:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .nav-item:active {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 10px rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-item:active::before {
+            width: 150px;
+            height: 150px;
+        }
+
+        .nav-item:active::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .nav-item-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+                min-height: 100vh;
+            }
+
+            .hero-section {
+                margin-bottom: 3rem;
+            }
+
+            .main-title {
+                font-size: clamp(2.5rem, 12vw, 4.5rem);
+                margin-bottom: 1.5rem;
+                line-height: 1.0;
+            }
+
+            .subtitle {
+                font-size: clamp(1rem, 4vw, 1.4rem);
+                margin-bottom: 0.75rem;
+                padding: 0 1rem;
+            }
+
+            .location {
+                font-size: clamp(1rem, 4vw, 1.4rem);
+                margin-bottom: 2.5rem;
+                padding: 0 1rem;
+            }
+
+            .nav-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                max-width: 320px;
+            }
+
+            .nav-item {
+                padding: 1.2rem 1rem;
+            }
+
+            .nav-item-title {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .hero-section {
+                margin-bottom: 2.5rem;
+            }
+
+            .main-title {
+                font-size: clamp(2.2rem, 14vw, 3.8rem);
+                margin-bottom: 1.25rem;
+                word-break: break-word;
+                hyphens: auto;
+            }
+
+            .subtitle {
+                font-size: clamp(0.95rem, 4.5vw, 1.2rem);
+                margin-bottom: 0.5rem;
+                padding: 0 0.5rem;
+            }
+
+            .location {
+                font-size: clamp(0.95rem, 4.5vw, 1.2rem);
+                margin-bottom: 2rem;
+                padding: 0 0.5rem;
+            }
+
+            .nav-grid {
+                max-width: 280px;
+                gap: 0.75rem;
+            }
+
+            .nav-item {
+                padding: 1rem 0.75rem;
+            }
+
+            .nav-item-title {
+                font-size: 0.8rem;
+                letter-spacing: 0.08em;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .main-title {
+                font-size: clamp(1.8rem, 16vw, 3rem);
+                letter-spacing: -0.01em;
+            }
+
+            .subtitle, .location {
+                font-size: clamp(0.85rem, 5vw, 1.1rem);
+            }
+
+            .nav-grid {
+                max-width: 260px;
+            }
+
+            .nav-item-title {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Loading Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .fade-in:nth-child(1) { animation-delay: 0.2s; }
+        .fade-in:nth-child(2) { animation-delay: 0.4s; }
+        .fade-in:nth-child(3) { animation-delay: 0.6s; }
+        .fade-in:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="typewriter">
-        <h1 id="typewriter-text"></h1>
+    <!-- Wireframe Wave Background -->
+    <div class="wireframe-wave">
+        <svg class="wave-svg" viewBox="0 0 1200 300" preserveAspectRatio="none">
+            <!-- Horizontal grid lines forming wave contours -->
+            <g class="wave-contours">
+                <path class="wave-path" d="M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215" style="animation: waveFlow1 12s ease-in-out infinite;">
+                    <animate attributeName="d" dur="12s" repeatCount="indefinite" 
+                        values="M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215;
+                                M0,240 Q150,180 300,200 T600,190 T900,205 T1200,195;
+                                M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215"/>
+                </path>
+                <path class="wave-path" d="M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175" style="animation: waveFlow2 10s ease-in-out infinite;">
+                    <animate attributeName="d" dur="10s" repeatCount="indefinite" 
+                        values="M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175;
+                                M0,200 Q150,140 300,160 T600,150 T900,165 T1200,155;
+                                M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175"/>
+                </path>
+                <path class="wave-path" d="M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135" style="animation: waveFlow3 14s ease-in-out infinite;">
+                    <animate attributeName="d" dur="14s" repeatCount="indefinite" 
+                        values="M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135;
+                                M0,160 Q150,100 300,120 T600,110 T900,125 T1200,115;
+                                M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135"/>
+                </path>
+                <path class="wave-path" d="M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95" style="animation: waveFlow4 11s ease-in-out infinite;">
+                    <animate attributeName="d" dur="11s" repeatCount="indefinite" 
+                        values="M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95;
+                                M0,120 Q150,60 300,80 T600,70 T900,85 T1200,75;
+                                M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95"/>
+                </path>
+                <path class="wave-path" d="M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55" style="animation: waveFlow5 13s ease-in-out infinite;">
+                    <animate attributeName="d" dur="13s" repeatCount="indefinite" 
+                        values="M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55;
+                                M0,80 Q150,20 300,40 T600,30 T900,45 T1200,35;
+                                M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55"/>
+                </path>
+            </g>
+            
+            <!-- Vertical grid lines -->
+            <g class="wave-verticals">
+                <line class="wave-grid" x1="0" y1="30" x2="0" y2="270" opacity="0.3"/>
+                <line class="wave-grid" x1="100" y1="35" x2="100" y2="260" opacity="0.4"/>
+                <line class="wave-grid" x1="200" y1="40" x2="200" y2="250" opacity="0.3"/>
+                <line class="wave-grid" x1="300" y1="38" x2="300" y2="255" opacity="0.5"/>
+                <line class="wave-grid" x1="400" y1="42" x2="400" y2="245" opacity="0.3"/>
+                <line class="wave-grid" x1="500" y1="35" x2="500" y2="265" opacity="0.4"/>
+                <line class="wave-grid" x1="600" y1="32" x2="600" y2="270" opacity="0.6"/>
+                <line class="wave-grid" x1="700" y1="40" x2="700" y2="250" opacity="0.3"/>
+                <line class="wave-grid" x1="800" y1="38" x2="800" y2="255" opacity="0.4"/>
+                <line class="wave-grid" x1="900" y1="35" x2="900" y2="260" opacity="0.5"/>
+                <line class="wave-grid" x1="1000" y1="42" x2="1000" y2="245" opacity="0.3"/>
+                <line class="wave-grid" x1="1100" y1="38" x2="1100" y2="255" opacity="0.4"/>
+                <line class="wave-grid" x1="1200" y1="35" x2="1200" y2="265" opacity="0.3"/>
+            </g>
+        </svg>
     </div>
-    <h2>3rd Year CS + Creative Technology and Design Student</h2>
-    <h2>@ CU Boulder</h2>
-    <div id="navbuttons">
-        <a href="./portfolio/about.html" class="button-link">About</a>
-        <a href="../../portfolio/projects.html" class="button-link">Projects</a>
-        <a href="https://x.com/haruval" class="button-link">Twitter</a>
-        <a href="https://www.youtube.com/@haruval" class="button-link">Youtube</a>
-        <a href="https://www.twitch.tv/harumilktea" class="button-link">Twitch</a>
-    </div>
-<script src="./portfolio/js/portfolio.js"></script>
-<script>
-    // Function to detect mobile devices
-    function isMobileDevice() {
-        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    }
 
-    // Show alert ONLY on index.html if on a mobile device
-    // if (isMobileDevice()) {
-    //     alert("I'm still working on getting this to look nice on mobile. In the meantime, please view this on a desktop.");
-    // }
-</script>
+    <!-- Main Content -->
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="main-title fade-in">ARI GLADSTONE</h1>
+            <p class="subtitle fade-in">3rd Year CS + Creative Technology and Design Student</p>
+            <p class="location fade-in">@ CU Boulder</p>
+        </div>
+
+        <div class="nav-grid fade-in">
+            <a href="./portfolio/about.html" class="nav-item">
+                <div class="nav-item-title">About</div>
+            </a>
+            <a href="./portfolio/projects.html" class="nav-item">
+                <div class="nav-item-title">Projects</div>
+            </a>
+            <a href="https://x.com/haruval" class="nav-item" target="_blank">
+                <div class="nav-item-title">Twitter</div>
+            </a>
+            <a href="https://www.youtube.com/@haruval" class="nav-item" target="_blank">
+                <div class="nav-item-title">YouTube</div>
+            </a>
+            <a href="https://www.twitch.tv/harumilktea" class="nav-item" target="_blank">
+                <div class="nav-item-title">Twitch</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
 </body>
 </html>
