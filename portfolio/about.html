@@ -34,38 +34,6 @@
             line-height: 1.6;
         }
 
-        /* Wireframe Wave Background */
-        .wireframe-wave {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 300px;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .wave-svg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            bottom: 0;
-        }
-
-        .wave-path {
-            fill: none;
-            stroke: rgba(120, 120, 120, 0.4);
-            stroke-width: 1;
-            vector-effect: non-scaling-stroke;
-        }
-
-        .wave-grid {
-            stroke: rgba(120, 120, 120, 0.2);
-            stroke-width: 0.5;
-            vector-effect: non-scaling-stroke;
-        }
-
         /* Navigation */
         .nav-container {
             position: relative;
@@ -338,62 +306,6 @@
     </style>
 </head>
 <body>
-    <!-- Wireframe Wave Background -->
-    <div class="wireframe-wave">
-        <svg class="wave-svg" viewBox="0 0 1200 300" preserveAspectRatio="none">
-            <!-- Horizontal grid lines forming wave contours -->
-            <g class="wave-contours">
-                <path class="wave-path" d="M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215">
-                    <animate attributeName="d" dur="12s" repeatCount="indefinite" 
-                        values="M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215;
-                                M0,240 Q150,180 300,200 T600,190 T900,205 T1200,195;
-                                M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215"/>
-                </path>
-                <path class="wave-path" d="M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175">
-                    <animate attributeName="d" dur="10s" repeatCount="indefinite" 
-                        values="M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175;
-                                M0,200 Q150,140 300,160 T600,150 T900,165 T1200,155;
-                                M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175"/>
-                </path>
-                <path class="wave-path" d="M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135">
-                    <animate attributeName="d" dur="14s" repeatCount="indefinite" 
-                        values="M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135;
-                                M0,160 Q150,100 300,120 T600,110 T900,125 T1200,115;
-                                M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135"/>
-                </path>
-                <path class="wave-path" d="M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95">
-                    <animate attributeName="d" dur="11s" repeatCount="indefinite" 
-                        values="M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95;
-                                M0,120 Q150,60 300,80 T600,70 T900,85 T1200,75;
-                                M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95"/>
-                </path>
-                <path class="wave-path" d="M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55">
-                    <animate attributeName="d" dur="13s" repeatCount="indefinite" 
-                        values="M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55;
-                                M0,80 Q150,20 300,40 T600,30 T900,45 T1200,35;
-                                M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55"/>
-                </path>
-            </g>
-            
-            <!-- Vertical grid lines -->
-            <g class="wave-verticals">
-                <line class="wave-grid" x1="0" y1="30" x2="0" y2="270" opacity="0.3"/>
-                <line class="wave-grid" x1="100" y1="35" x2="100" y2="260" opacity="0.4"/>
-                <line class="wave-grid" x1="200" y1="40" x2="200" y2="250" opacity="0.3"/>
-                <line class="wave-grid" x1="300" y1="38" x2="300" y2="255" opacity="0.5"/>
-                <line class="wave-grid" x1="400" y1="42" x2="400" y2="245" opacity="0.3"/>
-                <line class="wave-grid" x1="500" y1="35" x2="500" y2="265" opacity="0.4"/>
-                <line class="wave-grid" x1="600" y1="32" x2="600" y2="270" opacity="0.6"/>
-                <line class="wave-grid" x1="700" y1="40" x2="700" y2="250" opacity="0.3"/>
-                <line class="wave-grid" x1="800" y1="38" x2="800" y2="255" opacity="0.4"/>
-                <line class="wave-grid" x1="900" y1="35" x2="900" y2="260" opacity="0.5"/>
-                <line class="wave-grid" x1="1000" y1="42" x2="1000" y2="245" opacity="0.3"/>
-                <line class="wave-grid" x1="1100" y1="38" x2="1100" y2="255" opacity="0.4"/>
-                <line class="wave-grid" x1="1200" y1="35" x2="1200" y2="265" opacity="0.3"/>
-            </g>
-        </svg>
-    </div>
-
     <!-- Navigation -->
     <div class="nav-container fade-in">
         <a href="../index.html" class="back-button">
