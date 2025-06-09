@@ -2,44 +2,492 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ari Gladstone - About</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="./css/about.css">
-    <link rel="stylesheet" href="https://use.typekit.net/fia1iab.css">
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #000000;
+            --accent-color: #ff6b6b;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--secondary-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Wireframe Wave Background */
+        .wireframe-wave {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .wave-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            bottom: 0;
+        }
+
+        .wave-path {
+            fill: none;
+            stroke: rgba(120, 120, 120, 0.4);
+            stroke-width: 1;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .wave-grid {
+            stroke: rgba(120, 120, 120, 0.2);
+            stroke-width: 0.5;
+            vector-effect: non-scaling-stroke;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: relative;
+            z-index: 10;
+            padding: 2rem;
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transform-origin: center;
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .back-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .back-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-button:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .back-button:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        /* Main Content */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 6rem;
+        }
+
+        .main-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            letter-spacing: 0.05em;
+            line-height: 1.4;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            margin-bottom: 8rem;
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .content-section.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .content-text {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .content-text p {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .content-image {
+            flex: 0 0 auto;
+            max-width: 500px;
+        }
+
+        .content-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content-image img:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Loading Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .fade-in:nth-child(1) { animation-delay: 0.2s; }
+        .fade-in:nth-child(2) { animation-delay: 0.4s; }
+        .fade-in:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .hero-section {
+                margin-bottom: 4rem;
+            }
+
+            .main-title {
+                font-size: clamp(2.5rem, 12vw, 4.5rem);
+                margin-bottom: 1.5rem;
+            }
+
+            .subtitle {
+                font-size: clamp(1rem, 4vw, 1.4rem);
+                margin-bottom: 2.5rem;
+                padding: 0 1rem;
+            }
+
+            .content-section {
+                flex-direction: column;
+                gap: 2rem;
+                margin-bottom: 5rem;
+            }
+
+            .content-section.reverse {
+                flex-direction: column;
+            }
+
+            .content-text {
+                max-width: 100%;
+            }
+
+            .content-text p {
+                font-size: clamp(0.95rem, 4vw, 1.1rem);
+            }
+
+            .content-image {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .back-button {
+                padding: 0.8rem 1.2rem;
+                font-size: 0.8rem;
+            }
+
+            .hero-section {
+                margin-bottom: 3rem;
+            }
+
+            .main-title {
+                font-size: clamp(2.2rem, 14vw, 3.8rem);
+            }
+
+            .subtitle {
+                font-size: clamp(0.95rem, 4.5vw, 1.2rem);
+                margin-bottom: 2rem;
+                padding: 0 0.5rem;
+            }
+
+            .content-section {
+                margin-bottom: 4rem;
+                gap: 1.5rem;
+            }
+
+            .content-text p {
+                font-size: clamp(0.9rem, 4.5vw, 1rem);
+                line-height: 1.7;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="navbuttons">
-        <a href="../index.html" class="button-link">&lt-- back</a>
+    <!-- Wireframe Wave Background -->
+    <div class="wireframe-wave">
+        <svg class="wave-svg" viewBox="0 0 1200 300" preserveAspectRatio="none">
+            <!-- Horizontal grid lines forming wave contours -->
+            <g class="wave-contours">
+                <path class="wave-path" d="M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215">
+                    <animate attributeName="d" dur="12s" repeatCount="indefinite" 
+                        values="M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215;
+                                M0,240 Q150,180 300,200 T600,190 T900,205 T1200,195;
+                                M0,250 Q150,200 300,220 T600,210 T900,225 T1200,215"/>
+                </path>
+                <path class="wave-path" d="M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175">
+                    <animate attributeName="d" dur="10s" repeatCount="indefinite" 
+                        values="M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175;
+                                M0,200 Q150,140 300,160 T600,150 T900,165 T1200,155;
+                                M0,210 Q150,160 300,180 T600,170 T900,185 T1200,175"/>
+                </path>
+                <path class="wave-path" d="M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135">
+                    <animate attributeName="d" dur="14s" repeatCount="indefinite" 
+                        values="M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135;
+                                M0,160 Q150,100 300,120 T600,110 T900,125 T1200,115;
+                                M0,170 Q150,120 300,140 T600,130 T900,145 T1200,135"/>
+                </path>
+                <path class="wave-path" d="M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95">
+                    <animate attributeName="d" dur="11s" repeatCount="indefinite" 
+                        values="M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95;
+                                M0,120 Q150,60 300,80 T600,70 T900,85 T1200,75;
+                                M0,130 Q150,80 300,100 T600,90 T900,105 T1200,95"/>
+                </path>
+                <path class="wave-path" d="M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55">
+                    <animate attributeName="d" dur="13s" repeatCount="indefinite" 
+                        values="M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55;
+                                M0,80 Q150,20 300,40 T600,30 T900,45 T1200,35;
+                                M0,90 Q150,40 300,60 T600,50 T900,65 T1200,55"/>
+                </path>
+            </g>
+            
+            <!-- Vertical grid lines -->
+            <g class="wave-verticals">
+                <line class="wave-grid" x1="0" y1="30" x2="0" y2="270" opacity="0.3"/>
+                <line class="wave-grid" x1="100" y1="35" x2="100" y2="260" opacity="0.4"/>
+                <line class="wave-grid" x1="200" y1="40" x2="200" y2="250" opacity="0.3"/>
+                <line class="wave-grid" x1="300" y1="38" x2="300" y2="255" opacity="0.5"/>
+                <line class="wave-grid" x1="400" y1="42" x2="400" y2="245" opacity="0.3"/>
+                <line class="wave-grid" x1="500" y1="35" x2="500" y2="265" opacity="0.4"/>
+                <line class="wave-grid" x1="600" y1="32" x2="600" y2="270" opacity="0.6"/>
+                <line class="wave-grid" x1="700" y1="40" x2="700" y2="250" opacity="0.3"/>
+                <line class="wave-grid" x1="800" y1="38" x2="800" y2="255" opacity="0.4"/>
+                <line class="wave-grid" x1="900" y1="35" x2="900" y2="260" opacity="0.5"/>
+                <line class="wave-grid" x1="1000" y1="42" x2="1000" y2="245" opacity="0.3"/>
+                <line class="wave-grid" x1="1100" y1="38" x2="1100" y2="255" opacity="0.4"/>
+                <line class="wave-grid" x1="1200" y1="35" x2="1200" y2="265" opacity="0.3"/>
+            </g>
+        </svg>
     </div>
 
-    <h1>hi, i'm ari</h1>
-    <h2>or "haru" on the internet</h2>
-
-    <div id="content">
-        <p>
-            As a cs major in 2025, unemployment came naturally to me. In an attempt to avoid starving to death (at least for the near future), I went all in on combining my esports experience and passion for design with my Computer Science education to position myself as a valuable asset for any gaming or esports developer. I love providing value to the shareholders. I live to provide value to the shareholders.
-        </p>
-        <img src="../portfolio/images/me.png" alt="Ari Gladstone">
+    <!-- Navigation -->
+    <div class="nav-container fade-in">
+        <a href="../index.html" class="back-button">
+            <span>← back</span>
+        </a>
     </div>
 
-    <div id="content2">
-        <p>
-            Esports has been my number one passion my entire life, from back when I was watching pro Counter Strike tournaments on the chromebooks in 5th grade science class to my sophomore year of college when I played collegiate Valorant for CU Boulder Varsity. 
-            Alongside my amazing friends and teammates, we won the Red Bull Campus Clutch Rockies LAN, placing top 12 NA in Red Bull Campus Clutch Fall 2023.
-        </p>
-        <img src="../portfolio/images/boise1.jpg" alt="winning the boise lan!" 
-     style="max-width: 100%; height: auto; width: 500px; object-fit: cover;">
+    <!-- Main Content -->
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="main-title fade-in">hi, i'm ari</h1>
+            <p class="subtitle fade-in">or "haru" on the internet</p>
+        </div>
+
+        <div class="content-section" data-scroll>
+            <div class="content-text">
+                <p>
+                    As a cs major in 2025, unemployment came naturally to me. In an attempt to avoid starving to death (at least for the near future), I went all in on combining my esports experience and passion for design with my Computer Science education to position myself as a valuable asset for any gaming or esports developer. I love providing value to the shareholders. I live to provide value to the shareholders.
+                </p>
+            </div>
+            <div class="content-image">
+                <img src="../portfolio/images/me.png" alt="Ari Gladstone">
+            </div>
+        </div>
+
+        <div class="content-section reverse" data-scroll>
+            <div class="content-text">
+                <p>
+                    Esports has been my number one passion my entire life, from back when I was watching pro Counter Strike tournaments on the chromebooks in 5th grade science class to my sophomore year of college when I played collegiate Valorant for CU Boulder Varsity. 
+                    Alongside my amazing friends and teammates, we won the Red Bull Campus Clutch Rockies LAN, placing top 12 NA in Red Bull Campus Clutch Fall 2023.
+                </p>
+            </div>
+            <div class="content-image">
+                <img src="../portfolio/images/boise1.jpg" alt="winning the boise lan!">
+            </div>
+        </div>
+
+        <div class="content-section" data-scroll>
+            <div class="content-text">
+                <p>
+                    "Don't put your Valorant rank on your portfolio, that's weird and unprofessional" - some nerds
+                </p>
+            </div>
+            <div class="content-image">
+                <img src="../portfolio/images/radiant.png" alt="radiant">
+            </div>
+        </div>
     </div>
 
-    <div id="content">
-        <p>
-            "Don't put your Valorant rank on your portfolio, that's weird and unprofessional" - some nerds
-        </p>
-        <img src="../portfolio/images/radiant.png" alt="radiant" style="max-width: 100%; height: auto; width: 500px; object-fit: cover;">
-    </div>
-    
+    <script>
+        // Scroll-triggered animations
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('[data-scroll]');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
 
-<script src="./js/portfolio.js"></script>
+        // Intersection Observer for better performance
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all scroll-triggered elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const scrollElements = document.querySelectorAll('[data-scroll]');
+            scrollElements.forEach(el => observer.observe(el));
+        });
+
+        // Fallback scroll handler
+        window.addEventListener('scroll', handleScrollAnimations);
+
+        // Initial check
+        handleScrollAnimations();
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
 </body>
 </html>
