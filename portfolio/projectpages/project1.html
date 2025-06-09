@@ -2,33 +2,486 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Ari Gladstone - Project 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ari Gladstone - Watch L8R</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="../../portfolio/css/projectpage.css">
-    <link rel="stylesheet" href="https://use.typekit.net/fia1iab.css">
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #000000;
+            --accent-color: #ff6b6b;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--secondary-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: relative;
+            z-index: 10;
+            padding: 2rem;
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transform-origin: center;
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .back-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .back-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-button:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .back-button:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        /* Main Content */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .project-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .project-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .project-subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            letter-spacing: 0.05em;
+            line-height: 1.4;
+        }
+
+        /* Carousel */
+        .carousel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 4rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(60px);
+        }
+
+        .carousel.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .carousel:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .carousel-container {
+            position: relative;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .displayed-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .displayed-img:hover {
+            transform: scale(1.02);
+        }
+
+        #carousel-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .carousel-button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transform-origin: center;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .carousel-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .carousel-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .carousel-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .carousel-button:hover::before {
+            width: 150px;
+            height: 150px;
+        }
+
+        .carousel-button:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .carousel-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        /* Project Description */
+        .project-content {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .project-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .project-content:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .project-content p {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .project-content p:last-child {
+            margin-bottom: 0;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Loading Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .fade-in:nth-child(1) { animation-delay: 0.2s; }
+        .fade-in:nth-child(2) { animation-delay: 0.4s; }
+        .fade-in:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .nav-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .project-header {
+                margin-bottom: 3rem;
+            }
+
+            .project-title {
+                font-size: clamp(2.5rem, 12vw, 4.5rem);
+            }
+
+            .project-subtitle {
+                font-size: clamp(1rem, 4vw, 1.4rem);
+                padding: 0 1rem;
+            }
+
+            .carousel, .project-content {
+                padding: 1.5rem;
+            }
+
+            #carousel-buttons {
+                gap: 0.5rem;
+            }
+
+            .carousel-button {
+                padding: 0.7rem 1rem;
+                font-size: 0.75rem;
+            }
+
+            .project-content p {
+                font-size: clamp(0.95rem, 4vw, 1.1rem);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .back-button {
+                padding: 0.8rem 1.2rem;
+                font-size: 0.8rem;
+            }
+
+            .project-header {
+                margin-bottom: 2rem;
+            }
+
+            .project-title {
+                font-size: clamp(2.2rem, 14vw, 3.8rem);
+            }
+
+            .project-subtitle {
+                font-size: clamp(0.95rem, 4.5vw, 1.2rem);
+                padding: 0 0.5rem;
+            }
+
+            .carousel, .project-content {
+                padding: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .carousel-button {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.7rem;
+            }
+
+            .project-content p {
+                font-size: clamp(0.9rem, 4.5vw, 1rem);
+                line-height: 1.7;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="navbuttons">
-        <a href="../../portfolio/projects.html" class="button-link">&lt-- back</a>
+    <!-- Navigation -->
+    <div class="nav-container fade-in">
+        <a href="../../portfolio/projects.html" class="back-button">
+            <span>← back</span>
+        </a>
     </div>
 
-    <h1>Watch L8R</h1>
-    <h2>3rd-party Youtube Client Expanding Watch Later Functionality</h2>
-
-    <div class="carousel">
-        <div class="carousel-container">
-            <img class="displayed-img" src="../../portfolio/images/img(1).png" alt="Image 1">
+    <!-- Main Content -->
+    <div class="container">
+        <div class="project-header">
+            <h1 class="project-title fade-in">Watch L8R</h1>
+            <h2 class="project-subtitle fade-in">3rd-party Youtube Client Expanding Watch Later Functionality</h2>
         </div>
-        <div id="carousel-buttons">
-            <a href="#" class="button-link prev">Previous</a>
-            <a href="#" class="button-link next">Next</a>
+
+        <div class="carousel fade-in" data-scroll>
+            <div class="carousel-container">
+                <img class="displayed-img" src="../../portfolio/images/img(1).png" alt="Image 1">
+            </div>
+            <div id="carousel-buttons">
+                <a href="#" class="carousel-button prev">
+                    <span>Previous</span>
+                </a>
+                <a href="#" class="carousel-button next">
+                    <span>Next</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="project-content" data-scroll>
+            <p>This project, completed as a group project for the CSCI 3308 final, provides users with a streamlined way to manage their Youtube Watch Later list. Using the Youtube API, we even allow users to search Youtube from inside our site, so they don't have to switch between youtube.com and our project. Unintentionally, it also doesn't show ads. Google please don't sue us.</p>
+            <p>Relevant Skills: HTML, CSS, JS, Boostrap, Docker, SQL, Azure.</p>
         </div>
     </div>
-    <p>This project, completed as a group project for the CSCI 3308 final, provides users with a streamlined way to manage their Youtube Watch Later list. Using the Youtube API, we even allow users to search Youtube from inside our site, so they don't have to switch between youtube.com and our project. Unintentionally, it also doesn't show ads. Google please don't sue us.</p>
-    <p>Relevant Skills: HTML, CSS, JS, Boostrap, Docker, SQL, Azure.</p>
-    
 
-<script src="../../portfolio/js/project1.js"></script>
+    <script src="../../portfolio/js/project1.js"></script>
+    <script>
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all scroll-triggered elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const scrollElements = document.querySelectorAll('[data-scroll]');
+            scrollElements.forEach(el => observer.observe(el));
+        });
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
 </body>
 </html>
