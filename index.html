@@ -33,38 +33,6 @@
             overflow-x: hidden;
         }
 
-        /* Custom Cursor */
-        .cursor {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: difference;
-        }
-
-        .cursor::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: -10px;
-            width: 20px;
-            height: 1px;
-            background: white;
-            transform: translateY(-50%);
-        }
-
-        .cursor::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: -10px;
-            width: 1px;
-            height: 20px;
-            background: white;
-            transform: translateX(-50%);
-        }
-
         /* Dot Matrix Background */
         .dot-matrix {
             position: fixed;
