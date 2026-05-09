@@ -83,6 +83,10 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1.1;
+            word-break: normal;
+            overflow-wrap: normal;
+            -webkit-hyphens: none;
+            hyphens: none;
         }
 
         .subtitle {
@@ -92,6 +96,10 @@
             margin-bottom: 0.5rem;
             letter-spacing: 0.05em;
             line-height: 1.4;
+        }
+
+        .mobile-tagline-break {
+            display: none;
         }
 
         .location {
@@ -209,8 +217,10 @@
             .main-title {
                 font-size: clamp(2.2rem, 14vw, 3.8rem);
                 margin-bottom: 1.25rem;
-                word-break: break-word;
-                hyphens: auto;
+                word-break: normal;
+                overflow-wrap: normal;
+                -webkit-hyphens: none;
+                hyphens: none;
             }
 
             .subtitle {
@@ -254,6 +264,12 @@
             }
         }
 
+        @media (max-width: 768px) {
+            .mobile-tagline-break {
+                display: block;
+            }
+        }
+
         /* Loading Animation */
         .fade-in {
             opacity: 0;
@@ -279,7 +295,7 @@
     <div class="container">
         <div class="hero-section">
             <h1 class="main-title fade-in">ARI GLADSTONE</h1>
-            <p class="subtitle fade-in">cs + creative technology // CU Boulder spring '26</p>
+            <p class="subtitle fade-in">cs + creative technology // <br class="mobile-tagline-break">CU Boulder spring '26</p>
         </div>
 
         <div class="nav-grid fade-in">
