@@ -1,22 +1,11 @@
 {
     "projects": [{
-        "name": "Training Arc",
-        "subtitle": "daily workout and valorant progress tracking",
-        "abstract": "The summer after my 3rd year of uni I decided to fix the three main problems with myself: I was a washed radiant, I was fat, and I had no good projects on my portfolio. I created this to be something I would use daily to keep myself accountable, while teaching myself SwiftUI.",
-        "category": "CS",
-        "subdomain": "project1",
-        "link": "https://github.com/haruval/TrainingArc"
-    }, {
-        "name": "Watch L8R",
-        "subtitle": "3rd-party youtube client expanding watch later functionality",
-        "abstract": "This project, completed as a group project for the CSCI 3308 final, provides users with a streamlined way to manage their Youtube Watch Later list. Using the Youtube API, we even allow users to search Youtube from inside our site, so they don't have to switch between youtube.com and our project. Unintentionally, it also doesn't show ads. Google please don't sue us.",
-        "category": "CS",
-        "subdomain": "project2",
-        "link": "../../portfolio/projectpages/project2.html"
-    }, {"name": "Displaced Tarsier",
-        "subtitle": "creative branding exploration",
-        "abstract": "This project explores branding, design, and product mockup for a (fictional) boba tea kit inspired by my cultural heritage.",
-        "category": "CTD",
-        "subdomain": "project3",
-        "link": "../../portfolio/projectpages/project3.html"}]
+        "name": "let me cook...",
+        "subtitle": "",
+        "abstract": "",
+        "category": "placeholder",
+        "subdomain": "placeholder",
+        "link": "#",
+        "image": false
+    }]
 }

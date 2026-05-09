@@ -41,6 +41,10 @@ function parseData(data) {
 
     for (let i = 0; i < data.projects.length; i++) {
         const project = data.projects[i];
+        const imageMarkup = project.image === false ? "" : `
+                <div class="projimg">
+                    <img src="${project.image || `./images/img(${i + 1}).png`}" alt="${project.alt || project.name}">
+                </div>`;
         
         // Create project element
         const projectElement = document.createElement('a');
@@ -49,9 +53,7 @@ function parseData(data) {
         
         projectElement.innerHTML = `
             <div class="row project" id="${project.subdomain}">
-                <div class="projimg">
-                    <img src="./images/img(${i + 1}).png" alt="${project.name}">
-                </div>
+${imageMarkup}
                 <div class="description">
                     <h2>${project.name}</h2>
                     <h3 class="subtitle">${project.subtitle}</h3>
