@@ -114,18 +114,21 @@
 
         /* Navigation */
         .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1.5rem;
-            max-width: 800px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: clamp(0.3rem, 1.5vw, 1.2rem);
             width: 100%;
         }
 
         .nav-item {
+            flex: 1 1 0;
+            min-width: 0;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 1.5rem 1rem;
+            padding: 1.5rem clamp(0.45rem, 1.2vw, 1rem);
             text-decoration: none;
             color: var(--text-primary);
             font-weight: 500;
@@ -169,10 +172,11 @@
             position: relative;
             z-index: 1;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
+            font-size: clamp(0.62rem, 1.15vw, 0.9rem);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
+            white-space: nowrap;
         }
 
         .nav-item:hover::before {
@@ -250,17 +254,16 @@
             }
 
             .nav-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                max-width: 320px;
+                gap: 0.5rem;
+                max-width: 100%;
             }
 
             .nav-item {
-                padding: 1.2rem 1rem;
+                padding: 1rem 0.45rem;
             }
 
             .nav-item-title {
-                font-size: 0.85rem;
+                font-size: 0.64rem;
             }
         }
 
@@ -293,17 +296,16 @@
             }
 
             .nav-grid {
-                max-width: 280px;
-                gap: 0.75rem;
+                gap: 0.35rem;
             }
 
             .nav-item {
-                padding: 1rem 0.75rem;
+                padding: 0.85rem 0.3rem;
             }
 
             .nav-item-title {
-                font-size: 0.8rem;
-                letter-spacing: 0.08em;
+                font-size: 0.52rem;
+                letter-spacing: 0.04em;
             }
         }
 
@@ -318,11 +320,11 @@
             }
 
             .nav-grid {
-                max-width: 260px;
+                gap: 0.25rem;
             }
 
             .nav-item-title {
-                font-size: 0.75rem;
+                font-size: 0.46rem;
             }
         }
 
@@ -351,7 +353,7 @@
     <div class="container">
         <div class="hero-section">
             <h1 class="main-title fade-in">ARI GLADSTONE</h1>
-            <p class="subtitle fade-in">cs + creative technology spring '26 CU Boulder grad</p>
+            <p class="subtitle fade-in">cs + creative technology // CU Boulder spring '26</p>
         </div>
 
         <div class="nav-grid fade-in">
@@ -360,6 +362,9 @@
             </a>
             <a href="./portfolio/projects.html" class="nav-item">
                 <div class="nav-item-title">Projects</div>
+            </a>
+            <a href="https://github.com/haruval" class="nav-item" target="_blank">
+                <div class="nav-item-title">GitHub</div>
             </a>
             <a href="https://x.com/haruval" class="nav-item" target="_blank">
                 <div class="nav-item-title">Twitter</div>
