@@ -6,8 +6,21 @@ const DEFAULT_OPTIONS = {
     maxPixelRatio: 1.5,
 };
 
+const COLOR_PALETTE = [
+    0x7dd3fc,
+    0xc4b5fd,
+    0xf0abfc,
+    0xfda4af,
+    0xfcd34d,
+    0x86efac,
+];
+
 function randomBetween(min, max) {
     return min + Math.random() * (max - min);
+}
+
+function easeOutCubic(value) {
+    return 1 - Math.pow(1 - value, 3);
 }
 
 export class ThreeCloudOverlay {
@@ -18,6 +31,7 @@ export class ThreeCloudOverlay {
         this.targetMouse = new THREE.Vector2(0, 0);
         this.animationFrame = null;
         this.isDestroyed = false;
+        this.startedAt = performance.now() * 0.001;
 
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
@@ -68,12 +82,15 @@ export class ThreeCloudOverlay {
         const spreadY = 4.2;
 
         for (let index = 0; index < count; index += 1) {
-            const opacity = randomBetween(0.035, 0.11);
+            const color = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+            const opacity = randomBetween(0.075, 0.17);
             const material = new THREE.MeshLambertMaterial({
-                color: 0xffffff,
+                color,
                 transparent: true,
-                opacity,
+                opacity: 0,
                 depthWrite: false,
+                emissive: color,
+                emissiveIntensity: 0.18,
                 flatShading: true,
             });
 
@@ -86,7 +103,7 @@ export class ThreeCloudOverlay {
             );
 
             mesh.position.copy(position);
-            mesh.scale.setScalar(scale);
+            mesh.scale.setScalar(scale * 0.84);
             mesh.rotation.set(
                 randomBetween(0, Math.PI),
                 randomBetween(0, Math.PI),
@@ -95,6 +112,10 @@ export class ThreeCloudOverlay {
 
             mesh.userData = {
                 basePosition: position.clone(),
+                baseScale: scale,
+                targetOpacity: opacity,
+                fadeDelay: index * 0.08 + randomBetween(0, 0.55),
+                fadeDuration: randomBetween(1.35, 2.6),
                 driftSpeed: randomBetween(0.018, 0.045),
                 driftDistance: randomBetween(0.22, 0.68),
                 bobSpeed: randomBetween(0.35, 0.75),
@@ -164,9 +185,17 @@ export class ThreeCloudOverlay {
                 bobSpeed,
                 bobDistance,
                 rotationSpeed,
+                baseScale,
+                targetOpacity,
+                fadeDelay,
+                fadeDuration,
                 phase,
             } = mesh.userData;
+            const fadeProgress = Math.min(Math.max((elapsed - this.startedAt - fadeDelay) / fadeDuration, 0), 1);
+            const easedFade = easeOutCubic(fadeProgress);
 
+            mesh.material.opacity = targetOpacity * easedFade;
+            mesh.scale.setScalar(baseScale * (0.84 + easedFade * 0.16));
             mesh.position.x = basePosition.x + Math.sin(elapsed * driftSpeed + phase) * driftDistance;
             mesh.position.y = basePosition.y + Math.sin(elapsed * bobSpeed + phase) * bobDistance;
             mesh.position.z = basePosition.z + Math.cos(elapsed * driftSpeed * 0.8 + phase) * 0.2;
