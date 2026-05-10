@@ -15,6 +15,9 @@ const COLOR_PALETTE = [
     0x86efac,
 ];
 
+const SOFT_TINT = new THREE.Color(0xffffff);
+const GLOW_RADIUS = 2.4;
+
 function randomBetween(min, max) {
     return min + Math.random() * (max - min);
 }
@@ -29,6 +32,10 @@ export class ThreeCloudOverlay {
         this.meshes = [];
         this.mouse = new THREE.Vector2(0, 0);
         this.targetMouse = new THREE.Vector2(0, 0);
+        this.pointerNdc = new THREE.Vector2(0, 0);
+        this.cursorRaycaster = new THREE.Raycaster();
+        this.cursorWorldPosition = new THREE.Vector3();
+        this.meshWorldPosition = new THREE.Vector3();
         this.animationFrame = null;
         this.isDestroyed = false;
         this.startedAt = performance.now() * 0.001;
@@ -56,6 +63,7 @@ export class ThreeCloudOverlay {
         });
 
         this.geometry = new THREE.IcosahedronGeometry(1, 1);
+        this.glowGeometry = new THREE.IcosahedronGeometry(0.72, 1);
         this.cloudGroup = new THREE.Group();
         this.scene.add(this.cloudGroup);
 
@@ -83,18 +91,41 @@ export class ThreeCloudOverlay {
 
         for (let index = 0; index < count; index += 1) {
             const color = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
-            const opacity = randomBetween(0.075, 0.17);
-            const material = new THREE.MeshLambertMaterial({
-                color,
+            const tint = new THREE.Color(color).lerp(SOFT_TINT, 0.28);
+            const glowColor = new THREE.Color(color).lerp(SOFT_TINT, 0.12);
+            const opacity = randomBetween(0.1, 0.18);
+            const material = new THREE.MeshPhysicalMaterial({
+                color: tint,
                 transparent: true,
                 opacity: 0,
                 depthWrite: false,
-                emissive: color,
-                emissiveIntensity: 0.18,
+                roughness: 0.72,
+                metalness: 0,
+                transmission: 0.28,
+                thickness: 0.85,
+                ior: 1.24,
+                clearcoat: 0.18,
+                clearcoatRoughness: 0.78,
+                attenuationColor: tint,
+                attenuationDistance: 3.4,
+                emissive: glowColor,
+                emissiveIntensity: 0.1,
                 flatShading: true,
+                side: THREE.DoubleSide,
+            });
+            const baseGlowOpacity = randomBetween(0.018, 0.038);
+            const maxGlowOpacity = randomBetween(0.13, 0.22);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: glowColor,
+                transparent: true,
+                opacity: 0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                toneMapped: false,
             });
 
             const mesh = new THREE.Mesh(this.geometry, material);
+            const innerGlowMesh = new THREE.Mesh(this.glowGeometry, glowMaterial);
             const scale = randomBetween(0.55, 1.85);
             const position = new THREE.Vector3(
                 randomBetween(-spreadX, spreadX),
@@ -109,11 +140,22 @@ export class ThreeCloudOverlay {
                 randomBetween(0, Math.PI),
                 randomBetween(0, Math.PI),
             );
+            innerGlowMesh.scale.setScalar(0.92);
+            mesh.add(innerGlowMesh);
 
             mesh.userData = {
                 basePosition: position.clone(),
                 baseScale: scale,
                 targetOpacity: opacity,
+                innerGlowMesh,
+                glowMaterial,
+                baseGlowOpacity,
+                maxGlowOpacity,
+                currentGlow: baseGlowOpacity,
+                targetGlow: baseGlowOpacity,
+                baseEmissiveIntensity: randomBetween(0.08, 0.14),
+                maxEmissiveBoost: randomBetween(0.16, 0.28),
+                shellOpacityBoost: randomBetween(0.018, 0.032),
                 fadeDelay: index * 0.08 + randomBetween(0, 0.55),
                 fadeDuration: randomBetween(1.35, 2.6),
                 driftSpeed: randomBetween(0.018, 0.045),
@@ -176,6 +218,8 @@ export class ThreeCloudOverlay {
         this.cloudGroup.position.y = -this.mouse.y * 0.28;
         this.cloudGroup.rotation.y = this.mouse.x * 0.025;
         this.cloudGroup.rotation.x = this.mouse.y * 0.018;
+        this.pointerNdc.set(this.mouse.x, -this.mouse.y);
+        this.cursorRaycaster.setFromCamera(this.pointerNdc, this.camera);
 
         this.meshes.forEach((mesh) => {
             const {
@@ -187,6 +231,13 @@ export class ThreeCloudOverlay {
                 rotationSpeed,
                 baseScale,
                 targetOpacity,
+                innerGlowMesh,
+                glowMaterial,
+                baseGlowOpacity,
+                maxGlowOpacity,
+                baseEmissiveIntensity,
+                maxEmissiveBoost,
+                shellOpacityBoost,
                 fadeDelay,
                 fadeDuration,
                 phase,
@@ -194,7 +245,6 @@ export class ThreeCloudOverlay {
             const fadeProgress = Math.min(Math.max((elapsed - this.startedAt - fadeDelay) / fadeDuration, 0), 1);
             const easedFade = easeOutCubic(fadeProgress);
 
-            mesh.material.opacity = targetOpacity * easedFade;
             mesh.scale.setScalar(baseScale * (0.84 + easedFade * 0.16));
             mesh.position.x = basePosition.x + Math.sin(elapsed * driftSpeed + phase) * driftDistance;
             mesh.position.y = basePosition.y + Math.sin(elapsed * bobSpeed + phase) * bobDistance;
@@ -202,6 +252,24 @@ export class ThreeCloudOverlay {
             mesh.rotation.x += rotationSpeed.x;
             mesh.rotation.y += rotationSpeed.y;
             mesh.rotation.z += rotationSpeed.z;
+
+            mesh.getWorldPosition(this.meshWorldPosition);
+            const ray = this.cursorRaycaster.ray;
+            const distanceToMeshDepth = (this.meshWorldPosition.z - ray.origin.z) / ray.direction.z;
+            this.cursorWorldPosition.copy(ray.origin).addScaledVector(ray.direction, distanceToMeshDepth);
+
+            const distance = this.cursorWorldPosition.distanceTo(this.meshWorldPosition);
+            const influence = THREE.MathUtils.clamp(1 - distance / GLOW_RADIUS, 0, 1);
+            const easedInfluence = influence * influence * (3 - 2 * influence);
+            const targetGlow = baseGlowOpacity + easedInfluence * (maxGlowOpacity - baseGlowOpacity);
+            const currentGlow = THREE.MathUtils.lerp(mesh.userData.currentGlow, targetGlow, 0.08);
+
+            mesh.userData.targetGlow = targetGlow;
+            mesh.userData.currentGlow = currentGlow;
+            mesh.material.opacity = Math.min(targetOpacity + easedInfluence * shellOpacityBoost, 0.23) * easedFade;
+            mesh.material.emissiveIntensity = baseEmissiveIntensity + easedInfluence * maxEmissiveBoost;
+            glowMaterial.opacity = Math.min(currentGlow, maxGlowOpacity) * easedFade;
+            innerGlowMesh.scale.setScalar(0.92 + easedInfluence * 0.1);
         });
 
         this.renderer.render(this.scene, this.camera);
@@ -224,10 +292,18 @@ export class ThreeCloudOverlay {
         window.removeEventListener("pointermove", this.onPointerMove);
 
         this.meshes.forEach((mesh) => {
+            const { innerGlowMesh, glowMaterial } = mesh.userData;
+            if (innerGlowMesh) {
+                mesh.remove(innerGlowMesh);
+            }
+            if (glowMaterial) {
+                glowMaterial.dispose();
+            }
             mesh.material.dispose();
             this.cloudGroup.remove(mesh);
         });
         this.geometry.dispose();
+        this.glowGeometry.dispose();
         this.lights.forEach((light) => this.scene.remove(light));
         this.scene.remove(this.cloudGroup);
         this.renderer.renderLists.dispose();
