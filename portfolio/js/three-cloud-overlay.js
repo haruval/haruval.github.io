@@ -17,6 +17,15 @@ const COLOR_PALETTE = [
 
 const SOFT_TINT = new THREE.Color(0xffffff);
 const GLOW_RADIUS = 2.4;
+const POINTER_PARALLAX = {
+    groupX: 0.12,
+    groupY: 0.08,
+    rotationY: 0.085,
+    rotationX: 0.062,
+    depthMin: 0.04,
+    depthMax: 2.35,
+    depthYRatio: 0.78,
+};
 
 function randomBetween(min, max) {
     return min + Math.random() * (max - min);
@@ -174,11 +183,17 @@ export class ThreeCloudOverlay {
             this.cloudGroup.add(mesh);
         }
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.62);
-        const keyLight = new THREE.DirectionalLight(0xffffff, 1.3);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.48);
+        const hemisphereLight = new THREE.HemisphereLight(0xc7f0ff, 0x181020, 0.36);
+        const keyLight = new THREE.DirectionalLight(0xffffff, 1.45);
+        const fillLight = new THREE.DirectionalLight(0xb9c7ff, 0.42);
+        const rimLight = new THREE.DirectionalLight(0xffd4ec, 0.64);
+
         keyLight.position.set(-3, 5, 6);
-        this.scene.add(ambientLight, keyLight);
-        this.lights = [ambientLight, keyLight];
+        fillLight.position.set(4, -2, 5);
+        rimLight.position.set(3, 2, -5);
+        this.scene.add(ambientLight, hemisphereLight, keyLight, fillLight, rimLight);
+        this.lights = [ambientLight, hemisphereLight, keyLight, fillLight, rimLight];
     }
 
     mount() {
@@ -214,10 +229,10 @@ export class ThreeCloudOverlay {
         const elapsed = performance.now() * 0.001;
 
         this.mouse.lerp(this.targetMouse, 0.035);
-        this.cloudGroup.position.x = this.mouse.x * 0.42;
-        this.cloudGroup.position.y = -this.mouse.y * 0.28;
-        this.cloudGroup.rotation.y = this.mouse.x * 0.025;
-        this.cloudGroup.rotation.x = this.mouse.y * 0.018;
+        this.cloudGroup.position.x = this.mouse.x * POINTER_PARALLAX.groupX;
+        this.cloudGroup.position.y = -this.mouse.y * POINTER_PARALLAX.groupY;
+        this.cloudGroup.rotation.y = this.mouse.x * POINTER_PARALLAX.rotationY;
+        this.cloudGroup.rotation.x = this.mouse.y * POINTER_PARALLAX.rotationX;
         this.pointerNdc.set(this.mouse.x, -this.mouse.y);
         this.cursorRaycaster.setFromCamera(this.pointerNdc, this.camera);
 
@@ -246,8 +261,11 @@ export class ThreeCloudOverlay {
             const easedFade = easeOutCubic(fadeProgress);
 
             mesh.scale.setScalar(baseScale * (0.84 + easedFade * 0.16));
-            mesh.position.x = basePosition.x + Math.sin(elapsed * driftSpeed + phase) * driftDistance;
-            mesh.position.y = basePosition.y + Math.sin(elapsed * bobSpeed + phase) * bobDistance;
+            const depthProgress = THREE.MathUtils.clamp(THREE.MathUtils.mapLinear(basePosition.z, -7, 0.8, 0, 1), 0, 1);
+            const depthResponse = depthProgress * depthProgress * (3 - 2 * depthProgress);
+            const parallaxDepth = THREE.MathUtils.lerp(POINTER_PARALLAX.depthMin, POINTER_PARALLAX.depthMax, depthResponse);
+            mesh.position.x = basePosition.x + Math.sin(elapsed * driftSpeed + phase) * driftDistance - this.mouse.x * parallaxDepth;
+            mesh.position.y = basePosition.y + Math.sin(elapsed * bobSpeed + phase) * bobDistance + this.mouse.y * parallaxDepth * POINTER_PARALLAX.depthYRatio;
             mesh.position.z = basePosition.z + Math.cos(elapsed * driftSpeed * 0.8 + phase) * 0.2;
             mesh.rotation.x += rotationSpeed.x;
             mesh.rotation.y += rotationSpeed.y;
