@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const projectsContainer = document.getElementById("projects");
     
     if (projectsContainer) {
-        fetch('./projects.json') 
+        fetch('/portfolio/projects.json') 
             .then(response => response.json())
             .then((projects) => {
                 proj = projects;
@@ -41,9 +41,10 @@ function parseData(data) {
 
     for (let i = 0; i < data.projects.length; i++) {
         const project = data.projects[i];
+        const imagePath = normalizePortfolioImagePath(project.image || `./images/img(${i + 1}).png`);
         const imageMarkup = project.image === false ? "" : `
                 <div class="projimg">
-                    <img src="${project.image || `./images/img(${i + 1}).png`}" alt="${project.alt || project.name}">
+                    <img src="${imagePath}" alt="${project.alt || project.name}">
                 </div>`;
         
         // Create project element
@@ -63,6 +64,14 @@ ${imageMarkup}
             
         projectsContainer.appendChild(projectElement);
     }
+}
+
+function normalizePortfolioImagePath(path) {
+    if (path.startsWith("./images/")) {
+        return path.replace("./images/", "/portfolio/images/");
+    }
+
+    return path;
 }
 
 // Set up filter buttons
