@@ -1,0 +1,89 @@
+{
+  "ascent": {
+    "kj": {
+      "atk": [
+        "ctMolly.png",
+        "heavenMolly.png",
+        "stairsMolly.png",
+        "treeMolly.png"
+      ],
+      "def": [
+        "wineMollyUlt.png"
+      ]
+    }
+  },
+  "breeze": {
+    "viper": {
+      "atk": {
+        "molly": [],
+        "orb": [
+          "aSplitOrb.png"
+        ],
+        "wall": [
+          "aSplitWall.png",
+          "defaultAwall.png"
+        ]
+      },
+      "def": {
+        "molly": [],
+        "orb": [
+          "aMainOrb.png",
+          "aOneway.png",
+          "bMainOrb.png",
+          "doorOneway.png"
+        ],
+        "wall": [
+          "aMidWall.png",
+          "bMidWall.png",
+          "bRetakeWall.png"
+        ]
+      }
+    }
+  },
+  "lotus": {
+    "vyse": {
+      "atk": [
+        "aBacksiteThorn.png",
+        "aHeavenThorn.png",
+        "aStairsThorn.png"
+      ],
+      "def": [
+        "aSetup1.png",
+        "aSetup2.png",
+        "cSetup1.png"
+      ]
+    }
+  },
+  "split": {
+    "viper": {
+      "atk": {
+        "molly": [
+          "backsiteMolly.png",
+          "blueboxMolly.png",
+          "pillarMolly.png",
+          "slantMolly.png"
+        ],
+        "orb": [
+          "bLurkOrb.png",
+          "defaultRampOrb.png"
+        ],
+        "wall": [
+          "bLurkWall.png",
+          "defaultAWall.png"
+        ]
+      },
+      "def": {
+        "molly": [],
+        "orb": [
+          "bMainoneway.png",
+          "mailMidOrb.png",
+          "spawnBsiteorb.png",
+          "ventMidOrb.png"
+        ],
+        "wall": [
+          "defaultAwall.png"
+        ]
+      }
+    }
+  }
+}

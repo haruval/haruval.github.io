@@ -205,44 +205,10 @@
   </main>
 
   <script>
-    const lineupTree = {
-      breeze: {
-        viper: {
-          atk: {
-            molly: [],
-            orb: ["aSplitOrb.png"],
-            wall: ["aSplitWall.png", "defaultAwall.png"]
-          },
-          def: {
-            molly: [],
-            orb: ["aMainOrb.png", "aOneway.png", "bMainOrb.png", "doorOneway.png"],
-            wall: ["aMidWall.png", "bMidWall.png", "bRetakeWall.png"]
-          }
-        }
-      },
-      lotus: {
-        vyse: {
-          atk: ["aBacksiteThorn.png", "aHeavenThorn.png", "aStairsThorn.png"],
-          def: ["aSetup1.png", "aSetup2.png", "cSetup1.png"]
-        }
-      },
-      split: {
-        viper: {
-          atk: {
-            molly: ["backsiteMolly.png", "blueboxMolly.png", "pillarMolly.png", "slantMolly.png"],
-            orb: ["bLurkOrb.png", "defaultRampOrb.png"],
-            wall: ["bLurkWall.png", "defaultAWall.png"]
-          },
-          def: {
-            molly: [],
-            orb: ["bMainoneway.png", "mailMidOrb.png", "spawnBsiteorb.png", "ventMidOrb.png"],
-            wall: ["defaultAwall.png"]
-          }
-        }
-      }
-    };
+    let lineupTree = {};
 
     const screenshotRoot = "lineupscreenshots";
+    const manifestUrl = "manifest.json";
     const content = document.getElementById("content");
     const pagePath = document.getElementById("pagePath");
 
@@ -385,8 +351,21 @@
       }
     }
 
+    async function init() {
+      try {
+        const response = await fetch(manifestUrl, { cache: "no-cache" });
+        if (!response.ok) throw new Error(`manifest ${response.status}`);
+        lineupTree = await response.json();
+      } catch (error) {
+        content.innerHTML = '<p class="empty">couldn\'t load manifest.json</p>';
+        console.error(error);
+        return;
+      }
+      render();
+    }
+
     window.addEventListener("hashchange", render);
-    render();
+    init();
   </script>
 </body>
 </html>
