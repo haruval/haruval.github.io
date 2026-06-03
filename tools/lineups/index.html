@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valorant Lineups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #D3D3FF;
+      --ink: #090933;
+      --muted: #575799;
+      --panel: rgba(255, 255, 255, 0.36);
+      --panel-strong: rgba(255, 255, 255, 0.62);
+      --border: rgba(9, 9, 51, 0.18);
+      --shadow: rgba(9, 9, 51, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Roboto Mono", "Times New Roman", Times, serif;
+      letter-spacing: 0;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      width: min(1120px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      min-height: 36px;
+      margin-bottom: 30px;
+    }
+
+    .path {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2.5vw, 1.55rem);
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .path-button {
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 2px 4px;
+    }
+
+    .path-button:hover,
+    .path-button:focus-visible {
+      background: var(--panel-strong);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .path-button[aria-current="page"] {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .path-separator {
+      color: var(--muted);
+    }
+
+    .folder-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .folder-button {
+      min-height: 88px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      padding: 18px;
+      text-align: left;
+      box-shadow: 0 10px 24px var(--shadow);
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    .folder-button:hover,
+    .folder-button:focus-visible {
+      background: var(--panel-strong);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .folder-name {
+      display: block;
+      color: var(--ink);
+      font-size: 1.35rem;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    .folder-meta {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .image-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .image-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 480px) minmax(150px, 1fr);
+      gap: 18px;
+      align-items: center;
+      width: min(100%, 860px);
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 10px 24px var(--shadow);
+    }
+
+    .image-row a {
+      display: block;
+      color: inherit;
+    }
+
+    .image-row img {
+      display: block;
+      width: 100%;
+      max-height: 310px;
+      object-fit: contain;
+      object-position: left center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.34);
+    }
+
+    .file-name {
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 680px) {
+      .app {
+        width: min(100vw - 20px, 1120px);
+        padding-top: 16px;
+      }
+
+      .topbar {
+        margin-bottom: 22px;
+      }
+
+      .folder-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .image-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-live="polite">
+    <header class="topbar">
+      <nav class="path" id="pagePath" aria-label="Lineup path"></nav>
+    </header>
+    <section id="content"></section>
+  </main>
+
+  <script>
+    const lineupTree = {
+      breeze: {
+        viper: {
+          atk: {
+            molly: [],
+            orb: ["aSplitOrb.png"],
+            wall: ["aSplitWall.png", "defaultAwall.png"]
+          },
+          def: {
+            molly: [],
+            orb: ["aMainOrb.png", "aOneway.png", "bMainOrb.png", "doorOneway.png"],
+            wall: ["aMidWall.png", "bMidWall.png", "bRetakeWall.png"]
+          }
+        }
+      },
+      lotus: {
+        vyse: {
+          atk: ["aBacksiteThorn.png", "aHeavenThorn.png", "aStairsThorn.png"],
+          def: ["aSetup1.png", "aSetup2.png", "cSetup1.png"]
+        }
+      },
+      split: {
+        viper: {
+          atk: {
+            molly: ["backsiteMolly.png", "blueboxMolly.png", "pillarMolly.png", "slantMolly.png"],
+            orb: ["bLurkOrb.png", "defaultRampOrb.png"],
+            wall: ["bLurkWall.png", "defaultAWall.png"]
+          },
+          def: {
+            molly: [],
+            orb: ["bMainoneway.png", "mailMidOrb.png", "spawnBsiteorb.png", "ventMidOrb.png"],
+            wall: ["defaultAwall.png"]
+          }
+        }
+      }
+    };
+
+    const screenshotRoot = "lineupscreenshots";
+    const content = document.getElementById("content");
+    const pagePath = document.getElementById("pagePath");
+
+    function displayName(value) {
+      return value
+        .replace(/[-_]/g, " ")
+        .toLowerCase();
+    }
+
+    function getPath() {
+      return decodeURIComponent(window.location.hash.replace(/^#\/?/, ""))
+        .split("/")
+        .filter(Boolean);
+    }
+
+    function setPath(parts) {
+      window.location.hash = parts.length ? `#/${parts.map(encodeURIComponent).join("/")}` : "#/";
+    }
+
+    function getNode(parts) {
+      return parts.reduce((node, part) => node && node[part], lineupTree);
+    }
+
+    function countImages(node) {
+      if (Array.isArray(node)) return node.length;
+      return Object.values(node).reduce((total, child) => total + countImages(child), 0);
+    }
+
+    function describeFolder(node) {
+      const total = countImages(node);
+      const noun = total === 1 ? "lineup" : "lineups";
+      return `${total} ${noun}`;
+    }
+
+    function renderPath(parts) {
+      pagePath.innerHTML = "";
+      const crumbs = ["home", ...parts];
+
+      crumbs.forEach((name, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "path-button";
+        button.textContent = displayName(name);
+        button.addEventListener("click", () => setPath(parts.slice(0, index)));
+
+        if (index === crumbs.length - 1) {
+          button.setAttribute("aria-current", "page");
+        }
+
+        if (index > 0) {
+          const separator = document.createElement("span");
+          separator.className = "path-separator";
+          separator.textContent = "/";
+          pagePath.appendChild(separator);
+        }
+
+        pagePath.appendChild(button);
+      });
+    }
+
+    function renderFolders(parts, node) {
+      content.innerHTML = "";
+      const grid = document.createElement("div");
+      grid.className = "folder-grid";
+
+      Object.keys(node).sort().forEach((name) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "folder-button";
+        button.addEventListener("click", () => setPath([...parts, name]));
+
+        const label = document.createElement("span");
+        label.className = "folder-name";
+        label.textContent = displayName(name);
+
+        const meta = document.createElement("span");
+        meta.className = "folder-meta";
+        meta.textContent = describeFolder(node[name]);
+
+        button.append(label, meta);
+        grid.appendChild(button);
+      });
+
+      content.appendChild(grid);
+    }
+
+    function renderImages(parts, images) {
+      content.innerHTML = "";
+      const list = document.createElement("div");
+      list.className = "image-list";
+
+      images.forEach((fileName) => {
+        const imagePath = [screenshotRoot, ...parts, fileName].join("/");
+        const row = document.createElement("article");
+        row.className = "image-row";
+
+        const link = document.createElement("a");
+        link.href = imagePath;
+        link.target = "_blank";
+        link.rel = "noopener";
+
+        const image = document.createElement("img");
+        image.src = imagePath;
+        image.alt = fileName;
+        image.loading = "lazy";
+        link.appendChild(image);
+
+        const label = document.createElement("div");
+        label.className = "file-name";
+        label.textContent = fileName;
+
+        row.append(link, label);
+        list.appendChild(row);
+      });
+
+      content.appendChild(list);
+    }
+
+    function renderEmpty() {
+      content.innerHTML = '<p class="empty">i dont have any :c</p>';
+    }
+
+    function render() {
+      const parts = getPath();
+      const node = getNode(parts);
+
+      if (!node) {
+        setPath([]);
+        return;
+      }
+
+      renderPath(parts);
+
+      if (Array.isArray(node)) {
+        node.length ? renderImages(parts, node) : renderEmpty();
+      } else if (Object.keys(node).length) {
+        renderFolders(parts, node);
+      } else {
+        renderEmpty();
+      }
+    }
+
+    window.addEventListener("hashchange", render);
+    render();
+  </script>
+</body>
+</html>
