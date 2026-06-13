@@ -26,13 +26,9 @@ const lanternMat = new THREE.MeshBasicMaterial({ color: 0xff6a52 });
 const lampBulbMat = new THREE.MeshBasicMaterial({ color: 0xffd9a8 });
 const wireMat = new THREE.LineBasicMaterial({ color: 0x04040a });
 const floorMat = new THREE.MeshBasicMaterial({ color: 0xa06a38 });
-// dividers double as the alcoves' side walls and as exterior building wall
-// where they're exposed at row ends/corners, so they wear the window facade
-// (at a ground-floor scale) rather than reading as flat black boxes
-const dividerTex = pick(windowTextures).clone();
-dividerTex.wrapS = dividerTex.wrapT = THREE.RepeatWrapping;
-dividerTex.repeat.set(1, 0.42);
-const dividerMat = new THREE.MeshBasicMaterial({ map: dividerTex });
+// skirts and dividers are the alcoves' dark side walls / separators between
+// shops; kept flat black rather than carrying the building's window facade
+const dividerMat = new THREE.MeshBasicMaterial({ color: 0x0c0c14 });
 const counterMat = new THREE.MeshBasicMaterial({ color: 0x4a2a18 });
 const counterTopMat = new THREE.MeshBasicMaterial({ color: 0xe8b878 });
 const stoolMat = new THREE.MeshBasicMaterial({ color: 0x2a2a36 });
@@ -293,20 +289,10 @@ function buildShopUnit(g, side, zc, sw) {
     g.add(mass);
 
     // the mass floats above the alcove, leaving its side walls open below
-    // y=3.2 behind the dividers; flush skirts continue the same facade down to
-    // the ground. Match the mass's window grid exactly — same horizontal repeat
-    // so columns line up, and a vertical repeat/offset that picks up the tile
-    // band just below the mass's base so rows are seamless across y=3.2.
-    const massTex = mass.material[0].map;
-    const skirtTex = massTex.clone();
-    skirtTex.wrapS = skirtTex.wrapT = THREE.RepeatWrapping;
-    const skirtRepY = massTex.repeat.y * 3.2 / mass.scale.y;
-    skirtTex.repeat.set(massTex.repeat.x, skirtRepY);
-    skirtTex.offset.set(massTex.offset.x, -skirtRepY);
-    skirtTex.needsUpdate = true;
-    const skirtMat = new THREE.MeshBasicMaterial({ map: skirtTex });
+    // y=3.2 behind the dividers; flush black skirts close them off, matching
+    // the dark dividers/side walls rather than the building's window facade
     for (const e of [-1, 1]) {
-        const skirt = new THREE.Mesh(new THREE.PlaneGeometry(sd, 3.2), skirtMat);
+        const skirt = new THREE.Mesh(new THREE.PlaneGeometry(sd, 3.2), dividerMat);
         skirt.position.set(inX(sd / 2), 1.6, zc + e * (sw / 2));
         skirt.rotation.y = e > 0 ? 0 : Math.PI;
         g.add(skirt);
