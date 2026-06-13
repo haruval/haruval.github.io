@@ -382,9 +382,13 @@
 
     <script src="/portfolio/js/portfolio.js"></script>
     <script type="module">
-        import { mountThreeCloudOverlay } from '/portfolio/js/three-cloud-overlay.js';
+        import { mountTokyoScene } from '/fun/tokyo/js/main.js';
 
-        mountThreeCloudOverlay();
+        mountTokyoScene({
+            className: 'projects-tokyo-scene',
+            zIndex: 1,
+            maxPixelRatio: 1.25,
+        });
     </script>
     <script>
         // Intersection Observer for scroll animations

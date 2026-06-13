@@ -1,5 +1,5 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
-import { IS_MOBILE, FOG_COLOR, rand, pick, skyTex, glowTex, applyAnisotropy, updateAnimBoards } from './textures.js';
+import { IS_MOBILE, FOG_COLOR, rand, pick, skyTex, glowTex, applyAnisotropy, updateAnimBoards, animBoards } from './textures.js';
 import {
     BLOCK_LEN, INTER_HALF,
     boxGeo, sphereGeo, darkMat,
@@ -11,18 +11,60 @@ const SPEED = 11;
 const AHEAD = IS_MOBILE ? 250 : 330;
 const BEHIND = 60;
 
+const DEFAULT_OPTIONS = {
+    canvas: null,
+    fallback: null,
+    className: 'tokyo-scene-canvas',
+    zIndex: 1,
+    maxPixelRatio: undefined,
+};
+
+export function mountTokyoScene(options = {}) {
+const settings = { ...DEFAULT_OPTIONS, ...options };
+const canvas = settings.canvas || document.createElement('canvas');
+const ownsCanvas = !settings.canvas;
+const fallback = settings.fallback || null;
+let animationFrame = null;
+let isDestroyed = false;
+
+flickerables.length = 0;
+pulsers.length = 0;
+beacons.length = 0;
+steams.length = 0;
+animBoards.length = 0;
+
+if (settings.className) {
+    canvas.className = settings.className;
+}
+
+if (ownsCanvas) {
+    canvas.setAttribute('aria-hidden', 'true');
+    Object.assign(canvas.style, {
+        position: 'fixed',
+        inset: '0',
+        display: 'block',
+        width: '100vw',
+        height: '100vh',
+        pointerEvents: 'none',
+        zIndex: String(settings.zIndex),
+    });
+    document.body.prepend(canvas);
+}
+
 let renderer;
 try {
     renderer = new THREE.WebGLRenderer({
-        canvas: document.getElementById('scene'),
+        canvas,
         antialias: true,
         powerPreference: 'high-performance',
     });
 } catch (error) {
-    document.getElementById('fallback').style.display = 'flex';
+    if (fallback) {
+        fallback.style.display = 'flex';
+    }
     throw error;
 }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, IS_MOBILE ? 1.25 : 1.5));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, settings.maxPixelRatio || (IS_MOBILE ? 1.25 : 1.5)));
 applyAnisotropy(renderer);
 
 const scene = new THREE.Scene();
@@ -241,12 +283,13 @@ function updateCar(car, dt) {
 const mouse = new THREE.Vector2();
 const targetMouse = new THREE.Vector2();
 
-window.addEventListener('pointermove', (event) => {
+function onPointerMove(event) {
     targetMouse.set(
         (event.clientX / window.innerWidth - 0.5) * 2,
         (event.clientY / window.innerHeight - 0.5) * 2,
     );
-}, { passive: true });
+}
+window.addEventListener('pointermove', onPointerMove, { passive: true });
 
 function onResize() {
     camera.aspect = window.innerWidth / Math.max(window.innerHeight, 1);
@@ -271,7 +314,8 @@ let fpsT0 = 0;
 let fps = 0;
 
 function animate() {
-    requestAnimationFrame(animate);
+    if (isDestroyed) return;
+    animationFrame = requestAnimationFrame(animate);
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
     frames += 1;
@@ -339,5 +383,42 @@ function animate() {
 
 animate();
 
+function destroy() {
+    if (isDestroyed) return;
+    isDestroyed = true;
+
+    if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
+
+    window.removeEventListener('resize', onResize);
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pagehide', destroy);
+    renderer.dispose();
+
+    if (ownsCanvas && canvas.parentNode) {
+        canvas.parentNode.removeChild(canvas);
+    }
+
+    if (window.__tokyo === api) {
+        delete window.__tokyo;
+    }
+}
+
+const api = {
+    scene,
+    camera,
+    renderer,
+    destroy,
+    fps: () => fps,
+    skip: (ds) => { camS += ds; },
+};
+
+window.addEventListener('pagehide', destroy, { once: true });
+
 // debug hook for jumping ahead while testing
-window.__tokyo = { skip: (ds) => { camS += ds; }, renderer, fps: () => fps };
+window.__tokyo = api;
+
+return api;
+}

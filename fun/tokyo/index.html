@@ -155,6 +155,13 @@
         tickClock();
         setInterval(tickClock, 1000);
     </script>
-    <script type="module" src="./js/main.js"></script>
+    <script type="module">
+        import { mountTokyoScene } from './js/main.js';
+
+        mountTokyoScene({
+            canvas: document.getElementById('scene'),
+            fallback: document.getElementById('fallback'),
+        });
+    </script>
 </body>
 </html>
