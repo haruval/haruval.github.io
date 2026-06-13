@@ -15,6 +15,7 @@ export const ROAD_HALF = 6;
 export const WALK_EDGE = 10;    // building faces sit at |x| = 10
 export const STUB_LEN = 26;     // fake side-street depth at intersections
 const DETAILED = !IS_MOBILE;
+const FAKE_BRANCH_LEN = IS_MOBILE ? 28 : 38;
 
 export const boxGeo = new THREE.BoxGeometry(1, 1, 1);
 boxGeo.translate(0, 0.5, 0);
@@ -76,6 +77,12 @@ export function makeBuilding(w, h, d) {
     const mesh = new THREE.Mesh(boxGeo, [mat, mat, roofMat, roofMat, mat, mat]);
     mesh.scale.set(w, h, d);
     return mesh;
+}
+
+function makeFillerBuilding(w, h, d) {
+    const building = makeBuilding(w, h, d);
+    building.userData.filler = true;
+    return building;
 }
 
 export function addVSign(g, x, yCenter, z, h, { pulse = false } = {}) {
@@ -265,6 +272,7 @@ function buildShopUnit(g, side, zc, sw) {
 
     if (Math.random() > 0.75) {
         const mass = makeBuilding(sd, sh, sw);
+        mass.userData.protectFiller = true;
         mass.position.set(inX(sd / 2), 0, zc);
         g.add(mass);
         const front = new THREE.Mesh(
@@ -285,6 +293,7 @@ function buildShopUnit(g, side, zc, sw) {
     }
 
     const mass = makeBuilding(sd, sh - 3.2, sw);
+    mass.userData.protectFiller = true;
     mass.position.set(inX(sd / 2), 3.2, zc);
     g.add(mass);
 
@@ -485,29 +494,110 @@ export function makeStreetChunk() {
     return { group: g, inUse: false };
 }
 
-// fake side street seen down an intersection arm: road, signs, lamps, and an
-// end-cap building so the fog never shows a void (canyon walls come from the
-// neighboring real chunks' building sides)
-function buildStub() {
-    const g = new THREE.Group();
-    const road = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_HALF * 2, STUB_LEN), new THREE.MeshBasicMaterial({ map: stubRoadTex }));
+function addFakeRoad(g, len) {
+    const road = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_HALF * 2, len), new THREE.MeshBasicMaterial({ map: stubRoadTex }));
     road.rotation.x = -Math.PI / 2;
-    road.position.set(0, 0.005, -STUB_LEN / 2);
+    road.position.set(0, 0.005, -len / 2);
     g.add(road);
     const walkMat = new THREE.MeshBasicMaterial({ map: stubWalkTex });
     for (const side of [-1, 1]) {
-        const walk = new THREE.Mesh(new THREE.PlaneGeometry(WALK_EDGE - ROAD_HALF, STUB_LEN), walkMat);
+        const walk = new THREE.Mesh(new THREE.PlaneGeometry(WALK_EDGE - ROAD_HALF, len), walkMat);
         walk.rotation.x = -Math.PI / 2;
-        walk.position.set(side * (ROAD_HALF + (WALK_EDGE - ROAD_HALF) / 2), 0.015, -STUB_LEN / 2);
+        walk.position.set(side * (ROAD_HALF + (WALK_EDGE - ROAD_HALF) / 2), 0.015, -len / 2);
         g.add(walk);
+    }
+}
+
+function addFakeStreetWalls(g, len, { deep = false } = {}) {
+    for (const side of [-1, 1]) {
         addStreetLamp(g, side, -rand(5, 20));
         for (let i = 0; i < (IS_MOBILE ? 1 : 2); i += 1) {
-            addVSign(g, side * (WALK_EDGE - 0.6), rand(3.6, 6.4), -rand(3, 22), rand(2.4, 3.8));
+            addVSign(g, side * (WALK_EDGE - 0.6), rand(3.6, 6.4), -rand(4, Math.max(8, len - 4)), rand(2.4, 4.2));
+        }
+
+        const count = deep ? (IS_MOBILE ? 3 : 5) : (IS_MOBILE ? 2 : 3);
+        for (let i = 0; i < count; i += 1) {
+            const w = rand(deep ? 10 : 8, deep ? 20 : 15);
+            const d = rand(7, deep ? 16 : 12);
+            const h = rand(deep ? 34 : 22, deep ? 98 : 68);
+            const zMin = d / 2 + 1;
+            const zMax = Math.max(zMin + 1, len - d / 2 - 1);
+            const tower = makeFillerBuilding(w, h, d);
+            tower.position.set(side * (WALK_EDGE + 1.8 + w / 2 + rand(0, 4)), 0, -rand(zMin, zMax));
+            g.add(tower);
         }
     }
-    const cap = makeBuilding(rand(20, 26), rand(22, 46), 10);
-    cap.position.set(rand(-2, 2), 0, -(STUB_LEN + 5));
-    g.add(cap);
+}
+
+function buildBranchRoad() {
+    const g = new THREE.Group();
+    addFakeRoad(g, FAKE_BRANCH_LEN);
+    addFakeStreetWalls(g, FAKE_BRANCH_LEN, { deep: true });
+
+    for (const side of [-1, 1]) {
+        const w = rand(18, 34);
+        const far = makeFillerBuilding(w, rand(66, 140), rand(14, 30));
+        far.position.set(side * (WALK_EDGE + 4 + w / 2 + rand(0, 18)), 0, -(FAKE_BRANCH_LEN + rand(10, 28)));
+        g.add(far);
+    }
+    addAtmosphere(g, rand(-6, 6), rand(20, 34), -FAKE_BRANCH_LEN / 2);
+    return g;
+}
+
+function addFakeIntersection(g, z0) {
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(INTER_HALF * 2, INTER_HALF * 2), new THREE.MeshBasicMaterial({ map: interTex }));
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.set(0, 0.005, z0 - INTER_HALF);
+    g.add(ground);
+
+    const cornerMat = new THREE.MeshBasicMaterial({ map: cornerWalkTex });
+    for (const sx of [-1, 1]) {
+        for (const zc of [z0 - 2, z0 - 18]) {
+            const corner = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), cornerMat);
+            corner.rotation.x = -Math.PI / 2;
+            corner.position.set(sx * 8, 0.012, zc);
+            g.add(corner);
+        }
+    }
+
+    const cwMat = new THREE.MeshBasicMaterial({ map: crosswalkTex, transparent: true, depthWrite: false });
+    const cwGeo = new THREE.PlaneGeometry(11.5, 3.2);
+    const cwSpots = [
+        [0, z0 - 1.8, 0], [0, z0 - 18.2, 0],
+        [-8.2, z0 - 10, Math.PI / 2], [8.2, z0 - 10, Math.PI / 2],
+    ];
+    for (const [x, z, rz] of cwSpots) {
+        const cw = new THREE.Mesh(cwGeo, cwMat);
+        cw.rotation.set(-Math.PI / 2, 0, rz);
+        cw.position.set(x, 0.02, z);
+        cw.renderOrder = 1;
+        g.add(cw);
+    }
+
+    addSignal(g, 8.3, z0 - 17.6, 0, true);
+    addSignal(g, -8.3, z0 - 2.4, Math.PI, false);
+
+    const forward = buildBranchRoad();
+    forward.position.set(0, 0, z0 - INTER_HALF * 2);
+    g.add(forward);
+    const right = buildBranchRoad();
+    right.position.set(INTER_HALF, 0, z0 - INTER_HALF);
+    right.rotation.y = -Math.PI / 2;
+    g.add(right);
+    const left = buildBranchRoad();
+    left.position.set(-INTER_HALF, 0, z0 - INTER_HALF);
+    left.rotation.y = Math.PI / 2;
+    g.add(left);
+}
+
+// Fake side street seen down an unused intersection arm. It now leads into its
+// own visible intersection, with left, right, and forward continuation streets
+// instead of a hard cap into the void.
+function buildStub() {
+    const g = new THREE.Group();
+    addFakeRoad(g, STUB_LEN);
+    addFakeStreetWalls(g, STUB_LEN);
+    addFakeIntersection(g, -STUB_LEN);
     addBillboard(g, rand(-4, 4), rand(7, 14), -(STUB_LEN - 0.2), rand(6, 9), rand(2.6, 3.6), { anim: Math.random() < 0.35 });
     addAtmosphere(g, 0, rand(18, 26), -STUB_LEN / 2);
     return g;
