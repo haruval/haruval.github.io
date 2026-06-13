@@ -286,6 +286,19 @@ function buildShopUnit(g, side, zc, sw) {
     mass.position.set(inX(sd / 2), 3.2, zc);
     g.add(mass);
 
+    // the mass floats above the alcove, leaving its side walls open below
+    // y=3.2 behind the dividers; flush facade-textured skirts close them off
+    const skirtTex = mass.material[0].map.clone();
+    skirtTex.repeat.set(1, 3.2 / 9);
+    skirtTex.needsUpdate = true;
+    const skirtMat = new THREE.MeshBasicMaterial({ map: skirtTex });
+    for (const e of [-1, 1]) {
+        const skirt = new THREE.Mesh(new THREE.PlaneGeometry(sd, 3.2), skirtMat);
+        skirt.position.set(inX(sd / 2), 1.6, zc + e * (sw / 2));
+        skirt.rotation.y = e > 0 ? 0 : Math.PI;
+        g.add(skirt);
+    }
+
     const kind = isRamen ? 'ramen' : pick(['izakaya', 'konbini']);
     const cool = kind === 'konbini';
 
