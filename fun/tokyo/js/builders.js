@@ -5,7 +5,6 @@ import {
     canvasTexture, glowTex, windowTextures,
     vsignTexture, billboardTexture, bandTexture, interiorTexture, chefTex, norenTex, flatShopTexture,
     roadTex, stubRoadTex, walkTex, stubWalkTex, cornerWalkTex, interTex, crosswalkTex,
-    animTextures,
 } from './textures.js';
 
 // street layout (single chunk local frame: path enters at z=0 and runs to z=-BLOCK_LEN)
@@ -102,18 +101,17 @@ export function addVSign(g, x, yCenter, z, h, { pulse = false, color = pick(NEON
     return color;
 }
 
-export function addBillboard(g, x, y, z, w, h, { anim = false, rotY = 0 } = {}) {
+export function addBillboard(g, x, y, z, w, h, { rotY = 0 } = {}) {
     const color = pick(NEON);
-    const map = anim ? pick(animTextures) : billboardTexture(pick(BILLBOARD_TEXTS), color);
-    const mat = new THREE.MeshBasicMaterial({ map, transparent: true });
+    const mat = new THREE.MeshBasicMaterial({ map: billboardTexture(pick(BILLBOARD_TEXTS), color), transparent: true });
     const board = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
     board.position.set(x, y, z);
     board.rotation.y = rotY;
     g.add(board);
-    const halo = makeGlow(anim ? '#ffb3ec' : color, w * 1.3, h * 1.9, 0.32);
+    const halo = makeGlow(color, w * 1.3, h * 1.9, 0.32);
     halo.position.copy(board.position);
     g.add(halo);
-    registerFlicker([mat, halo.material], anim ? 0 : 0.25);
+    registerFlicker([mat, halo.material], 0.25);
     registerPulse(halo.material, 0.4);
 }
 
@@ -480,10 +478,10 @@ function buildTowers(g, side) {
             g.add(bracket);
         }
         if (Math.random() < 0.6) {
-            addBillboard(g, tx + rand(-1.5, 1.5), rand(h * 0.4, h * 0.8), tz + d / 2 + 0.08, rand(7, 11), rand(3, 4.4), { anim: Math.random() < 0.3 });
+            addBillboard(g, tx + rand(-1.5, 1.5), rand(h * 0.4, h * 0.8), tz + d / 2 + 0.08, rand(7, 11), rand(3, 4.4));
         }
         if (h > 30 && Math.random() < 0.3) {
-            addBillboard(g, tx, h + 1.6, tz + d / 2 * 0.85, w * 0.62, 2.6, { anim: Math.random() < 0.25 });
+            addBillboard(g, tx, h + 1.6, tz + d / 2 * 0.85, w * 0.62, 2.6);
         }
         if (Math.random() < 0.45) {
             const stripColor = pick(NEON);
@@ -632,7 +630,7 @@ function buildStub() {
     addFakeRoad(g, STUB_LEN);
     addFakeStreetWalls(g, STUB_LEN);
     addFakeIntersection(g, -STUB_LEN);
-    addBillboard(g, rand(-4, 4), rand(7, 14), -(STUB_LEN - 0.2), rand(6, 9), rand(2.6, 3.6), { anim: Math.random() < 0.35 });
+    addBillboard(g, rand(-4, 4), rand(7, 14), -(STUB_LEN - 0.2), rand(6, 9), rand(2.6, 3.6));
     addAtmosphere(g, 0, rand(18, 26), -STUB_LEN / 2);
     return g;
 }

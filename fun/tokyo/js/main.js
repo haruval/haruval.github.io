@@ -1,5 +1,5 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
-import { IS_MOBILE, FOG_COLOR, rand, pick, skyTex, glowTex, applyAnisotropy, updateAnimBoards } from './textures.js';
+import { IS_MOBILE, FOG_COLOR, rand, pick, skyTex, glowTex, applyAnisotropy } from './textures.js';
 import {
     BLOCK_LEN, INTER_HALF, ROAD_HALF,
     boxGeo, sphereGeo, darkMat,
@@ -395,7 +395,6 @@ function animate() {
             }
         }
     }
-    updateAnimBoards(t);
 
     renderer.render(scene, camera);
 }
