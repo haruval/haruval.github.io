@@ -27,7 +27,7 @@ applyAnisotropy(renderer);
 
 const scene = new THREE.Scene();
 scene.background = skyTex;
-scene.fog = new THREE.FogExp2(FOG_COLOR, IS_MOBILE ? 0.011 : 0.0082);
+scene.fog = new THREE.FogExp2(FOG_COLOR, IS_MOBILE ? 0.016 : 0.0135);
 
 const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 600);
 

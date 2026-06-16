@@ -85,8 +85,7 @@ function makeFillerBuilding(w, h, d) {
     return building;
 }
 
-export function addVSign(g, x, yCenter, z, h, { pulse = false } = {}) {
-    const color = pick(NEON);
+export function addVSign(g, x, yCenter, z, h, { pulse = false, color = pick(NEON) } = {}) {
     const mat = new THREE.MeshBasicMaterial({
         map: vsignTexture(pick(SIGN_TEXTS), color),
         side: THREE.DoubleSide,
@@ -100,6 +99,7 @@ export function addVSign(g, x, yCenter, z, h, { pulse = false } = {}) {
     g.add(halo);
     registerFlicker([mat, halo.material]);
     if (pulse) registerPulse(halo.material);
+    return color;
 }
 
 export function addBillboard(g, x, y, z, w, h, { anim = false, rotY = 0 } = {}) {
@@ -250,6 +250,34 @@ function addAtmosphere(g, x, y, z) {
     g.add(atmo);
 }
 
+// A shop bleeding its own sign color into the surrounding haze: a broad soft
+// wash over the whole storefront, a tighter brighter core at the sign band, and
+// a colored pool of light on the wet sidewalk. All additive, so the neon glows
+// through the purple fog and tints the dark facades and street around the shop.
+function addNeonAmbience(g, side, zc, sw, color) {
+    const wash = makeGlow(color, sw + 5, 8.5, 0.32);
+    wash.position.set(side * (WALK_EDGE - 1.6), 3.9, zc);
+    g.add(wash);
+    registerPulse(wash.material, 0.4);
+
+    const core = makeGlow(color, sw * 0.6 + 1.5, 3.4, 0.36);
+    core.position.set(side * (WALK_EDGE - 0.5), 3.7, zc);
+    g.add(core);
+    registerFlicker([core.material], 0.18);
+
+    const pool = new THREE.Mesh(
+        new THREE.PlaneGeometry(6.4, Math.min(sw + 2, 10)),
+        new THREE.MeshBasicMaterial({
+            map: glowTex, color, transparent: true, opacity: 0.2,
+            blending: THREE.AdditiveBlending, depthWrite: false,
+        }),
+    );
+    pool.rotation.x = -Math.PI / 2;
+    pool.position.set(side * (WALK_EDGE - 3.6), 0.04, zc);
+    pool.renderOrder = 1;
+    g.add(pool);
+}
+
 // one storefront cell: 75% are recessed shops (building mass above an open
 // alcove with a lit interior), the rest are flat fronts with metal shutters
 function buildShopUnit(g, side, zc, sw) {
@@ -259,6 +287,9 @@ function buildShopUnit(g, side, zc, sw) {
     const inX = (o) => side * (WALK_EDGE + o);
     const rotY = side > 0 ? -Math.PI / 2 : Math.PI / 2;
     const openW = sw - 1.1;
+    // one neon accent per shop, shared by its vertical sign and the ambient
+    // wash it throws onto the street, so each storefront reads as a single color
+    const neon = pick(NEON);
 
     const addBand = (name, band) => {
         const sign = new THREE.Mesh(
@@ -285,9 +316,10 @@ function buildShopUnit(g, side, zc, sw) {
         const flatSpill = makeGlow('#ffc46a', 3.8, 2.2, 0.16);
         flatSpill.position.set(inX(-1.1), 1.4, zc);
         g.add(flatSpill);
+        addNeonAmbience(g, side, zc, sw, neon);
         addBand(pick(SHOP_NAMES), pick(SHOP_BANDS));
         if (Math.random() < 0.5) {
-            addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2));
+            addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2), { color: neon });
         }
         return;
     }
@@ -370,6 +402,8 @@ function buildShopUnit(g, side, zc, sw) {
     poolLight.renderOrder = 1;
     g.add(poolLight);
 
+    addNeonAmbience(g, side, zc, sw, neon);
+
     addBand(
         isRamen ? pick(RAMEN_NAMES) : pick(SHOP_NAMES),
         isRamen ? pick(RAMEN_BANDS) : pick(SHOP_BANDS),
@@ -388,7 +422,7 @@ function buildShopUnit(g, side, zc, sw) {
     }
 
     if (Math.random() < 0.85) {
-        addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2));
+        addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2), { color: neon });
     }
 }
 

@@ -1,7 +1,9 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
 
 export const IS_MOBILE = window.innerWidth < 720;
-export const FOG_COLOR = 0x221038;
+// a glowing violet haze rather than near-black: distant geometry dissolves into
+// this purple, which the denser FogExp2 in main.js pushes hard into the distance
+export const FOG_COLOR = 0x3a1c66;
 
 export const rand = (a, b) => a + Math.random() * (b - a);
 export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -36,9 +38,10 @@ export const glowTex = canvasTexture(128, 128, (ctx) => {
 
 export const skyTex = canvasTexture(64, 256, (ctx) => {
     const g = ctx.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0, '#0a0418');
-    g.addColorStop(0.55, '#160a2c');
-    g.addColorStop(1, '#221038');
+    g.addColorStop(0, '#0c0622');
+    g.addColorStop(0.5, '#1b0f3c');
+    g.addColorStop(0.82, '#311a58');
+    g.addColorStop(1, '#3a1c66'); // == FOG_COLOR so the fogged horizon blends seamlessly
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 64, 256);
 });
