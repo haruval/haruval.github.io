@@ -5,7 +5,6 @@ import {
     canvasTexture, glowTex, windowTextures,
     vsignTexture, billboardTexture, bandTexture, interiorTexture, chefTex, norenTex, flatShopTexture,
     roadTex, stubRoadTex, walkTex, stubWalkTex, cornerWalkTex, interTex, crosswalkTex,
-    animTextures,
 } from './textures.js';
 
 // street layout (single chunk local frame: path enters at z=0 and runs to z=-BLOCK_LEN)
@@ -15,6 +14,7 @@ export const ROAD_HALF = 6;
 export const WALK_EDGE = 10;    // building faces sit at |x| = 10
 export const STUB_LEN = 26;     // fake side-street depth at intersections
 const DETAILED = !IS_MOBILE;
+const FAKE_BRANCH_LEN = IS_MOBILE ? 28 : 38;
 
 export const boxGeo = new THREE.BoxGeometry(1, 1, 1);
 boxGeo.translate(0, 0.5, 0);
@@ -78,8 +78,13 @@ export function makeBuilding(w, h, d) {
     return mesh;
 }
 
-export function addVSign(g, x, yCenter, z, h, { pulse = false } = {}) {
-    const color = pick(NEON);
+function makeFillerBuilding(w, h, d) {
+    const building = makeBuilding(w, h, d);
+    building.userData.filler = true;
+    return building;
+}
+
+export function addVSign(g, x, yCenter, z, h, { pulse = false, color = pick(NEON) } = {}) {
     const mat = new THREE.MeshBasicMaterial({
         map: vsignTexture(pick(SIGN_TEXTS), color),
         side: THREE.DoubleSide,
@@ -93,20 +98,20 @@ export function addVSign(g, x, yCenter, z, h, { pulse = false } = {}) {
     g.add(halo);
     registerFlicker([mat, halo.material]);
     if (pulse) registerPulse(halo.material);
+    return color;
 }
 
-export function addBillboard(g, x, y, z, w, h, { anim = false, rotY = 0 } = {}) {
+export function addBillboard(g, x, y, z, w, h, { rotY = 0 } = {}) {
     const color = pick(NEON);
-    const map = anim ? pick(animTextures) : billboardTexture(pick(BILLBOARD_TEXTS), color);
-    const mat = new THREE.MeshBasicMaterial({ map, transparent: true });
+    const mat = new THREE.MeshBasicMaterial({ map: billboardTexture(pick(BILLBOARD_TEXTS), color), transparent: true });
     const board = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
     board.position.set(x, y, z);
     board.rotation.y = rotY;
     g.add(board);
-    const halo = makeGlow(anim ? '#ffb3ec' : color, w * 1.3, h * 1.9, 0.32);
+    const halo = makeGlow(color, w * 1.3, h * 1.9, 0.32);
     halo.position.copy(board.position);
     g.add(halo);
-    registerFlicker([mat, halo.material], anim ? 0 : 0.25);
+    registerFlicker([mat, halo.material], 0.25);
     registerPulse(halo.material, 0.4);
 }
 
@@ -243,6 +248,34 @@ function addAtmosphere(g, x, y, z) {
     g.add(atmo);
 }
 
+// A shop bleeding its own sign color into the surrounding haze: a broad soft
+// wash over the whole storefront, a tighter brighter core at the sign band, and
+// a colored pool of light on the wet sidewalk. All additive, so the neon glows
+// through the purple fog and tints the dark facades and street around the shop.
+function addNeonAmbience(g, side, zc, sw, color) {
+    const wash = makeGlow(color, sw + 5, 8.5, 0.32);
+    wash.position.set(side * (WALK_EDGE - 1.6), 3.9, zc);
+    g.add(wash);
+    registerPulse(wash.material, 0.4);
+
+    const core = makeGlow(color, sw * 0.6 + 1.5, 3.4, 0.36);
+    core.position.set(side * (WALK_EDGE - 0.5), 3.7, zc);
+    g.add(core);
+    registerFlicker([core.material], 0.18);
+
+    const pool = new THREE.Mesh(
+        new THREE.PlaneGeometry(6.4, Math.min(sw + 2, 10)),
+        new THREE.MeshBasicMaterial({
+            map: glowTex, color, transparent: true, opacity: 0.2,
+            blending: THREE.AdditiveBlending, depthWrite: false,
+        }),
+    );
+    pool.rotation.x = -Math.PI / 2;
+    pool.position.set(side * (WALK_EDGE - 3.6), 0.04, zc);
+    pool.renderOrder = 1;
+    g.add(pool);
+}
+
 // one storefront cell: 75% are recessed shops (building mass above an open
 // alcove with a lit interior), the rest are flat fronts with metal shutters
 function buildShopUnit(g, side, zc, sw) {
@@ -252,6 +285,9 @@ function buildShopUnit(g, side, zc, sw) {
     const inX = (o) => side * (WALK_EDGE + o);
     const rotY = side > 0 ? -Math.PI / 2 : Math.PI / 2;
     const openW = sw - 1.1;
+    // one neon accent per shop, shared by its vertical sign and the ambient
+    // wash it throws onto the street, so each storefront reads as a single color
+    const neon = pick(NEON);
 
     const addBand = (name, band) => {
         const sign = new THREE.Mesh(
@@ -265,6 +301,7 @@ function buildShopUnit(g, side, zc, sw) {
 
     if (Math.random() > 0.75) {
         const mass = makeBuilding(sd, sh, sw);
+        mass.userData.protectFiller = true;
         mass.position.set(inX(sd / 2), 0, zc);
         g.add(mass);
         const front = new THREE.Mesh(
@@ -277,14 +314,16 @@ function buildShopUnit(g, side, zc, sw) {
         const flatSpill = makeGlow('#ffc46a', 3.8, 2.2, 0.16);
         flatSpill.position.set(inX(-1.1), 1.4, zc);
         g.add(flatSpill);
+        addNeonAmbience(g, side, zc, sw, neon);
         addBand(pick(SHOP_NAMES), pick(SHOP_BANDS));
         if (Math.random() < 0.5) {
-            addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2));
+            addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2), { color: neon });
         }
         return;
     }
 
     const mass = makeBuilding(sd, sh - 3.2, sw);
+    mass.userData.protectFiller = true;
     mass.position.set(inX(sd / 2), 3.2, zc);
     g.add(mass);
 
@@ -361,6 +400,8 @@ function buildShopUnit(g, side, zc, sw) {
     poolLight.renderOrder = 1;
     g.add(poolLight);
 
+    addNeonAmbience(g, side, zc, sw, neon);
+
     addBand(
         isRamen ? pick(RAMEN_NAMES) : pick(SHOP_NAMES),
         isRamen ? pick(RAMEN_BANDS) : pick(SHOP_BANDS),
@@ -379,7 +420,7 @@ function buildShopUnit(g, side, zc, sw) {
     }
 
     if (Math.random() < 0.85) {
-        addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2));
+        addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2), { color: neon });
     }
 }
 
@@ -437,10 +478,10 @@ function buildTowers(g, side) {
             g.add(bracket);
         }
         if (Math.random() < 0.6) {
-            addBillboard(g, tx + rand(-1.5, 1.5), rand(h * 0.4, h * 0.8), tz + d / 2 + 0.08, rand(7, 11), rand(3, 4.4), { anim: Math.random() < 0.3 });
+            addBillboard(g, tx + rand(-1.5, 1.5), rand(h * 0.4, h * 0.8), tz + d / 2 + 0.08, rand(7, 11), rand(3, 4.4));
         }
         if (h > 30 && Math.random() < 0.3) {
-            addBillboard(g, tx, h + 1.6, tz + d / 2 * 0.85, w * 0.62, 2.6, { anim: Math.random() < 0.25 });
+            addBillboard(g, tx, h + 1.6, tz + d / 2 * 0.85, w * 0.62, 2.6);
         }
         if (Math.random() < 0.45) {
             const stripColor = pick(NEON);
@@ -485,30 +526,111 @@ export function makeStreetChunk() {
     return { group: g, inUse: false };
 }
 
-// fake side street seen down an intersection arm: road, signs, lamps, and an
-// end-cap building so the fog never shows a void (canyon walls come from the
-// neighboring real chunks' building sides)
-function buildStub() {
-    const g = new THREE.Group();
-    const road = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_HALF * 2, STUB_LEN), new THREE.MeshBasicMaterial({ map: stubRoadTex }));
+function addFakeRoad(g, len) {
+    const road = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_HALF * 2, len), new THREE.MeshBasicMaterial({ map: stubRoadTex }));
     road.rotation.x = -Math.PI / 2;
-    road.position.set(0, 0.005, -STUB_LEN / 2);
+    road.position.set(0, 0.005, -len / 2);
     g.add(road);
     const walkMat = new THREE.MeshBasicMaterial({ map: stubWalkTex });
     for (const side of [-1, 1]) {
-        const walk = new THREE.Mesh(new THREE.PlaneGeometry(WALK_EDGE - ROAD_HALF, STUB_LEN), walkMat);
+        const walk = new THREE.Mesh(new THREE.PlaneGeometry(WALK_EDGE - ROAD_HALF, len), walkMat);
         walk.rotation.x = -Math.PI / 2;
-        walk.position.set(side * (ROAD_HALF + (WALK_EDGE - ROAD_HALF) / 2), 0.015, -STUB_LEN / 2);
+        walk.position.set(side * (ROAD_HALF + (WALK_EDGE - ROAD_HALF) / 2), 0.015, -len / 2);
         g.add(walk);
+    }
+}
+
+function addFakeStreetWalls(g, len, { deep = false } = {}) {
+    for (const side of [-1, 1]) {
         addStreetLamp(g, side, -rand(5, 20));
         for (let i = 0; i < (IS_MOBILE ? 1 : 2); i += 1) {
-            addVSign(g, side * (WALK_EDGE - 0.6), rand(3.6, 6.4), -rand(3, 22), rand(2.4, 3.8));
+            addVSign(g, side * (WALK_EDGE - 0.6), rand(3.6, 6.4), -rand(4, Math.max(8, len - 4)), rand(2.4, 4.2));
+        }
+
+        const count = deep ? (IS_MOBILE ? 3 : 5) : (IS_MOBILE ? 2 : 3);
+        for (let i = 0; i < count; i += 1) {
+            const w = rand(deep ? 10 : 8, deep ? 20 : 15);
+            const d = rand(7, deep ? 16 : 12);
+            const h = rand(deep ? 34 : 22, deep ? 98 : 68);
+            const zMin = d / 2 + 1;
+            const zMax = Math.max(zMin + 1, len - d / 2 - 1);
+            const tower = makeFillerBuilding(w, h, d);
+            tower.position.set(side * (WALK_EDGE + 1.8 + w / 2 + rand(0, 4)), 0, -rand(zMin, zMax));
+            g.add(tower);
         }
     }
-    const cap = makeBuilding(rand(20, 26), rand(22, 46), 10);
-    cap.position.set(rand(-2, 2), 0, -(STUB_LEN + 5));
-    g.add(cap);
-    addBillboard(g, rand(-4, 4), rand(7, 14), -(STUB_LEN - 0.2), rand(6, 9), rand(2.6, 3.6), { anim: Math.random() < 0.35 });
+}
+
+function buildBranchRoad() {
+    const g = new THREE.Group();
+    addFakeRoad(g, FAKE_BRANCH_LEN);
+    addFakeStreetWalls(g, FAKE_BRANCH_LEN, { deep: true });
+
+    for (const side of [-1, 1]) {
+        const w = rand(18, 34);
+        const far = makeFillerBuilding(w, rand(66, 140), rand(14, 30));
+        far.position.set(side * (WALK_EDGE + 4 + w / 2 + rand(0, 18)), 0, -(FAKE_BRANCH_LEN + rand(10, 28)));
+        g.add(far);
+    }
+    addAtmosphere(g, rand(-6, 6), rand(20, 34), -FAKE_BRANCH_LEN / 2);
+    return g;
+}
+
+function addFakeIntersection(g, z0) {
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(INTER_HALF * 2, INTER_HALF * 2), new THREE.MeshBasicMaterial({ map: interTex }));
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.set(0, 0.005, z0 - INTER_HALF);
+    g.add(ground);
+
+    const cornerMat = new THREE.MeshBasicMaterial({ map: cornerWalkTex });
+    for (const sx of [-1, 1]) {
+        for (const zc of [z0 - 2, z0 - 18]) {
+            const corner = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), cornerMat);
+            corner.rotation.x = -Math.PI / 2;
+            corner.position.set(sx * 8, 0.012, zc);
+            g.add(corner);
+        }
+    }
+
+    const cwMat = new THREE.MeshBasicMaterial({ map: crosswalkTex, transparent: true, depthWrite: false });
+    const cwGeo = new THREE.PlaneGeometry(11.5, 3.2);
+    const cwSpots = [
+        [0, z0 - 1.8, 0], [0, z0 - 18.2, 0],
+        [-8.2, z0 - 10, Math.PI / 2], [8.2, z0 - 10, Math.PI / 2],
+    ];
+    for (const [x, z, rz] of cwSpots) {
+        const cw = new THREE.Mesh(cwGeo, cwMat);
+        cw.rotation.set(-Math.PI / 2, 0, rz);
+        cw.position.set(x, 0.02, z);
+        cw.renderOrder = 1;
+        g.add(cw);
+    }
+
+    addSignal(g, 8.3, z0 - 17.6, 0, true);
+    addSignal(g, -8.3, z0 - 2.4, Math.PI, false);
+
+    const forward = buildBranchRoad();
+    forward.position.set(0, 0, z0 - INTER_HALF * 2);
+    g.add(forward);
+    const right = buildBranchRoad();
+    right.position.set(INTER_HALF, 0, z0 - INTER_HALF);
+    right.rotation.y = -Math.PI / 2;
+    g.add(right);
+    const left = buildBranchRoad();
+    left.position.set(-INTER_HALF, 0, z0 - INTER_HALF);
+    left.rotation.y = Math.PI / 2;
+    g.add(left);
+}
+
+// Fake side street seen down an unused intersection arm. It now leads into its
+// own visible intersection, with left, right, and forward continuation streets
+// instead of a hard cap into the void.
+function buildStub() {
+    const g = new THREE.Group();
+    addFakeRoad(g, STUB_LEN);
+    addFakeStreetWalls(g, STUB_LEN);
+    addFakeIntersection(g, -STUB_LEN);
+    addBillboard(g, rand(-4, 4), rand(7, 14), -(STUB_LEN - 0.2), rand(6, 9), rand(2.6, 3.6));
     addAtmosphere(g, 0, rand(18, 26), -STUB_LEN / 2);
     return g;
 }

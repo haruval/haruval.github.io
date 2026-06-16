@@ -1,7 +1,7 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
-import { IS_MOBILE, FOG_COLOR, rand, pick, skyTex, glowTex, applyAnisotropy, updateAnimBoards, animBoards } from './textures.js';
+import { IS_MOBILE, FOG_COLOR, rand, pick, skyTex, glowTex, applyAnisotropy } from './textures.js';
 import {
-    BLOCK_LEN, INTER_HALF,
+    BLOCK_LEN, INTER_HALF, ROAD_HALF,
     boxGeo, sphereGeo, darkMat,
     flickerables, pulsers, beacons, steams,
     makeGlow, makeStreetChunk, makeInterChunk,
@@ -31,7 +31,6 @@ flickerables.length = 0;
 pulsers.length = 0;
 beacons.length = 0;
 steams.length = 0;
-animBoards.length = 0;
 
 if (settings.className) {
     canvas.className = settings.className;
@@ -69,7 +68,7 @@ applyAnisotropy(renderer);
 
 const scene = new THREE.Scene();
 scene.background = skyTex;
-scene.fog = new THREE.FogExp2(FOG_COLOR, IS_MOBILE ? 0.011 : 0.0082);
+scene.fog = new THREE.FogExp2(FOG_COLOR, IS_MOBILE ? 0.016 : 0.0135);
 
 const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 600);
 
@@ -91,6 +90,8 @@ const streetPool = [];
 const interPool = [];
 const gen = { x: 0, z: 50, dirIdx: 0, s: -50, lastTurn: 0, turnCooldown: 2 };
 let camS = 0;
+let fillersDirty = true;
+const _cullV = new THREE.Vector3();
 
 function acquire(pool, maker) {
     let chunk = pool.find((c) => !c.inUse);
@@ -113,6 +114,7 @@ function addBlock() {
     gen.x += dx * BLOCK_LEN;
     gen.z += dz * BLOCK_LEN;
     gen.s += BLOCK_LEN;
+    fillersDirty = true;
 }
 
 function addIntersection() {
@@ -131,6 +133,7 @@ function addIntersection() {
     chunk.group.position.set(gen.x, 0, gen.z);
     chunk.group.rotation.y = -gen.dirIdx * Math.PI / 2;
     chunk.setArms(turn);
+    fillersDirty = true;
 
     if (turn === 0) {
         pieces.push({ type: 's', s0: gen.s, len: INTER_HALF * 2, ax: gen.x, az: gen.z, dx, dz, chunk });
@@ -170,6 +173,64 @@ function retirePath() {
         const p = pieces.shift();
         p.chunk.inUse = false;
         p.chunk.group.visible = false;
+        fillersDirty = true;
+    }
+}
+
+function rectXZ(mesh) {
+    const geo = mesh.geometry;
+    if (!geo.boundingBox) geo.computeBoundingBox();
+    const bb = geo.boundingBox;
+    let minx = Infinity, maxx = -Infinity, minz = Infinity, maxz = -Infinity;
+    for (const x of [bb.min.x, bb.max.x]) {
+        for (const z of [bb.min.z, bb.max.z]) {
+            _cullV.set(x, 0, z).applyMatrix4(mesh.matrixWorld);
+            if (_cullV.x < minx) minx = _cullV.x;
+            if (_cullV.x > maxx) maxx = _cullV.x;
+            if (_cullV.z < minz) minz = _cullV.z;
+            if (_cullV.z > maxz) maxz = _cullV.z;
+        }
+    }
+    return { minx, maxx, minz, maxz };
+}
+
+function hasHiddenAncestor(o) {
+    for (let n = o; n && n !== scene; n = n.parent) {
+        if (!n.visible) return true;
+    }
+    return false;
+}
+
+function overlaps(a, b, margin) {
+    return a.maxx > b.minx + margin
+        && a.minx < b.maxx - margin
+        && a.maxz > b.minz + margin
+        && a.minz < b.maxz - margin;
+}
+
+// Fake branch scenery is intentionally generous. If the random walk later folds
+// near it, hide filler buildings whose footprint crosses real roads, fake road
+// surfaces, intersections, or protected shop masses.
+function cullFillers() {
+    scene.updateMatrixWorld(true);
+    const protectedRects = [];
+    for (const p of pieces) {
+        p.chunk.group.traverse((o) => {
+            if (!o.isMesh || hasHiddenAncestor(o)) return;
+            const roadWidth = o.geometry.type === 'PlaneGeometry' && o.geometry.parameters && o.geometry.parameters.width;
+            if (roadWidth === ROAD_HALF * 2 || roadWidth === INTER_HALF * 2 || o.userData.protectFiller) {
+                protectedRects.push(rectXZ(o));
+            }
+        });
+    }
+
+    const M = 0.5;
+    for (const p of pieces) {
+        p.chunk.group.traverse((o) => {
+            if (!o.userData.filler) return;
+            const b = rectXZ(o);
+            o.visible = !protectedRects.some((r) => overlaps(b, r, M));
+        });
     }
 }
 
@@ -329,6 +390,7 @@ function animate() {
     extendPath();
     retirePath();
     maybeRebase();
+    if (fillersDirty) { cullFillers(); fillersDirty = false; }
 
     samplePath(camS, camPos, camTan);
     samplePath(camS + 13, aheadPos, aheadTan);
@@ -376,7 +438,6 @@ function animate() {
             }
         }
     }
-    updateAnimBoards(t);
 
     renderer.render(scene, camera);
 }

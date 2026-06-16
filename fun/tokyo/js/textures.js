@@ -1,7 +1,9 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
 
 export const IS_MOBILE = window.innerWidth < 720;
-export const FOG_COLOR = 0x221038;
+// a glowing violet haze rather than near-black: distant geometry dissolves into
+// this purple, which the denser FogExp2 in main.js pushes hard into the distance
+export const FOG_COLOR = 0x3a1c66;
 
 export const rand = (a, b) => a + Math.random() * (b - a);
 export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -36,9 +38,10 @@ export const glowTex = canvasTexture(128, 128, (ctx) => {
 
 export const skyTex = canvasTexture(64, 256, (ctx) => {
     const g = ctx.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0, '#0a0418');
-    g.addColorStop(0.55, '#160a2c');
-    g.addColorStop(1, '#221038');
+    g.addColorStop(0, '#0c0622');
+    g.addColorStop(0.5, '#1b0f3c');
+    g.addColorStop(0.82, '#311a58');
+    g.addColorStop(1, '#3a1c66'); // == FOG_COLOR so the fogged horizon blends seamlessly
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 64, 256);
 });
@@ -512,51 +515,4 @@ export function applyAnisotropy(renderer) {
     stubRoadTex.anisotropy = a;
     walkTex.anisotropy = a;
     stubWalkTex.anisotropy = a;
-}
-
-// flashing video-board textures, redrawn on an interval from main.js
-export const animBoards = [];
-
-function drawAnim(b) {
-    const { ctx } = b;
-    b.hue = (b.hue + rand(30, 90)) % 360;
-    ctx.fillStyle = '#08040c';
-    ctx.fillRect(0, 0, 160, 60);
-    for (let x = 0; x < 160; x += 8) {
-        ctx.fillStyle = `hsl(${(b.hue + x * 2) % 360} 100% ${Math.floor(rand(35, 65))}%)`;
-        ctx.fillRect(x, rand(0, 18), 6, rand(20, 60));
-    }
-    const chr = pick([...'アエオカサタナハマヤラワネシメツビル']);
-    ctx.font = `700 42px ${CJK_FONT}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.shadowColor = '#ffffff';
-    ctx.shadowBlur = 12;
-    ctx.fillStyle = 'rgba(255,255,255,0.95)';
-    ctx.fillText(chr, 80, 31);
-    ctx.shadowBlur = 0;
-    b.tex.needsUpdate = true;
-}
-
-function makeAnimTexture() {
-    const c = document.createElement('canvas');
-    c.width = 160;
-    c.height = 60;
-    const tex = new THREE.CanvasTexture(c);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    const board = { ctx: c.getContext('2d'), tex, next: 0, hue: rand(0, 360) };
-    drawAnim(board);
-    animBoards.push(board);
-    return tex;
-}
-
-export const animTextures = [makeAnimTexture(), makeAnimTexture(), makeAnimTexture()];
-
-export function updateAnimBoards(t) {
-    for (const b of animBoards) {
-        if (t > b.next) {
-            b.next = t + rand(0.45, 0.95);
-            drawAnim(b);
-        }
-    }
 }
