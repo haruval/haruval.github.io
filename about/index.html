@@ -137,6 +137,11 @@
         .content-text {
             flex: 1;
             max-width: 600px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .content-text p {
@@ -144,6 +149,10 @@
             line-height: 1.8;
             color: var(--text-secondary);
             margin-bottom: 1.5rem;
+        }
+
+        .content-text p:last-child {
+            margin-bottom: 0;
         }
 
         .content-image {
@@ -215,6 +224,7 @@
 
             .content-text {
                 max-width: 100%;
+                padding: 1.5rem;
             }
 
             .content-text p {
@@ -257,6 +267,10 @@
             .content-section {
                 margin-bottom: 4rem;
                 gap: 1.5rem;
+            }
+
+            .content-text {
+                padding: 1.25rem;
             }
 
             .content-text p {
