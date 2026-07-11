@@ -2,8 +2,10 @@ import * as THREE from '/portfolio/vendor/three/three.module.js';
 import {
     IS_MOBILE, rand, pick,
     NEON, SIGN_TEXTS, BILLBOARD_TEXTS, RAMEN_NAMES, SHOP_NAMES, RAMEN_BANDS, SHOP_BANDS, CJK_FONT,
-    canvasTexture, glowTex, windowTextures,
+    BANNER_TEXTS, HBANNER_TEXTS, CIRCLE_CHARS, PILL_TEXTS,
+    canvasTexture, glowTex, windowTextures, darkWindowTex,
     vsignTexture, billboardTexture, bandTexture, interiorTexture, chefTex, norenTex, flatShopTexture,
+    bannerTexture, hbannerTexture, circleSignTexture, pillSignTexture,
     roadTex, stubRoadTex, walkTex, stubWalkTex, cornerWalkTex, interTex, crosswalkTex,
 } from './textures.js';
 
@@ -26,9 +28,15 @@ const lanternMat = new THREE.MeshBasicMaterial({ color: 0xff6a52 });
 const lampBulbMat = new THREE.MeshBasicMaterial({ color: 0xffd9a8 });
 const wireMat = new THREE.LineBasicMaterial({ color: 0x04040a });
 const floorMat = new THREE.MeshBasicMaterial({ color: 0xa06a38 });
-// skirts and dividers are the alcoves' dark side walls / separators between
-// shops; kept flat black rather than carrying the building's window facade
-const dividerMat = new THREE.MeshBasicMaterial({ color: 0x0c0c14 });
+// skirts are the alcoves' hidden side closers, kept flat black; the exposed
+// divider pillars between shops instead wear an all-unlit slice of the
+// building facade so they read as slim building fronts, not voids
+const skirtMat = new THREE.MeshBasicMaterial({ color: 0x0c0c14 });
+darkWindowTex.wrapS = darkWindowTex.wrapT = THREE.RepeatWrapping;
+// pane scale matches makeBuilding's ~(5u x 9u) tile on the 3.0 x 3.28 divider face
+darkWindowTex.repeat.set(0.6, 0.36);
+const dividerFaceMat = new THREE.MeshBasicMaterial({ map: darkWindowTex });
+const dividerMats = [dividerFaceMat, dividerFaceMat, roofMat, roofMat, dividerFaceMat, dividerFaceMat];
 const counterMat = new THREE.MeshBasicMaterial({ color: 0x4a2a18 });
 const counterTopMat = new THREE.MeshBasicMaterial({ color: 0xe8b878 });
 const stoolMat = new THREE.MeshBasicMaterial({ color: 0x2a2a36 });
@@ -113,6 +121,132 @@ export function addBillboard(g, x, y, z, w, h, { rotY = 0 } = {}) {
     g.add(halo);
     registerFlicker([mat, halo.material], 0.25);
     registerPulse(halo.material, 0.4);
+}
+
+export function addBannerSign(g, x, yCenter, z, h, { rotY = 0, color = pick(NEON) } = {}) {
+    const banner = new THREE.Mesh(
+        new THREE.PlaneGeometry(h / 4, h),
+        new THREE.MeshBasicMaterial({ map: bannerTexture(pick(BANNER_TEXTS), color), side: THREE.DoubleSide }),
+    );
+    banner.position.set(x, yCenter, z);
+    banner.rotation.y = rotY;
+    g.add(banner);
+    const halo = makeGlow(color, h * 0.6, h * 1.15, 0.16);
+    halo.position.copy(banner.position);
+    g.add(halo);
+}
+
+export function addHBanner(g, x, y, z, w, { rotY = 0, color = pick(NEON) } = {}) {
+    const banner = new THREE.Mesh(
+        new THREE.PlaneGeometry(w, w * 0.22),
+        new THREE.MeshBasicMaterial({ map: hbannerTexture(pick(HBANNER_TEXTS), color), side: THREE.DoubleSide }),
+    );
+    banner.position.set(x, y, z);
+    banner.rotation.y = rotY;
+    g.add(banner);
+    const halo = makeGlow(color, w * 1.2, w * 0.5, 0.18);
+    halo.position.copy(banner.position);
+    g.add(halo);
+    registerPulse(halo.material, 0.35);
+}
+
+export function addCircleSign(g, x, y, z, r, { rotY = 0, color = pick(NEON) } = {}) {
+    const mat = new THREE.MeshBasicMaterial({
+        map: circleSignTexture(pick(CIRCLE_CHARS), color),
+        transparent: true,
+        side: THREE.DoubleSide,
+    });
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2), mat);
+    sign.position.set(x, y, z);
+    sign.rotation.y = rotY;
+    g.add(sign);
+    const halo = makeGlow(color, r * 3.4, r * 3.4, 0.4);
+    halo.position.copy(sign.position);
+    g.add(halo);
+    registerFlicker([mat, halo.material]);
+    registerPulse(halo.material, 0.35);
+}
+
+export function addPillSign(g, x, y, z, len, { vertical = true, rotY = 0, color = pick(NEON) } = {}) {
+    const mat = new THREE.MeshBasicMaterial({
+        map: pillSignTexture(pick(PILL_TEXTS), color, vertical),
+        transparent: true,
+        side: THREE.DoubleSide,
+    });
+    const w = vertical ? len * 0.32 : len;
+    const h = vertical ? len : len * 0.32;
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+    sign.position.set(x, y, z);
+    sign.rotation.y = rotY;
+    g.add(sign);
+    const halo = makeGlow(color, w * 2.2 + 0.6, h * 1.7, 0.3);
+    halo.position.copy(sign.position);
+    g.add(halo);
+    registerPulse(halo.material, 0.6);
+    registerFlicker([mat, halo.material], 0.12);
+}
+
+// every shop hangs one projecting sign over the sidewalk; the style varies:
+// classic vertical blade, round disc, or a pill lantern (vertical/horizontal).
+// Blade planes span x, so each style keeps its outer edge inside
+// WALK_EDGE-0.14 (the facade-banner plane) — no sign can pierce another.
+// The whole ground layer tops out at y=7.3, leaving a clear band for the
+// second storey of signs above.
+function addProjectingSign(g, side, zc, sw, color) {
+    const z = zc + rand(-sw / 4, sw / 4);
+    const roll = Math.random();
+    if (roll < 0.4) {
+        const h = rand(2.6, 4.2);
+        addVSign(g, side * (WALK_EDGE - 0.7), rand(4.2, 7.3 - h / 2), z, h, { color });
+    } else if (roll < 0.62) {
+        const r = rand(0.75, 1.05);
+        addCircleSign(g, side * (WALK_EDGE - 0.2 - r), rand(4.0, 5.8), z, r, { color });
+    } else if (roll < 0.84) {
+        // pill bottoms stay above the shop name band (top ~4.2) so the
+        // lantern never hangs in front of it
+        const len = rand(2.1, 2.9);
+        addPillSign(g, side * (WALK_EDGE - 0.2 - len * 0.16), rand(4.35 + len / 2, 7.3 - len / 2), z, len, { color });
+    } else {
+        const len = rand(2.4, 3.4);
+        const hh = len * 0.32;
+        addPillSign(g, side * (WALK_EDGE - 0.2 - len / 2), rand(4.35 + hh / 2, 7.3 - hh / 2), z, len, { vertical: false, color });
+    }
+}
+
+// second storey of neon: a clear band above the ground-floor signs (which
+// top out at y=7.3), fitted to each facade so nothing crests the roof or
+// dips into the layer below. Every element's whole extent stays inside
+// [8.1, sh-0.3]; blade x-spans stay inside the banner planes, so no sign
+// covers another.
+function addUpperSigns(g, side, zc, sw, sh, rotY) {
+    const room = sh - 8.1; // facade height available above the ground sign layer
+    if (room < 1.4 || (IS_MOBILE && Math.random() < 0.4)) return;
+    const fitY = (hh) => rand(8.1 + hh / 2, sh - 0.3 - hh / 2);
+    if (Math.random() < 0.8) {
+        const z = zc + rand(-sw / 3, sw / 3);
+        const color = pick(NEON);
+        // tight facades only fit the short horizontal formats
+        const roll = room >= 2.6 ? Math.random() : rand(0.55, 1);
+        if (roll < 0.35) {
+            const h = Math.min(rand(2.4, 3.4), room - 0.4);
+            addVSign(g, side * (WALK_EDGE - 0.65), fitY(h), z, h, { color });
+        } else if (roll < 0.55) {
+            const len = Math.min(rand(2.0, 3.0), room - 0.4);
+            addPillSign(g, side * (WALK_EDGE - 0.2 - len * 0.16), fitY(len), z, len, { color });
+        } else if (roll < 0.78) {
+            const r = Math.min(rand(0.7, 1.0), (room - 0.35) / 2);
+            addCircleSign(g, side * (WALK_EDGE - 0.2 - r), fitY(r * 2), z, r, { color });
+        } else {
+            const len = rand(2.2, 3.2);
+            addPillSign(g, side * (WALK_EDGE - 0.2 - len / 2), fitY(len * 0.32), z, len, { vertical: false, color });
+        }
+    }
+    if (Math.random() < 0.5) {
+        // sits 0.04 nearer the street than the ground-floor banner so the two
+        // can never be coplanar
+        const bw = Math.min(sw - 3.0, rand(3.4, 5.8), (room - 0.35) / 0.22);
+        addHBanner(g, side * (WALK_EDGE - 0.14), fitY(bw * 0.22), zc + rand(-0.8, 0.8), bw, { rotY, color: pick(NEON) });
+    }
 }
 
 function addLanterns(g, side, z, width) {
@@ -299,8 +433,11 @@ function buildShopUnit(g, side, zc, sw) {
         g.add(sign);
     };
 
+    // shop masses are inset 0.08 from each slot boundary so adjacent
+    // buildings never share a coplanar face (their window facades z-fight
+    // through each other); the dividers hide the resulting slit
     if (Math.random() > 0.75) {
-        const mass = makeBuilding(sd, sh, sw);
+        const mass = makeBuilding(sd, sh, sw - 0.16);
         mass.userData.protectFiller = true;
         mass.position.set(inX(sd / 2), 0, zc);
         g.add(mass);
@@ -316,13 +453,15 @@ function buildShopUnit(g, side, zc, sw) {
         g.add(flatSpill);
         addNeonAmbience(g, side, zc, sw, neon);
         addBand(pick(SHOP_NAMES), pick(SHOP_BANDS));
-        if (Math.random() < 0.5) {
-            addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2), { color: neon });
+        addProjectingSign(g, side, zc, sw, neon);
+        if (Math.random() < 0.45) {
+            addHBanner(g, inX(-0.1), rand(4.9, 6.3), zc + rand(-0.8, 0.8), Math.min(sw - 3.0, rand(3.6, 6.0)), { rotY, color: pick(NEON) });
         }
+        addUpperSigns(g, side, zc, sw, sh, rotY);
         return;
     }
 
-    const mass = makeBuilding(sd, sh - 3.2, sw);
+    const mass = makeBuilding(sd, sh - 3.2, sw - 0.16);
     mass.userData.protectFiller = true;
     mass.position.set(inX(sd / 2), 3.2, zc);
     g.add(mass);
@@ -331,8 +470,8 @@ function buildShopUnit(g, side, zc, sw) {
     // y=3.2 behind the dividers; flush black skirts close them off, matching
     // the dark dividers/side walls rather than the building's window facade
     for (const e of [-1, 1]) {
-        const skirt = new THREE.Mesh(new THREE.PlaneGeometry(sd, 3.2), dividerMat);
-        skirt.position.set(inX(sd / 2), 1.6, zc + e * (sw / 2));
+        const skirt = new THREE.Mesh(new THREE.PlaneGeometry(sd, 3.2), skirtMat);
+        skirt.position.set(inX(sd / 2), 1.6, zc + e * (sw / 2 - 0.08));
         skirt.rotation.y = e > 0 ? 0 : Math.PI;
         g.add(skirt);
     }
@@ -353,7 +492,9 @@ function buildShopUnit(g, side, zc, sw) {
     floor.position.set(inX(1.15), 0.03, zc);
     g.add(floor);
 
-    if (DETAILED) {
+    // counter bar, chef, and stools belong to eateries only — a konbini
+    // shows just its painted interior through the opening
+    if (DETAILED && kind !== 'konbini') {
         const counter = new THREE.Mesh(boxGeo, counterMat);
         counter.scale.set(0.6, 0.92, openW - 2.4);
         counter.position.set(inX(1.55), 0, zc);
@@ -419,25 +560,38 @@ function buildShopUnit(g, side, zc, sw) {
         if (DETAILED && Math.random() < 0.6) addSteam(g, side, zc + rand(-1, 1));
     }
 
-    if (Math.random() < 0.85) {
-        addVSign(g, side * (WALK_EDGE - 0.55), rand(4.2, 6.8), zc + rand(-sw / 4, sw / 4), rand(2.6, 4.2), { color: neon });
+    addProjectingSign(g, side, zc, sw, neon);
+    if (Math.random() < 0.55) {
+        // horizontal banner mounted flat on the facade above the name band
+        addHBanner(g, inX(-0.1), rand(4.9, 6.3), zc + rand(-0.8, 0.8), Math.min(sw - 3.0, rand(3.6, 6.0)), { rotY, color: pick(NEON) });
     }
+    if (Math.random() < 0.5) {
+        // tall fabric banner flanking the alcove mouth
+        const e = Math.random() < 0.5 ? -1 : 1;
+        const bh = rand(2.9, 3.6);
+        addBannerSign(g, inX(-0.5), bh / 2 + 0.3, zc + e * (openW / 2 - 0.35), bh, { color: pick(NEON) });
+    }
+    addUpperSigns(g, side, zc, sw, sh, rotY);
 }
 
 function buildShopRow(g, side) {
     // full-depth divider walls between slots double as the alcoves' side
-    // walls and close off the row ends
+    // walls and close off the row ends; their exposed faces carry the
+    // unlit-window facade
     const divider = (z) => {
-        const d = new THREE.Mesh(boxGeo, dividerMat);
+        const d = new THREE.Mesh(boxGeo, dividerMats);
         d.scale.set(3.0, 3.28, 1.1);
         d.position.set(side * (WALK_EDGE + 1.22), 0, z);
         g.add(d);
     };
+    // slot widths always stay >= 6.8: the row closes with one full-width slot
+    // (or a capped step that leaves room for it), never a sliver shop whose
+    // interior props would need negative scales
     let t = 0;
     divider(-0.3);
-    while (t < 34) {
-        let sw = rand(6.8, 10.5);
-        if (t + sw > 34.5) sw = BLOCK_LEN - t;
+    while (t < BLOCK_LEN - 0.5) {
+        const remaining = BLOCK_LEN - t;
+        const sw = remaining <= 13.6 ? remaining : Math.min(rand(6.8, 10.5), remaining - 6.8);
         buildShopUnit(g, side, -(t + sw / 2), sw);
         t += sw;
         divider(-Math.min(t, 35.7));
@@ -451,7 +605,10 @@ function buildTowers(g, side) {
         const d = rand(9, 16);
         const h = rand(18, 72);
         const tower = makeBuilding(w, h, d);
-        const tx = side * rand(19, 40);
+        // keep tower faces behind the deepest shop mass (WALK_EDGE + 9) so a
+        // tower can never slice through an alcove and show its facade inside
+        // a storefront
+        const tx = side * (WALK_EDGE + 9.6 + w / 2 + rand(0, 16));
         const tz = -rand(d / 2, BLOCK_LEN - d / 2);
         tower.position.set(tx, 0, tz);
         g.add(tower);
@@ -465,8 +622,8 @@ function buildTowers(g, side) {
         if (h > 48 && Math.random() < 0.55) addBeacon(g, tx, h + 0.6, tz);
 
         // flashy tower neon: big blade signs hung off the tower's street face,
-        // plus billboards and rooftop boards
-        if (Math.random() < 0.65) {
+        // plus discs, lantern pills, draped banners, billboards, rooftop boards
+        if (Math.random() < 0.7) {
             const sh = Math.min(rand(8, 14), h - 4);
             const sx = tx - side * (w / 2 + 0.55);
             const sy = rand(sh / 2 + 3, Math.max(sh / 2 + 4, h - sh / 2 - 1));
@@ -477,10 +634,33 @@ function buildTowers(g, side) {
             bracket.position.set(tx - side * w / 2 * 0.55, sy + sh / 2 - 0.3, sz);
             g.add(bracket);
         }
-        if (Math.random() < 0.6) {
+        if (Math.random() < 0.45) {
+            // second, smaller projecting sign lower on the street face
+            const sz = tz + rand(-d / 4, d / 4);
+            if (Math.random() < 0.5) {
+                const r = rand(0.9, 1.3);
+                addCircleSign(g, tx - side * (w / 2 + r + 0.2), rand(4.5, 9), sz, r);
+            } else {
+                const len = rand(2.6, 3.8);
+                addPillSign(g, tx - side * (w / 2 + len * 0.16 + 0.2), rand(4, 8), sz, len);
+            }
+        }
+        if (h > 22 && Math.random() < 0.35) {
+            // tall fabric banner draped flat down the street face
+            const bh = Math.min(rand(9, 15), h - 8);
+            const bandRot = side > 0 ? -Math.PI / 2 : Math.PI / 2;
+            const zr = Math.max(0, d / 2 - bh / 8 - 0.5);
+            addBannerSign(g, tx - side * (w / 2 + 0.15), rand(bh / 2 + 4, h - bh / 2 - 2), tz + rand(-zr, zr), bh, { rotY: bandRot });
+        }
+        if (h > 26 && Math.random() < 0.22) {
+            // rooftop disc sign facing down the street
+            const r = rand(1.8, 2.8);
+            addCircleSign(g, tx, h + r + 0.5, tz, r);
+        }
+        if (Math.random() < 0.7) {
             addBillboard(g, tx + rand(-1.5, 1.5), rand(h * 0.4, h * 0.8), tz + d / 2 + 0.08, rand(7, 11), rand(3, 4.4));
         }
-        if (h > 30 && Math.random() < 0.3) {
+        if (h > 30 && Math.random() < 0.35) {
             addBillboard(g, tx, h + 1.6, tz + d / 2 * 0.85, w * 0.62, 2.6);
         }
         if (Math.random() < 0.45) {
@@ -543,8 +723,21 @@ function addFakeRoad(g, len) {
 function addFakeStreetWalls(g, len, { deep = false } = {}) {
     for (const side of [-1, 1]) {
         addStreetLamp(g, side, -rand(5, 20));
-        for (let i = 0; i < (IS_MOBILE ? 1 : 2); i += 1) {
-            addVSign(g, side * (WALK_EDGE - 0.6), rand(3.6, 6.4), -rand(4, Math.max(8, len - 4)), rand(2.4, 4.2));
+        for (let i = 0; i < (IS_MOBILE ? 2 : 4); i += 1) {
+            const z = -rand(4, Math.max(8, len - 4));
+            const roll = Math.random();
+            if (roll < 0.4) {
+                addVSign(g, side * (WALK_EDGE - 0.6), rand(3.6, 6.4), z, rand(2.4, 4.2));
+            } else if (roll < 0.6) {
+                const r = rand(0.7, 1.0);
+                addCircleSign(g, side * (WALK_EDGE - 0.2 - r), rand(3.8, 5.6), z, r);
+            } else if (roll < 0.8) {
+                const pl = rand(2.0, 3.0);
+                addPillSign(g, side * (WALK_EDGE - 0.2 - pl * 0.16), rand(3.6, 5.2), z, pl);
+            } else {
+                const bh = rand(2.8, 3.6);
+                addBannerSign(g, side * (WALK_EDGE - 0.5), bh / 2 + 0.3, z, bh);
+            }
         }
 
         const count = deep ? (IS_MOBILE ? 3 : 5) : (IS_MOBILE ? 2 : 3);

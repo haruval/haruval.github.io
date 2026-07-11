@@ -13,6 +13,10 @@ export const SIGN_TEXTS = ['ラーメン', 'カラオケ', 'スナック', 'ホ�
 export const BILLBOARD_TEXTS = ['ネオン東京', 'ビール', 'ホテル 月', '未来電子', 'カラオケ館', '夜行都市', '電脳街', 'サイバー'];
 export const RAMEN_NAMES = ['ラーメン 一番', 'らーめん 月', '中華そば 龍', 'つけ麺 心', 'ラーメン 王'];
 export const SHOP_NAMES = ['居酒屋 のんべえ', 'コンビニ', '弁当 さくら', 'カレーの店', 'たこ焼き', '喫茶 ルナ'];
+export const BANNER_TEXTS = ['本日営業', '生ビール', '大衆酒場', '餃子', '天ぷら', 'うなぎ', '宝くじ', '占い'];
+export const HBANNER_TEXTS = ['営業中', '昼飲みOK', '食べ放題', '深夜営業', '年中無休', '新装開店'];
+export const CIRCLE_CHARS = ['酒', '麺', '湯', '寿', '薬', '歌', '遊', '丼'];
+export const PILL_TEXTS = ['焼鳥', 'おでん', '酒処', '立呑み', '串カツ', 'うどん', '甘味', 'そば'];
 export const RAMEN_BANDS = ['#c41f2e', '#d8451f', '#a8151f'];
 export const SHOP_BANDS = ['#1f7ac4', '#7a1fc4', '#1fc48a', '#c4a01f', '#44508c'];
 export const CJK_FONT = '"Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif';
@@ -46,33 +50,60 @@ export const skyTex = canvasTexture(64, 256, (ctx) => {
     ctx.fillRect(0, 0, 64, 256);
 });
 
-const FACADES = ['#10121d', '#141019', '#0e141a', '#15121f', '#0f0f16', '#171219'];
-const WINDOW_COLORS = ['#ffd9a0', '#ffe9c4', '#aee7ff', '#8fd8ff', '#ffc4e8', '#d9d2ff', '#ff9ad5', '#7df0ff', '#ff4fd8', '#27f0ff'];
+const GLASS_BASES = ['#07090f', '#080a12', '#0a0912', '#06080d'];
+const GLASS_PANES = ['#0d1420', '#0f1826', '#0a111c', '#111420', '#0c1524'];
+const LIT_WARM = ['#ffd9a0', '#ffeacb', '#f2e2c2'];
+const LIT_COOL = ['#bcd6f0', '#d8e8f8', '#a8c8e8'];
 
-function makeWindowTexture() {
+// dark glass curtain wall: large panes behind crisp mullions and floor slabs,
+// a few lit offices and dim blinds — most of the tower stays off so the neon
+// signage carries the color. Everything aligns to the pane grid so the
+// texture tiles cleanly under RepeatWrapping. lit=false keeps every pane
+// dark (used for the divider pillars between shops).
+function makeWindowTexture(lit = true) {
     return canvasTexture(128, 256, (ctx) => {
-        ctx.fillStyle = pick(FACADES);
+        ctx.fillStyle = pick(GLASS_BASES);
         ctx.fillRect(0, 0, 128, 256);
-        const cols = 8, rows = 16, cw = 128 / cols, ch = 256 / rows;
-        const litChance = rand(0.28, 0.55);
-        const dominant = pick(WINDOW_COLORS);
+        const cols = 4, rows = 12, cw = 128 / cols, ch = 256 / rows;
+        const litChance = lit ? rand(0.05, 0.13) : 0;
+        const dimChance = lit ? 0.09 : 0;
+        const warm = Math.random() < 0.6;
+        const litColors = warm ? LIT_WARM : LIT_COOL;
         for (let r = 0; r < rows; r += 1) {
             for (let c = 0; c < cols; c += 1) {
+                const x = c * cw, y = r * ch;
                 if (Math.random() < litChance) {
-                    ctx.fillStyle = Math.random() < 0.72 ? dominant : pick(WINDOW_COLORS);
-                    ctx.globalAlpha = rand(0.3, 1);
+                    ctx.fillStyle = pick(litColors);
+                    ctx.globalAlpha = rand(0.55, 0.95);
+                    ctx.fillRect(x + 1, y + 1.5, cw - 2, ch - 3);
+                } else if (Math.random() < dimChance) {
+                    // dim glow behind blinds
+                    ctx.fillStyle = warm ? '#7a6248' : '#46586e';
+                    ctx.globalAlpha = rand(0.22, 0.42);
+                    ctx.fillRect(x + 1, y + 1.5, cw - 2, ch - 3);
                 } else {
-                    ctx.fillStyle = '#05060a';
-                    ctx.globalAlpha = 0.9;
+                    // dark glass with a faint night-sky reflection at the top edge
+                    ctx.fillStyle = pick(GLASS_PANES);
+                    ctx.globalAlpha = rand(0.35, 0.8);
+                    ctx.fillRect(x + 1, y + 1.5, cw - 2, ch - 3);
+                    if (Math.random() < 0.3) {
+                        ctx.globalAlpha = rand(0.05, 0.13);
+                        ctx.fillStyle = '#b8d0f0';
+                        ctx.fillRect(x + 2, y + 2.5, cw - 4, 2.5);
+                    }
                 }
-                ctx.fillRect(c * cw + 2, r * ch + 3, cw - 4, ch - 6);
+                ctx.globalAlpha = 1;
             }
         }
-        ctx.globalAlpha = 1;
+        ctx.fillStyle = 'rgba(2,3,6,0.85)';
+        for (let c = 0; c <= cols; c += 1) ctx.fillRect(c * cw - 1, 0, 2, 256);
+        for (let r = 0; r <= rows; r += 1) ctx.fillRect(0, r * ch - 1.5, 128, 3);
     });
 }
 
-export const windowTextures = Array.from({ length: 6 }, makeWindowTexture);
+export const windowTextures = Array.from({ length: 6 }, () => makeWindowTexture());
+// every pane unlit — the divider pillars between shops wear this
+export const darkWindowTex = makeWindowTexture(false);
 
 const vsignCache = new Map();
 export function vsignTexture(text, color) {
@@ -156,6 +187,177 @@ export function bandTexture(name, band) {
         }));
     }
     return bandCache.get(key);
+}
+
+// tall nobori-style fabric banner: solid colored cloth, stacked white text,
+// darker hems — lit fabric rather than a neon tube
+const bannerCache = new Map();
+export function bannerTexture(text, color) {
+    const key = text + '|' + color;
+    if (!bannerCache.has(key)) {
+        bannerCache.set(key, canvasTexture(72, 288, (ctx) => {
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, 72, 288);
+            ctx.fillStyle = 'rgba(0,0,0,0.28)';
+            ctx.fillRect(0, 0, 6, 288);
+            ctx.fillRect(66, 0, 6, 288);
+            ctx.fillRect(0, 0, 72, 9);
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            for (let y = 30; y < 288; y += 52) ctx.fillRect(0, y, 72, 14);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = `700 44px ${CJK_FONT}`;
+            const chars = [...text];
+            const step = Math.min(58, 256 / chars.length);
+            const y0 = 148 - step * (chars.length - 1) / 2;
+            ctx.shadowColor = 'rgba(0,0,0,0.55)';
+            ctx.shadowBlur = 5;
+            ctx.fillStyle = '#fffdf4';
+            chars.forEach((chr, i) => ctx.fillText(chr, 36, y0 + step * i));
+            ctx.shadowBlur = 0;
+        }));
+    }
+    return bannerCache.get(key);
+}
+
+const hbannerCache = new Map();
+export function hbannerTexture(text, color) {
+    const key = text + '|' + color;
+    if (!hbannerCache.has(key)) {
+        hbannerCache.set(key, canvasTexture(288, 64, (ctx) => {
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, 288, 64);
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillRect(0, 0, 288, 6);
+            ctx.fillRect(0, 58, 288, 6);
+            ctx.fillRect(0, 0, 5, 64);
+            ctx.fillRect(283, 0, 5, 64);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = `700 34px ${CJK_FONT}`;
+            ctx.shadowColor = 'rgba(0,0,0,0.55)';
+            ctx.shadowBlur = 5;
+            ctx.fillStyle = '#fffdf4';
+            ctx.fillText(text, 144, 33);
+            ctx.shadowBlur = 0;
+        }));
+    }
+    return hbannerCache.get(key);
+}
+
+// round blade sign: dark disc, double neon ring, one glowing character;
+// transparent outside the disc
+const circleCache = new Map();
+export function circleSignTexture(char, color) {
+    const key = char + '|' + color;
+    if (!circleCache.has(key)) {
+        circleCache.set(key, canvasTexture(128, 128, (ctx) => {
+            ctx.beginPath();
+            ctx.arc(64, 64, 58, 0, Math.PI * 2);
+            ctx.fillStyle = '#0a0712';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 12;
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.arc(64, 64, 53, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 0.65;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(64, 64, 44, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = `700 50px ${CJK_FONT}`;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 18;
+            ctx.fillStyle = color;
+            ctx.fillText(char, 64, 66);
+            ctx.shadowBlur = 6;
+            ctx.fillStyle = 'rgba(255,255,255,0.92)';
+            ctx.fillText(char, 64, 66);
+            ctx.shadowBlur = 0;
+        }));
+    }
+    return circleCache.get(key);
+}
+
+function capsulePath(ctx, x, y, w, h) {
+    const r = Math.min(w, h) / 2;
+    ctx.beginPath();
+    if (w >= h) {
+        ctx.arc(x + r, y + r, r, Math.PI / 2, Math.PI * 1.5);
+        ctx.arc(x + w - r, y + r, r, Math.PI * 1.5, Math.PI / 2);
+    } else {
+        ctx.arc(x + r, y + r, r, Math.PI, 0);
+        ctx.arc(x + r, y + h - r, r, 0, Math.PI);
+    }
+    ctx.closePath();
+}
+
+// chochin-lantern pill: glowing capsule with paper ribs, dark end caps, and
+// dark text; vertical or horizontal
+const pillCache = new Map();
+export function pillSignTexture(text, color, vertical) {
+    const key = text + '|' + color + '|' + (vertical ? 'v' : 'h');
+    if (!pillCache.has(key)) {
+        const w = vertical ? 80 : 256;
+        const h = vertical ? 256 : 80;
+        pillCache.set(key, canvasTexture(w, h, (ctx) => {
+            capsulePath(ctx, 3, 3, w - 6, h - 6);
+            ctx.save();
+            ctx.clip();
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, w, h);
+            const glow = ctx.createRadialGradient(w / 2, h / 2, 4, w / 2, h / 2, Math.max(w, h) / 2);
+            glow.addColorStop(0, 'rgba(255,244,220,0.75)');
+            glow.addColorStop(0.55, 'rgba(255,238,200,0.28)');
+            glow.addColorStop(1, 'rgba(255,238,200,0)');
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, w, h);
+            ctx.strokeStyle = 'rgba(30,10,6,0.22)';
+            ctx.lineWidth = 2;
+            for (let p = 16; p < (vertical ? h : w); p += 18) {
+                ctx.beginPath();
+                if (vertical) { ctx.moveTo(0, p); ctx.lineTo(w, p); } else { ctx.moveTo(p, 0); ctx.lineTo(p, h); }
+                ctx.stroke();
+            }
+            ctx.fillStyle = 'rgba(24,12,10,0.9)';
+            if (vertical) {
+                ctx.fillRect(0, 0, w, 12);
+                ctx.fillRect(0, h - 12, w, 12);
+            } else {
+                ctx.fillRect(0, 0, 12, h);
+                ctx.fillRect(w - 12, 0, 12, h);
+            }
+            ctx.restore();
+            capsulePath(ctx, 3, 3, w - 6, h - 6);
+            ctx.strokeStyle = 'rgba(20,8,6,0.65)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'rgba(38,10,8,0.92)';
+            ctx.shadowColor = 'rgba(255,255,255,0.5)';
+            ctx.shadowBlur = 4;
+            const chars = [...text];
+            if (vertical) {
+                ctx.font = `700 40px ${CJK_FONT}`;
+                const step = Math.min(52, 200 / chars.length);
+                const y0 = h / 2 - step * (chars.length - 1) / 2;
+                chars.forEach((chr, i) => ctx.fillText(chr, w / 2, y0 + step * i));
+            } else {
+                ctx.font = `700 38px ${CJK_FONT}`;
+                ctx.fillText(text, w / 2, h / 2 + 1);
+            }
+            ctx.shadowBlur = 0;
+        }));
+    }
+    return pillCache.get(key);
 }
 
 // glowing shop interiors, seen through the recessed storefront opening —
