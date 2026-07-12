@@ -13,12 +13,12 @@
     
     <style>
         :root {
-            --primary-color: #ffffff;
+            --primary-color: #263248;
             --secondary-color: #000000;
             --accent-color: #ff6b6b;
-            --text-primary: #ffffff;
-            --text-secondary: #cccccc;
-            --text-muted: #666666;
+            --text-primary: #263248;
+            --text-secondary: #263248;
+            --text-muted: #4a5870;
         }
 
         * {
@@ -79,7 +79,7 @@
             letter-spacing: -0.02em;
             margin-bottom: 1rem;
             position: relative;
-            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            background: linear-gradient(135deg, #263248 0%, #4a5870 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -322,10 +322,10 @@
     </div>
 
     <script type="module">
-        import { mountTokyoScene } from '/fun/tokyo/js/main.js';
+        import { mountForestScene } from '/fun/forest/js/main.js';
 
-        mountTokyoScene({
-            className: 'homepage-tokyo-scene',
+        mountForestScene({
+            className: 'homepage-forest-scene',
             zIndex: 1,
             maxPixelRatio: 1.25,
         });
