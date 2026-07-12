@@ -13,12 +13,12 @@
     
     <style>
         :root {
-            --primary-color: #ffffff;
+            --primary-color: #263248;
             --secondary-color: #000000;
             --accent-color: #ff6b6b;
-            --text-primary: #ffffff;
-            --text-secondary: #cccccc;
-            --text-muted: #666666;
+            --text-primary: #263248;
+            --text-secondary: #263248;
+            --text-muted: #4a5870;
         }
 
         * {
@@ -98,7 +98,7 @@
             letter-spacing: -0.02em;
             margin-bottom: 1rem;
             position: relative;
-            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            background: linear-gradient(135deg, #263248 0%, #4a5870 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -139,51 +139,8 @@
             flex: 1;
             max-width: 600px;
             padding: 2rem;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0.03) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: #263248;
             border-radius: 20px;
-            backdrop-filter: blur(8px) saturate(185%) brightness(1.18);
-            -webkit-backdrop-filter: blur(8px) saturate(185%) brightness(1.18);
-            box-shadow:
-                0 8px 30px rgba(0, 0, 0, 0.28),
-                inset 0 1px 0 rgba(255, 255, 255, 0.6),
-                inset 0 0 20px rgba(255, 255, 255, 0.05);
-            transition: background 0.4s ease, box-shadow 0.4s ease, -webkit-backdrop-filter 0.4s ease, backdrop-filter 0.4s ease;
-        }
-
-        /* Liquid Glass — top specular gloss */
-        .content-text::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.05) 9%, transparent 22%);
-            pointer-events: none;
-        }
-
-        /* Liquid Glass — refractive bright rim, brightest at the top-left */
-        .content-text::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.12) 32%, rgba(255, 255, 255, 0) 58%, rgba(255, 255, 255, 0.4) 100%);
-            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-                    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            -webkit-mask-composite: xor;
-                    mask-composite: exclude;
-            pointer-events: none;
-        }
-
-        .content-text:hover {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.07) 45%, rgba(255, 255, 255, 0.04) 100%);
-            backdrop-filter: blur(9px) saturate(195%) brightness(1.25);
-            -webkit-backdrop-filter: blur(9px) saturate(195%) brightness(1.25);
-            box-shadow:
-                0 14px 40px rgba(0, 0, 0, 0.34),
-                inset 0 1px 0 rgba(255, 255, 255, 0.78),
-                inset 0 0 24px rgba(255, 255, 255, 0.08);
         }
 
         .content-text p {
@@ -191,7 +148,7 @@
             z-index: 1;
             font-size: clamp(1rem, 2.5vw, 1.2rem);
             line-height: 1.8;
-            color: var(--text-secondary);
+            color: #D9D9D9;
             margin-bottom: 1.5rem;
         }
 
@@ -209,12 +166,6 @@
             height: auto;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .content-image img:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
         }
 
         /* Loading Animation */
@@ -364,10 +315,10 @@
     </div>
 
     <script type="module">
-        import { mountTokyoScene } from '/fun/tokyo/js/main.js';
+        import { mountForestScene } from '/fun/forest/js/main.js';
 
-        mountTokyoScene({
-            className: 'about-tokyo-scene',
+        mountForestScene({
+            className: 'about-forest-scene',
             zIndex: 1,
             maxPixelRatio: 1.25,
         });
