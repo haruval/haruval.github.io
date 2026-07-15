@@ -7,6 +7,7 @@
             "category": "nlp",
             "subdomain": "private-triage-agent",
             "link": "https://github.com/haruval/private-triage-agent",
+            "github": "https://github.com/haruval/private-triage-agent",
             "image": false
         }
     ]

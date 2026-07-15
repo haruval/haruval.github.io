@@ -196,6 +196,16 @@
         .project-link {
             text-decoration: none;
             color: inherit;
+            cursor: pointer;
+        }
+
+        .project-link:focus-visible {
+            outline: none;
+        }
+
+        .project-link:focus-visible .project {
+            outline: 3px solid #58a6ff;
+            outline-offset: 4px;
         }
 
         .project {
@@ -234,6 +244,8 @@
         .description {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .description h2 {
@@ -260,6 +272,37 @@
             font-size: clamp(0.9rem, 2.5vw, 1.1rem);
             line-height: 1.6;
             color: #D9D9D9;
+        }
+
+        .github-project-link {
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            gap: 0.55rem;
+            margin-top: 1.5rem;
+            color: #58a6ff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .github-project-link img {
+            width: 1.25rem;
+            height: 1.25rem;
+            filter: invert(64%) sepia(85%) saturate(1577%) hue-rotate(183deg) brightness(105%) contrast(102%);
+        }
+
+        .github-project-link:hover {
+            color: #8cc8ff;
+            transform: translateX(3px);
+        }
+
+        .github-project-link:focus-visible {
+            outline: 2px solid currentColor;
+            outline-offset: 4px;
+            border-radius: 2px;
         }
 
         /* Loading Animation */
