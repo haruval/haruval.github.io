@@ -47,7 +47,7 @@ function parseData(data) {
                     <img src="${imagePath}" alt="${project.alt || project.name}">
                 </div>`;
         const githubMarkup = project.github ? `
-                    <a class="github-project-link" href="${project.github}" aria-label="View ${project.name} on GitHub">
+                    <a class="github-project-link" href="${project.github}" target="_blank" rel="noopener noreferrer" aria-label="View ${project.name} on GitHub (opens in a new tab)">
                         <img src="/githublogo.svg" alt="" aria-hidden="true">
                         <span>View on GitHub</span>
                     </a>` : "";
@@ -61,12 +61,12 @@ function parseData(data) {
             projectElement.tabIndex = 0;
             projectElement.addEventListener("click", (event) => {
                 if (!event.target.closest("a")) {
-                    window.location.href = project.link;
+                    window.open(project.link, "_blank", "noopener,noreferrer");
                 }
             });
             projectElement.addEventListener("keydown", (event) => {
                 if (event.target === projectElement && event.key === "Enter") {
-                    window.location.href = project.link;
+                    window.open(project.link, "_blank", "noopener,noreferrer");
                 }
             });
         }
