@@ -1,11 +1,13 @@
 {
-    "projects": [{
-        "name": "(coming soon)",
-        "subtitle": "let me cook...",
-        "abstract": "",
-        "category": "placeholder",
-        "subdomain": "placeholder",
-        "link": "#",
-        "image": "./images/marcille.png"
-    }]
+    "projects": [
+        {
+            "name": "private-triage-agent",
+            "subtitle": "",
+            "abstract": "Email triage agent that keeps your inbox on your machine. A local LLM (gemma3:27b) handles every email; and when further reasoning is required, sensitive information is stripped through regex → transformer NER → neural coreference, sent to Claude as placeholders, and re-hydrated locally. Nothing sends without your approval.",
+            "category": "nlp",
+            "subdomain": "private-triage-agent",
+            "link": "https://github.com/haruval/private-triage-agent",
+            "image": false
+        }
+    ]
 }
