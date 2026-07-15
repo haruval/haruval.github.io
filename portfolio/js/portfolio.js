@@ -46,11 +46,30 @@ function parseData(data) {
                 <div class="projimg">
                     <img src="${imagePath}" alt="${project.alt || project.name}">
                 </div>`;
+        const githubMarkup = project.github ? `
+                    <a class="github-project-link" href="${project.github}" aria-label="View ${project.name} on GitHub">
+                        <img src="/githublogo.svg" alt="" aria-hidden="true">
+                        <span>View on GitHub</span>
+                    </a>` : "";
         
         // Create project element
-        const projectElement = document.createElement('a');
-        projectElement.href = project.link;
+        const projectElement = document.createElement('div');
         projectElement.className = "project-link";
+
+        if (project.link) {
+            projectElement.setAttribute("role", "link");
+            projectElement.tabIndex = 0;
+            projectElement.addEventListener("click", (event) => {
+                if (!event.target.closest("a")) {
+                    window.location.href = project.link;
+                }
+            });
+            projectElement.addEventListener("keydown", (event) => {
+                if (event.target === projectElement && event.key === "Enter") {
+                    window.location.href = project.link;
+                }
+            });
+        }
         
         projectElement.innerHTML = `
             <div class="row project" id="${project.subdomain}">
@@ -59,6 +78,7 @@ ${imageMarkup}
                     <h2>${project.name}</h2>
                     <h3 class="subtitle">${project.subtitle}</h3>
                     <p class="abstract">${project.abstract}</p>
+${githubMarkup}
                 </div>
             </div>`;
             
