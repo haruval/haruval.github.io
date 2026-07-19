@@ -495,11 +495,9 @@
                 ever sent without your approval.
             </p>
             <div class="chip-row">
-                <span class="chip chip-blue">local-first</span>
                 <span class="chip chip-green">gemma3:27b via Ollama</span>
                 <span class="chip chip-teal">regex + NER + coref anonymization</span>
                 <span class="chip chip-orange">Claude escalation</span>
-                <span class="chip chip-amber">human review of every draft</span>
             </div>
         </header>
 
@@ -690,8 +688,8 @@ confirm timing.</pre>
                 <span class="k">supply chain</span>
                 <p>
                     Dependencies install from a lockfile with exact pins; the NER model wheel is
-                    pinned to its SHA-256. A package-age check rejects anything published less
-                    than 14 days ago and fails closed. The coref model is locked to an immutable
+                    pinned to its SHA-256. A package-age check rejects and fails anything published less
+                    than 14 days ago. The coref model is locked to an immutable
                     commit with per-file hashes, copied into an isolated runtime directory that
                     is hash-checked before every load; mail processing never downloads models.
                 </p>
