@@ -3,7 +3,7 @@
         {
             "name": "private-triage-agent",
             "subtitle": "",
-            "abstract": "Email triage agent that keeps your inbox on your machine. A local LLM (gemma3:27b) handles every email; and when further reasoning is required, sensitive information is stripped through regex → transformer NER → neural coreference, sent to Claude as placeholders, and re-hydrated locally. Nothing sends without your approval.",
+            "abstract": "Email triage agent that keeps your inbox on your machine. A local model (gemma3:27b) handles every email; and when harder reasoning is required, sensitive information is stripped through regex → transformer NER → neural coreference, sent to Claude as placeholders, and re-hydrated locally. Nothing sends without your approval.",
             "category": "nlp",
             "subdomain": "private-triage-agent",
             "link": "/triage",
