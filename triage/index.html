@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>private triage agent</title>
+    <meta name="description" content="A privacy-preserving email triage agent: local LLM triage, layered PII anonymization, Claude escalation, and human review of every draft.">
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <style>
+        /* Material 3 Expressive theme lifted from the app's review UI.
+           Same --md-sys-color-* palette: pastel blue surface, vivid blue
+           primary, pastel green secondary, purple tertiary; dark mode is the
+           same palette as dark pastels. System fonts only, like the app. */
+        :root {
+            --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+            --md-sys-color-primary: #2b5cd9;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #c5d5ff;
+            --md-sys-color-on-primary-container: #002a77;
+            --md-sys-color-secondary: #266b41;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #b4ecc6;
+            --md-sys-color-on-secondary-container: #002111;
+            --md-sys-color-tertiary: #6a4fa3;
+            --md-sys-color-on-tertiary: #ffffff;
+            --md-sys-color-tertiary-container: #e7dcff;
+            --md-sys-color-on-tertiary-container: #241457;
+            --md-sys-color-error-container: #ffdad6;
+            --md-sys-color-on-error-container: #410002;
+            --md-sys-color-surface: #d8e5fb;
+            --md-sys-color-on-surface: #121c2e;
+            --md-sys-color-on-surface-variant: #43506b;
+            --md-sys-color-surface-container-lowest: #ffffff;
+            --md-sys-color-surface-container-low: #eef4ff;
+            --md-sys-color-surface-container: #e4edff;
+            --md-sys-color-surface-container-high: #dae6fd;
+            --md-sys-color-surface-container-highest: #cfdef9;
+            --md-sys-color-outline-variant: #b9c8e8;
+
+            --app-cat-action-bg: #f3e08a;
+            --app-cat-action-fg: #4d3c00;
+            --app-cat-reply-bg: #b8ebf5;
+            --app-cat-reply-fg: #004e5c;
+            --app-cat-fyi-bg: #c9dcff;
+            --app-cat-fyi-fg: #0842a0;
+            --app-orange-bg: #ffdcc4;
+            --app-orange-fg: #743b00;
+            --app-prov-claude-bg: #e9ddff;
+            --app-prov-claude-fg: #4f378a;
+
+            /* Expressive section colors: large regions use closely related
+               pastels instead of divider lines. */
+            --app-canvas: #e3e5fa;
+            --app-topbar: #f4effa;
+            --app-detail: #fffefe;
+            --app-group-message: #f7f0fa;
+            --app-group-triage: #eaf6ee;
+            --app-group-routing: #fff3df;
+            --app-group-draft: #eaf3ff;
+            --app-queue-panel: #f1eafa;
+
+            --shadow-card: 0 1px 2px rgb(18 28 46 / 0.06), 0 6px 20px rgb(18 28 46 / 0.07);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #b1c5ff;
+                --md-sys-color-on-primary: #0c2d6f;
+                --md-sys-color-primary-container: #2e4a95;
+                --md-sys-color-on-primary-container: #dbe4ff;
+                --md-sys-color-secondary: #99d8ab;
+                --md-sys-color-on-secondary: #003920;
+                --md-sys-color-secondary-container: #2a5138;
+                --md-sys-color-on-secondary-container: #b4ecc6;
+                --md-sys-color-tertiary: #cfbcff;
+                --md-sys-color-on-tertiary: #3b2870;
+                --md-sys-color-tertiary-container: #524084;
+                --md-sys-color-on-tertiary-container: #e7dcff;
+                --md-sys-color-error-container: #93000a;
+                --md-sys-color-on-error-container: #ffdad6;
+                --md-sys-color-surface: #131926;
+                --md-sys-color-on-surface: #e1e6f2;
+                --md-sys-color-on-surface-variant: #bfcbe6;
+                --md-sys-color-surface-container-lowest: #0e1420;
+                --md-sys-color-surface-container-low: #1a2133;
+                --md-sys-color-surface-container: #1f2739;
+                --md-sys-color-surface-container-high: #29334b;
+                --md-sys-color-surface-container-highest: #333e59;
+                --md-sys-color-outline-variant: #43506b;
+
+                --app-cat-action-bg: #574400;
+                --app-cat-action-fg: #f8e59a;
+                --app-cat-reply-bg: #00566b;
+                --app-cat-reply-fg: #c2eef8;
+                --app-cat-fyi-bg: #1c3f78;
+                --app-cat-fyi-fg: #d3e3fd;
+                --app-orange-bg: #5e3a16;
+                --app-orange-fg: #ffdcc4;
+                --app-prov-claude-bg: #47357c;
+                --app-prov-claude-fg: #e9ddff;
+
+                --app-canvas: #151827;
+                --app-topbar: #292437;
+                --app-detail: #1c202c;
+                --app-group-message: #30283a;
+                --app-group-triage: #203329;
+                --app-group-routing: #392f20;
+                --app-group-draft: #202d42;
+                --app-queue-panel: #292238;
+
+                --shadow-card: 0 1px 2px rgb(0 0 0 / 0.35), 0 6px 20px rgb(0 0 0 / 0.3);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--app-canvas);
+            color: var(--md-sys-color-on-surface);
+            font-family: var(--font-sans);
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.92em;
+            background: color-mix(in srgb, var(--md-sys-color-surface-container-highest) 70%, transparent);
+            border-radius: 6px;
+            padding: 0.08em 0.35em;
+        }
+
+        .dim {
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* ---- topbar ------------------------------------------------------ */
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 21px 28px 9px;
+        }
+
+        /* Tonal buttons in the app's pill-pair shapes: the back button and
+           GitHub button bookend the topbar, so each gets its pill end facing
+           the outer edge. */
+        .tonal-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            height: 44px;
+            padding: 0 20px;
+            border-radius: 14px;
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        .tonal-button:hover {
+            filter: brightness(1.03);
+            box-shadow: var(--shadow-card);
+        }
+
+        .tonal-button:focus-visible {
+            outline: 3px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
+        .back-button {
+            border-radius: 22px 10px 10px 22px;
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            margin-right: auto;
+        }
+
+        .github-button {
+            border-radius: 10px 22px 22px 10px;
+        }
+
+        .github-button svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* ---- page layout ------------------------------------------------- */
+
+        .page {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 18px 28px 56px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .hero {
+            padding: 26px 4px 8px;
+        }
+
+        .hero h1 {
+            color: var(--md-sys-color-primary);
+            font-size: clamp(2rem, 5.5vw, 3.1rem);
+            font-weight: 650;
+            letter-spacing: -0.01em;
+            line-height: 1.12;
+            margin-bottom: 12px;
+        }
+
+        .hero .tagline {
+            font-size: clamp(1rem, 2.4vw, 1.2rem);
+            max-width: 46em;
+            margin-bottom: 16px;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .chip-blue   { background: var(--app-cat-fyi-bg);    color: var(--app-cat-fyi-fg); }
+        .chip-teal   { background: var(--app-cat-reply-bg);  color: var(--app-cat-reply-fg); }
+        .chip-amber  { background: var(--app-cat-action-bg); color: var(--app-cat-action-fg); }
+        .chip-purple { background: var(--app-prov-claude-bg);color: var(--app-prov-claude-fg); }
+        .chip-orange { background: var(--app-orange-bg); color: var(--app-orange-fg); }
+        .chip-green  { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
+
+        /* ---- cards ------------------------------------------------------- */
+
+        .card {
+            border-radius: 22px;
+            padding: 24px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card h2 {
+            font-size: 1.35rem;
+            font-weight: 650;
+            letter-spacing: -0.005em;
+        }
+
+        .card p {
+            max-width: 62em;
+        }
+
+        .message-group  { background: var(--app-group-message); }
+        .triage-group   { background: var(--app-group-triage); }
+        .routing-group  { background: var(--app-group-routing); }
+        .draft-group    { background: var(--app-group-draft); }
+        .panel-group    { background: var(--app-queue-panel); }
+
+        .section-label {
+            color: var(--md-sys-color-on-surface-variant);
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        /* ---- screenshots ------------------------------------------------- */
+
+        .shot {
+            background: var(--md-sys-color-surface-container-lowest);
+            border-radius: 18px;
+            padding: 10px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .shot img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .shot figcaption {
+            padding: 9px 6px 2px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .shot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .shot-grid-uneven {
+            grid-template-columns: 3fr 2fr;
+        }
+
+        /* ---- anonymization layers ---------------------------------------- */
+
+        .layer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            list-style: none;
+        }
+
+        .layer {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 78%, transparent);
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+
+        .layer-index {
+            flex: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin-top: 1px;
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .layer strong {
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* ---- pipeline walkthrough ---------------------------------------- */
+
+        .stage {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stage-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mono-block {
+            margin: 0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 78%, transparent);
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            line-height: 1.55;
+        }
+
+        .stage-arrow {
+            text-align: center;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .hl {
+            background: var(--app-prov-claude-bg);
+            color: var(--app-prov-claude-fg);
+            border-radius: 5px;
+            padding: 0 3px;
+            font-weight: 600;
+        }
+
+        /* ---- key/value rows (security card) ------------------------------ */
+
+        .kv {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .kv .k {
+            color: var(--md-sys-color-on-surface-variant);
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        /* ---- footer ------------------------------------------------------ */
+
+        .page-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 22px 0 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-back {
+            border-radius: 22px 10px 10px 22px;
+        }
+
+        .footer-github {
+            border-radius: 10px 22px 22px 10px;
+            margin-left: -4px;
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .footer-github svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* ---- responsive -------------------------------------------------- */
+
+        @media (max-width: 760px) {
+            .topbar {
+                padding: 16px 16px 6px;
+            }
+
+            .page {
+                padding: 10px 16px 44px;
+            }
+
+            .card {
+                padding: 18px;
+                border-radius: 18px;
+            }
+
+            .shot-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kv {
+                grid-template-columns: 1fr;
+                gap: 2px;
+            }
+
+            .kv .k {
+                margin-top: 8px;
+            }
+
+            .tonal-button {
+                padding: 0 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="topbar">
+        <a class="tonal-button back-button" href="/projects">← back</a>
+        <a class="tonal-button github-button" href="https://github.com/haruval/private-triage-agent" target="_blank" rel="noopener noreferrer" aria-label="View private-triage-agent on GitHub (opens in a new tab)">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            <span>View on GitHub</span>
+        </a>
+    </nav>
+
+    <main class="page">
+        <header class="hero">
+            <h1>private triage agent</h1>
+            <p class="tagline">
+                A privacy-preserving email triage agent. A local model handles your whole
+                inbox on your machine; and when harder reasoning is needed, sensitive content is
+                anonymized before it is sent to Claude, then re-hydrated locally. Nothing is
+                ever sent without your approval.
+            </p>
+            <div class="chip-row">
+                <span class="chip chip-blue">local-first</span>
+                <span class="chip chip-green">gemma3:27b via Ollama</span>
+                <span class="chip chip-teal">regex + NER + coref anonymization</span>
+                <span class="chip chip-orange">Claude escalation</span>
+                <span class="chip chip-amber">human review of every draft</span>
+            </div>
+        </header>
+
+        <figure class="shot">
+            <img src="/triage/images/home.png" alt="The review UI: a ranked queue of triaged emails on the left, and a detail panel with the original message, triage results, routing decision, and editable draft on the right.">
+            <figcaption>the review queue: every email triaged, ranked, and drafted, all on localhost</figcaption>
+        </figure>
+
+        <section class="card message-group">
+            <h2>what it does</h2>
+            <p>
+                The local model triages every email: category, summary, action items, and a
+                reply draft. When it is uncertain or the content looks sensitive (legal
+                language, negotiations, dollar figures), the email is <strong>anonymized</strong>,
+                sent to Claude for a stronger draft, then <strong>re-hydrated</strong> locally.
+                The raw text of your mail never leaves your machine; Claude only ever sees
+                placeholder-substituted text.
+            </p>
+            <p>
+                Every draft lands in a review queue in a React web app backed by a local API
+                over the Python pipeline. You approve, edit, or reject each one; approved
+                replies become IMAP drafts in your own mail client or click-to-send
+                <code>.eml</code> files. The pipeline itself never sends anything.
+            </p>
+        </section>
+
+        <section class="card triage-group">
+            <h2>the anonymization stack</h2>
+            <p>
+                Three sequential layers run on progressively cleaner text, each covering a
+                failure mode the others structurally miss. Overlapping spans resolve
+                longest-match-first, replacements apply right-to-left so offsets stay valid,
+                and every entity maps to a stable, proper-noun-shaped placeholder that Claude
+                reads as in-distribution text rather than an opaque redaction.
+            </p>
+            <ul class="layer-list">
+                <li class="layer">
+                    <span class="layer-index">1</span>
+                    <div>
+                        <strong>Deterministic regex</strong>
+                        Fixed-shape PII: email addresses, phone numbers, dollar amounts, dates.
+                        Fast and exact, but blind to anything without a predictable pattern.
+                    </div>
+                </li>
+                <li class="layer">
+                    <span class="layer-index">2</span>
+                    <div>
+                        <strong>Transformer NER</strong>
+                        A spaCy RoBERTa pipeline (<code>en_core_web_trf</code>) tags the open-ended
+                        proper nouns: people, organizations, locations, facilities. This is what
+                        turns <code>Sarah</code> into <code>Alex_P1</code> and <code>Northwind</code>
+                        into <code>Acme_O1</code>.
+                    </div>
+                </li>
+                <li class="layer">
+                    <span class="layer-index">3</span>
+                    <div>
+                        <strong>Neural coreference</strong>
+                        fastcoref (<code>biu-nlp/f-coref</code>) links every pronoun back to its
+                        entity, so “Sarah,” “she,” and “her” come back as one chain
+                        (<code>Alex_P1</code>, <code>They_P1</code>, <code>Their_P1</code>). A bare
+                        “she” three sentences later resolves to the right person instead of leaking.
+                        Pronouns aren't named entities, so only the coref chain can catch them.
+                    </div>
+                </li>
+            </ul>
+            <p class="dim">
+                Because coreference models are imperfect, a held-out eval harness measures the
+                residual PII leak rate of each layer.
+            </p>
+        </section>
+
+        <section class="card routing-group">
+            <h2>one email through the pipeline</h2>
+
+            <div class="stage">
+                <div class="stage-head">
+                    <span class="chip chip-blue">1 · incoming email</span>
+                </div>
+<pre class="mono-block">Subject: Contract renewal - need your sign-off by Friday
+From: sarah.chen@northwind.com
+
+Following up on the Northwind service contract. Legal flagged two changes
+to the liability cap and we should push back before signing. Can you review
+the redlines and confirm the $250,000 figure before Friday?
+
+Also - can we move our call to Thursday? Reach me at (415) 555-0182.</pre>
+            </div>
+
+            <div class="stage-arrow">↓</div>
+
+            <div class="stage">
+                <div class="stage-head">
+                    <span class="chip chip-teal">2 · local triage</span>
+                    <span class="section-label">gemma3:27b · never leaves your machine</span>
+                </div>
+<pre class="mono-block">category    : action_required   (confidence 0.85)
+action items:
+  - Review the contract redlines
+  - Confirm the $250,000 figure
+  - Reschedule the call</pre>
+                <p class="dim">The legal redlines and the dollar figure make this a candidate for escalation.</p>
+            </div>
+
+            <div class="stage-arrow">↓</div>
+
+            <div class="stage">
+                <div class="stage-head">
+                    <span class="chip chip-purple">3 · anonymized before delegation</span>
+                    <span class="section-label">this is all Claude sees</span>
+                </div>
+<pre class="mono-block">Subject: Contract renewal - need your sign-off by <span class="hl">Date_D1</span>
+From: <span class="hl">Email_E1</span>
+
+Following up on the <span class="hl">Acme_O1</span> service contract. Legal flagged two changes
+to the liability cap and we should push back before signing. Can you review
+the redlines and confirm the <span class="hl">Amount_M1</span> figure before <span class="hl">Date_D1</span>?
+
+Also - can we move our call to <span class="hl">Date_D2</span>? Reach me at <span class="hl">Phone_F1</span>.</pre>
+                <p class="dim">
+                    PII becomes proper-noun-shaped placeholders; the mapping stays local:
+                    <code>Email_E1 → sarah.chen@northwind.com</code>,
+                    <code>Acme_O1 → Northwind</code>, <code>Amount_M1 → $250,000</code>,
+                    <code>Phone_F1 → (415) 555-0182</code>.
+                </p>
+            </div>
+
+            <div class="stage-arrow">↓</div>
+
+            <div class="stage">
+                <div class="stage-head">
+                    <span class="chip chip-green">4 · Claude's draft, re-hydrated locally</span>
+                    <span class="section-label">placeholders swapped back, ready for review</span>
+                </div>
+<pre class="mono-block">Hi Sarah,
+
+Thanks for the heads up. I'll review the redlines and liability cap changes
+today and get back to you on the $250,000 figure by end of business tomorrow.
+
+Thursday works for my schedule. I'll give you a call at (415) 555-0182 to
+confirm timing.</pre>
+            </div>
+        </section>
+
+        <section class="card draft-group">
+            <h2>review everything before it sends</h2>
+            <p>
+                Select an email from the ranked queue to see the original message, summary,
+                action items, escalation decision, and an editable draft. Choose
+                <strong>Approve</strong>, <strong>Approve edit</strong>, or <strong>Reject</strong>;
+                approved drafts land in your IMAP Drafts folder or as a pre-filled
+                <code>.eml</code>, one click from sending in your own mail client.
+            </p>
+            <figure class="shot">
+                <img src="/triage/images/details.png" alt="Detail panel showing an email's original message, triage classification with confidence bar, routing decision, and draft." loading="lazy">
+                <figcaption>triage, routing, and escalation detail</figcaption>
+            </figure>
+            <div class="shot-grid shot-grid-uneven">
+                <figure class="shot">
+                    <img src="/triage/images/draft.png" alt="An editable Claude-drafted reply with Approve, Approve edit, and Reject buttons." loading="lazy">
+                    <figcaption>editable drafts: approve, edit, or reject</figcaption>
+                </figure>
+                <figure class="shot">
+                    <img src="/triage/images/imap2.png" alt="The Connect IMAP form for fetching unread mail read-only with an app-specific password." loading="lazy">
+                    <figcaption>connect an inbox over read-only IMAP, or upload an .mbox export</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section class="card panel-group">
+            <h2>security</h2>
+            <div class="kv">
+                <span class="k">local api</span>
+                <p>
+                    Localhost is not a security boundary: any web page can probe local ports.
+                    Every API request needs a per-run token that the Vite proxy injects, so
+                    browser JavaScript never sees it, plus strict <code>Host</code> and
+                    <code>Origin</code> checks. The browser never receives the anonymization
+                    mapping or the IMAP password.
+                </p>
+                <span class="k">imap</span>
+                <p>
+                    Reading is read-only, enforced twice: folders open with
+                    <code>readonly=True</code> and bodies fetch via <code>BODY.PEEK[]</code>,
+                    so nothing is ever marked read, deleted, or sent. The one write is the
+                    explicit APPEND of an approved reply into your Drafts folder.
+                </p>
+                <span class="k">supply chain</span>
+                <p>
+                    Dependencies install from a lockfile with exact pins; the NER model wheel is
+                    pinned to its SHA-256. A package-age check rejects anything published less
+                    than 14 days ago and fails closed. The coref model is locked to an immutable
+                    commit with per-file hashes, copied into an isolated runtime directory that
+                    is hash-checked before every load; mail processing never downloads models.
+                </p>
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            <a class="tonal-button footer-back" href="/projects">← back to projects</a>
+            <a class="tonal-button footer-github" href="https://github.com/haruval/private-triage-agent" target="_blank" rel="noopener noreferrer" aria-label="View private-triage-agent on GitHub (opens in a new tab)">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                <span>View on GitHub</span>
+            </a>
+        </footer>
+    </main>
+</body>
+</html>
