@@ -661,8 +661,7 @@ confirm timing.</pre>
             <div class="kv">
                 <span class="k">local api</span>
                 <p>
-                    Localhost isn't a security boundary: any web page can probe local ports.
-                    Every API request needs a per-run token the Vite proxy injects, plus
+                    Any web page can probe local ports, so every API request gets a per-run token the Vite proxy injects, plus
                     strict <code>Host</code> and <code>Origin</code> checks; the browser never
                     sees the token, the anonymization mapping, or the IMAP password.
                 </p>
