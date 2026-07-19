@@ -530,7 +530,7 @@
                     <div>
                         <strong>Deterministic regex</strong>
                         Fixed-shape PII: email addresses, phone numbers, dollar amounts, dates.
-                        Fast and exact, but blind to anything without a predictable pattern.
+                        Fast and exact, but won't catch anything without a predictable pattern.
                     </div>
                 </li>
                 <li class="layer">
@@ -550,7 +550,7 @@
                         fastcoref (<code>biu-nlp/f-coref</code>) links every pronoun back to its
                         entity, so “Sarah,” “she,” and “her” come back as one chain
                         (<code>Alex_P1</code>, <code>They_P1</code>, <code>Their_P1</code>). A bare
-                        “she” three sentences later resolves to the right person instead of leaking.
+                        “she” three sentences later resolves to the right person.
                         Pronouns aren't named entities, so only the coref chain can catch them.
                     </div>
                 </li>
@@ -566,7 +566,7 @@
 
             <div class="stage">
                 <div class="stage-head">
-                    <span class="chip chip-blue">1 · incoming email</span>
+                    <span class="chip chip-blue">1 incoming email</span>
                 </div>
 <pre class="mono-block">Subject: Contract renewal - need your sign-off by Friday
 From: sarah.chen@northwind.com
@@ -582,8 +582,8 @@ Also - can we move our call to Thursday? Reach me at (415) 555-0182.</pre>
 
             <div class="stage">
                 <div class="stage-head">
-                    <span class="chip chip-teal">2 · local triage</span>
-                    <span class="section-label">gemma3:27b · never leaves your machine</span>
+                    <span class="chip chip-teal">2 local triage</span>
+                    <span class="section-label">gemma3:27b, never leaves your machine</span>
                 </div>
 <pre class="mono-block">category    : action_required   (confidence 0.85)
 action items:
@@ -597,7 +597,7 @@ action items:
 
             <div class="stage">
                 <div class="stage-head">
-                    <span class="chip chip-purple">3 · anonymized before delegation</span>
+                    <span class="chip chip-purple">3 anonymized before delegation</span>
                     <span class="section-label">this is all Claude sees</span>
                 </div>
 <pre class="mono-block">Subject: Contract renewal - need your sign-off by <span class="hl">Date_D1</span>
@@ -620,7 +620,7 @@ Also - can we move our call to <span class="hl">Date_D2</span>? Reach me at <spa
 
             <div class="stage">
                 <div class="stage-head">
-                    <span class="chip chip-green">4 · Claude's draft, re-hydrated locally</span>
+                    <span class="chip chip-green">4 Claude's draft, re-hydrated locally</span>
                     <span class="section-label">placeholders swapped back, ready for review</span>
                 </div>
 <pre class="mono-block">Hi Sarah,
