@@ -29,6 +29,8 @@
             --m3-secondary-container: #b4ecc6;
             --m3-on-secondary-container: #002111;
             --m3-card: #fffefe;
+            --m3-heading-panel: #eaf6ee;
+            --m3-text-panel: #f7f0fa;
             --m3-on-surface: #121c2e;
             --m3-on-surface-variant: #43506b;
             --m3-shadow-rest: 0 1px 2px rgb(18 28 46 / 0.08), 0 6px 20px rgb(18 28 46 / 0.10);
@@ -43,6 +45,8 @@
                 --m3-secondary-container: #2a5138;
                 --m3-on-secondary-container: #b4ecc6;
                 --m3-card: #1c202c;
+                --m3-heading-panel: #203329;
+                --m3-text-panel: #30283a;
                 --m3-on-surface: #e1e6f2;
                 --m3-on-surface-variant: #bfcbe6;
                 --m3-shadow-rest: 0 1px 2px rgb(0 0 0 / 0.35), 0 6px 20px rgb(0 0 0 / 0.3);
@@ -240,11 +244,11 @@
         .project {
             position: relative;
             display: flex;
-            align-items: center;
-            gap: 2rem;
-            padding: 2rem;
-            background: var(--m3-card);
-            border-radius: 22px;
+            align-items: stretch;
+            gap: 1.25rem;
+            padding: 1.75rem;
+            background: var(--m3-heading-panel);
+            border-radius: 26px;
             box-shadow: var(--m3-shadow-rest);
             opacity: 0;
             transform: translateY(60px);
@@ -270,92 +274,120 @@
         }
 
         .projimg {
-            flex: 0 0 auto;
-            max-width: 300px;
+            width: 100%;
+            max-width: 720px;
         }
 
         .projimg img {
             width: 100%;
             height: auto;
-            border-radius: 15px;
+            border-radius: 16px;
         }
 
-        .description {
+        /* Expressive card interior: a pastel-green card surface with nested
+           panels, like the /triage page. Left column: heading band top-left,
+           text panel bottom-left. Right column: the two tonal buttons
+           stacked, together filling the card's full height. */
+        .project-main {
             flex: 1;
             min-width: 0;
             display: flex;
             flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1.25rem;
         }
 
-        .description h2 {
+        .project-heading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: var(--m3-card);
+            border-radius: 20px;
+            padding: 16px 24px;
+            min-width: 0;
+        }
+
+        .project-heading h2 {
             font-family: var(--m3-font-sans);
             font-size: clamp(1.5rem, 5vw, 2.3rem);
             font-weight: 650;
             letter-spacing: -0.01em;
-            margin-bottom: 0.5rem;
             color: var(--m3-primary);
             line-height: 1.15;
         }
 
-        .description h3 {
+        .project-heading h3 {
             font-family: var(--m3-font-sans);
-            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            font-size: clamp(0.9rem, 3vw, 1.15rem);
             font-weight: 400;
             font-style: italic;
             color: var(--m3-on-surface-variant);
-            margin-bottom: 1rem;
+            margin-top: 0.35rem;
             line-height: 1.4;
         }
 
-        .description p {
+        .project-heading h3:empty {
+            display: none;
+        }
+
+        .project-actions {
+            flex: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .project-text {
+            background: var(--m3-text-panel);
+            border-radius: 20px;
+            padding: 18px 22px;
+            max-width: 56em;
+        }
+
+        .project-text p {
             font-family: var(--m3-font-sans);
             font-size: clamp(0.9rem, 2.5vw, 1.05rem);
             line-height: 1.55;
             color: var(--m3-on-surface);
         }
 
-        .project-links {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            width: fit-content;
-            gap: 6px;
-            margin-top: 1.5rem;
-        }
-
-        /* Tonal buttons in the /triage page's style: a stacked pair, pill
-           ends facing out, compact rounded-rectangle ends facing in. */
+        /* Big tonal buttons in the /triage pill-pair language: the outer
+           side (top for View Project Page, bottom for View on GitHub) is
+           rounded, the inner side stays more rectangular. Each takes half
+           the actions column, so together they span the card's height. */
         .project-page-link,
         .github-project-link {
+            flex: 1 1 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.55rem;
-            height: 40px;
-            padding: 0 18px;
-            border-radius: 14px;
+            gap: 0.6rem;
+            min-height: 54px;
+            padding: 0 30px;
             font-family: var(--m3-font-sans);
-            font-size: 0.9rem;
+            font-size: 1.05rem;
             font-weight: 600;
             text-decoration: none;
+            white-space: nowrap;
             transition: filter 0.2s ease, box-shadow 0.2s ease;
         }
 
         .project-page-link {
             background: var(--m3-primary-container);
             color: var(--m3-on-primary-container);
-            border-radius: 20px 20px 10px 10px;
+            border-radius: 28px 28px 12px 12px;
         }
 
         .github-project-link {
             background: var(--m3-secondary-container);
             color: var(--m3-on-secondary-container);
-            border-radius: 10px 10px 20px 20px;
+            border-radius: 12px 12px 28px 28px;
         }
 
         .github-project-link svg {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             fill: currentColor;
         }
 
@@ -408,24 +440,29 @@
 
             .project {
                 flex-direction: column;
-                gap: 1.5rem;
-                padding: 1.5rem;
+                align-items: stretch;
+                gap: 1rem;
+                padding: 1.25rem;
             }
 
             .projimg {
                 max-width: 100%;
             }
 
-            .description h2 {
-                text-align: center;
+            .project-main {
+                align-items: stretch;
             }
 
-            .description h3 {
-                text-align: center;
+            .project-text {
+                max-width: none;
             }
 
-            .project-links {
-                align-self: center;
+            .project-page-link,
+            .github-project-link {
+                flex: none;
+                min-height: 50px;
+                padding: 0 20px;
+                white-space: normal;
             }
         }
 
@@ -445,18 +482,26 @@
 
             .project {
                 padding: 1rem;
-                gap: 1rem;
+                gap: 0.85rem;
             }
 
-            .description h2 {
+            .project-heading {
+                padding: 14px 18px;
+            }
+
+            .project-text {
+                padding: 14px 16px;
+            }
+
+            .project-heading h2 {
                 font-size: clamp(1.2rem, 6vw, 2rem);
             }
 
-            .description h3 {
+            .project-heading h3 {
                 font-size: clamp(0.8rem, 4vw, 1rem);
             }
 
-            .description p {
+            .project-text p {
                 font-size: clamp(0.85rem, 3.5vw, 1rem);
             }
         }

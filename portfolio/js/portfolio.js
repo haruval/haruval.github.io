@@ -55,9 +55,6 @@ function parseData(data) {
                     <a class="project-page-link" href="${project.link}" aria-label="View the ${project.name} project page">
                         <span>View Project Page</span>
                     </a>` : "";
-        const linksMarkup = (projectPageMarkup || githubMarkup) ? `
-                <div class="project-links">${projectPageMarkup}${githubMarkup}
-                </div>` : "";
         
         // Create project element
         const projectElement = document.createElement('div');
@@ -82,15 +79,23 @@ function parseData(data) {
             });
         }
         
+        const actionsMarkup = (projectPageMarkup || githubMarkup) ? `
+                <div class="project-actions">${projectPageMarkup}${githubMarkup}
+                </div>` : "";
+
         projectElement.innerHTML = `
             <div class="row project" id="${project.subdomain}">
+                <div class="project-main">
+                    <div class="project-heading">
+                        <h2>${project.name}</h2>
+                        <h3 class="subtitle">${project.subtitle}</h3>
+                    </div>
 ${imageMarkup}
-                <div class="description">
-                    <h2>${project.name}</h2>
-                    <h3 class="subtitle">${project.subtitle}</h3>
-                    <p class="abstract">${project.abstract}</p>
-${linksMarkup}
+                    <div class="project-text">
+                        <p class="abstract">${project.abstract}</p>
+                    </div>
                 </div>
+${actionsMarkup}
             </div>`;
             
         projectsContainer.appendChild(projectElement);
