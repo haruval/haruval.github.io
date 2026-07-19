@@ -503,35 +503,26 @@
 
         <figure class="shot">
             <img src="/triage/images/home.png" alt="The review UI: a ranked queue of triaged emails on the left, and a detail panel with the original message, triage results, routing decision, and editable draft on the right.">
-            <figcaption>the review queue: every email triaged, ranked, and drafted, all on localhost</figcaption>
+            <figcaption>the review queue</figcaption>
         </figure>
 
         <section class="card message-group">
             <h2>what it does</h2>
             <p>
                 The local model triages every email: category, summary, action items, and a
-                reply draft. When it is uncertain or the content looks sensitive (legal
-                language, negotiations, dollar figures), the email is <strong>anonymized</strong>,
-                sent to Claude for a stronger draft, then <strong>re-hydrated</strong> locally.
-                The raw text of your mail never leaves your machine; Claude only ever sees
-                placeholder-substituted text.
-            </p>
-            <p>
-                Every draft lands in a review queue in a React web app backed by a local API
-                over the Python pipeline. You approve, edit, or reject each one; approved
-                replies become IMAP drafts in your own mail client or click-to-send
-                <code>.eml</code> files. The pipeline itself never sends anything.
+                reply draft. Anything uncertain or sensitive-looking (legal language,
+                negotiations, dollar figures) gets <strong>anonymized</strong>, sent to Claude
+                for a stronger draft, then <strong>re-hydrated</strong> locally, so Claude only
+                ever sees placeholder-substituted text. Approve, edit, or reject drafts right from the review queue; approved drafts go into your inbox's drafts folder and nothing's ever sent without you doing so yourself.
             </p>
         </section>
 
         <section class="card triage-group">
             <h2>the anonymization stack</h2>
             <p>
-                Three sequential layers run on progressively cleaner text, each covering a
-                failure mode the others structurally miss. Overlapping spans resolve
-                longest-match-first, replacements apply right-to-left so offsets stay valid,
-                and every entity maps to a stable, proper-noun-shaped placeholder that Claude
-                reads as in-distribution text rather than an opaque redaction.
+                Three layers run in sequence, each covering a failure mode the others
+                would miss. Every entity maps to a stable, proper-noun-shaped
+                placeholder that Claude reads as normal text rather than an opaque redaction.
             </p>
             <ul class="layer-list">
                 <li class="layer">
@@ -645,11 +636,9 @@ confirm timing.</pre>
         <section class="card draft-group">
             <h2>review everything before it sends</h2>
             <p>
-                Select an email from the ranked queue to see the original message, summary,
-                action items, escalation decision, and an editable draft. Choose
-                <strong>Approve</strong>, <strong>Approve edit</strong>, or <strong>Reject</strong>;
-                approved drafts land in your IMAP Drafts folder or as a pre-filled
-                <code>.eml</code>, one click from sending in your own mail client.
+                See the original message, triage
+                results, escalation decision, and an editable draft. Approve, edit, or
+                reject; approved drafts land in your inbox's drafts folder.
             </p>
             <figure class="shot">
                 <img src="/triage/images/details.png" alt="Detail panel showing an email's original message, triage classification with confidence bar, routing decision, and draft." loading="lazy">
@@ -672,26 +661,25 @@ confirm timing.</pre>
             <div class="kv">
                 <span class="k">local api</span>
                 <p>
-                    Localhost is not a security boundary: any web page can probe local ports.
-                    Every API request needs a per-run token that the Vite proxy injects, so
-                    browser JavaScript never sees it, plus strict <code>Host</code> and
-                    <code>Origin</code> checks. The browser never receives the anonymization
-                    mapping or the IMAP password.
+                    Localhost isn't a security boundary: any web page can probe local ports.
+                    Every API request needs a per-run token the Vite proxy injects, plus
+                    strict <code>Host</code> and <code>Origin</code> checks; the browser never
+                    sees the token, the anonymization mapping, or the IMAP password.
                 </p>
                 <span class="k">imap</span>
                 <p>
-                    Reading is read-only, enforced twice: folders open with
+                    Reading is read-only twice over: folders open with
                     <code>readonly=True</code> and bodies fetch via <code>BODY.PEEK[]</code>,
-                    so nothing is ever marked read, deleted, or sent. The one write is the
-                    explicit APPEND of an approved reply into your Drafts folder.
+                    so nothing gets marked read, deleted, or sent. The one write is the
+                    APPEND of an approved reply into your Drafts folder.
                 </p>
                 <span class="k">supply chain</span>
                 <p>
-                    Dependencies install from a lockfile with exact pins; the NER model wheel is
-                    pinned to its SHA-256. A package-age check rejects and fails anything published less
-                    than 14 days ago. The coref model is locked to an immutable
-                    commit with per-file hashes, copied into an isolated runtime directory that
-                    is hash-checked before every load; mail processing never downloads models.
+                    Dependencies install from a lockfile with exact pins, the NER wheel is
+                    pinned to its SHA-256, and a package-age check fails anything published
+                    less than 14 days ago. The coref model is locked to an immutable commit
+                    with per-file hashes and hash-checked before every load; mail processing
+                    never downloads models.
                 </p>
             </div>
         </section>
