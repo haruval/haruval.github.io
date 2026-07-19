@@ -82,6 +82,11 @@ function parseData(data) {
         const actionsMarkup = (projectPageMarkup || githubMarkup) ? `
                 <div class="project-actions">${projectPageMarkup}${githubMarkup}
                 </div>` : "";
+        const stackMarkup = Array.isArray(project.stack) && project.stack.length ? `
+                    <div class="project-stack">
+                        <span class="stack-label">stack</span>
+                        <span class="stack-items">${project.stack.join(", ")}</span>
+                    </div>` : "";
 
         projectElement.innerHTML = `
             <div class="row project" id="${project.subdomain}">
@@ -94,6 +99,7 @@ ${imageMarkup}
                     <div class="project-text">
                         <p class="abstract">${project.abstract}</p>
                     </div>
+${stackMarkup}
                 </div>
 ${actionsMarkup}
             </div>`;

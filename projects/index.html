@@ -23,6 +23,7 @@
             /* Material 3 Expressive tokens for the project cards, shared with
                the /triage project page (light + dark pastels of one palette). */
             --m3-font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --m3-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
             --m3-primary: #2b5cd9;
             --m3-primary-container: #c5d5ff;
             --m3-on-primary-container: #002a77;
@@ -43,7 +44,7 @@
                 --m3-on-primary-container: #dbe4ff;
                 --m3-secondary-container: #2a5138;
                 --m3-on-secondary-container: #b4ecc6;
-                --m3-routing: #392f20;
+                --m3-routing: #43282c;
                 --m3-surface-lowest: #0e1420;
                 --m3-on-surface: #e1e6f2;
                 --m3-on-surface-variant: #bfcbe6;
@@ -348,6 +349,33 @@
             color: var(--m3-on-surface);
         }
 
+        /* Stack panel: same treatment as the body panel, slightly more
+           transparent. */
+        .project-stack {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            background: color-mix(in srgb, var(--m3-surface-lowest) 52%, transparent);
+            border-radius: 20px;
+            padding: 12px 22px;
+            max-width: 56em;
+        }
+
+        .project-stack .stack-label {
+            font-family: var(--m3-font-mono);
+            font-size: 12px;
+            color: var(--m3-on-surface-variant);
+            white-space: nowrap;
+        }
+
+        .project-stack .stack-items {
+            font-family: var(--m3-font-sans);
+            font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+            font-weight: 500;
+            line-height: 1.5;
+            color: var(--m3-on-surface);
+        }
+
         /* Big tonal buttons in the /triage pill-pair language: the outer
            side (top for View Project Page, bottom for View on GitHub) is
            rounded, the inner side stays more rectangular. Each takes half
@@ -449,7 +477,8 @@
                 align-items: stretch;
             }
 
-            .project-text {
+            .project-text,
+            .project-stack {
                 max-width: none;
             }
 
@@ -483,6 +512,12 @@
 
             .project-text {
                 padding: 14px 16px;
+            }
+
+            .project-stack {
+                padding: 10px 16px;
+                flex-direction: column;
+                gap: 4px;
             }
 
             .project-heading h2 {
