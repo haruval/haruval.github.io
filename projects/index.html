@@ -19,6 +19,38 @@
             --text-primary: #263248;
             --text-secondary: #263248;
             --text-muted: #4a5870;
+
+            /* Material 3 Expressive tokens for the project cards, shared with
+               the /triage project page (light + dark pastels of one palette). */
+            --m3-font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --m3-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            --m3-primary: #2b5cd9;
+            --m3-primary-container: #c5d5ff;
+            --m3-on-primary-container: #002a77;
+            --m3-secondary-container: #b4ecc6;
+            --m3-on-secondary-container: #002111;
+            --m3-routing: #fff3df;
+            --m3-surface-lowest: #ffffff;
+            --m3-on-surface: #121c2e;
+            --m3-on-surface-variant: #43506b;
+            --m3-shadow-rest: 0 1px 2px rgb(18 28 46 / 0.08), 0 6px 20px rgb(18 28 46 / 0.10);
+            --m3-shadow-hover: 0 4px 10px rgb(18 28 46 / 0.14), 0 18px 44px rgb(18 28 46 / 0.24);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --m3-primary: #b1c5ff;
+                --m3-primary-container: #2e4a95;
+                --m3-on-primary-container: #dbe4ff;
+                --m3-secondary-container: #2a5138;
+                --m3-on-secondary-container: #b4ecc6;
+                --m3-routing: #43282c;
+                --m3-surface-lowest: #0e1420;
+                --m3-on-surface: #e1e6f2;
+                --m3-on-surface-variant: #bfcbe6;
+                --m3-shadow-rest: 0 1px 2px rgb(0 0 0 / 0.35), 0 6px 20px rgb(0 0 0 / 0.3);
+                --m3-shadow-hover: 0 4px 10px rgb(0 0 0 / 0.4), 0 18px 44px rgb(0 0 0 / 0.5);
+            }
         }
 
         * {
@@ -204,20 +236,30 @@
         }
 
         .project-link:focus-visible .project {
-            outline: 3px solid #58a6ff;
+            outline: 3px solid var(--m3-primary);
             outline-offset: 4px;
         }
 
         .project {
             position: relative;
             display: flex;
-            align-items: center;
-            gap: 2rem;
-            padding: 2rem;
-            background: #263248;
-            border-radius: 20px;
+            align-items: stretch;
+            gap: 1.25rem;
+            padding: 1.75rem;
+            background: var(--m3-routing);
+            border-radius: 26px;
+            box-shadow: var(--m3-shadow-rest);
             opacity: 0;
             transform: translateY(60px);
+            transition: opacity 0.6s ease,
+                transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .project-link:hover .project,
+        .project-link:focus-visible .project {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: var(--m3-shadow-hover);
         }
 
         .project > * {
@@ -231,78 +273,158 @@
         }
 
         .projimg {
-            flex: 0 0 auto;
-            max-width: 300px;
+            width: 100%;
+            max-width: 720px;
         }
 
         .projimg img {
             width: 100%;
             height: auto;
-            border-radius: 15px;
+            border-radius: 16px;
         }
 
-        .description {
+        /* Expressive card interior in the palette of the /triage page's
+           "one email through the pipeline" section: amber card surface with
+           a translucent-white text panel. Left column: title top-left, text
+           panel bottom-left. Right column: the two tonal buttons stacked,
+           together filling the card's full height. */
+        .project-main {
             flex: 1;
             min-width: 0;
             display: flex;
             flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1.25rem;
         }
 
-        .description h2 {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-bottom: 0.5rem;
-            color: #D9D9D9;
-            line-height: 1.2;
+        .project-heading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
         }
 
-        .description h3 {
-            font-size: clamp(0.9rem, 3vw, 1.2rem);
+        .project-heading h2 {
+            font-family: var(--m3-font-sans);
+            font-size: clamp(1.5rem, 5vw, 2.3rem);
+            font-weight: 650;
+            letter-spacing: -0.01em;
+            color: var(--m3-primary);
+            line-height: 1.15;
+        }
+
+        .project-heading h3 {
+            font-family: var(--m3-font-sans);
+            font-size: clamp(0.9rem, 3vw, 1.15rem);
             font-weight: 400;
             font-style: italic;
-            color: #D9D9D9;
-            margin-bottom: 1rem;
+            color: var(--m3-on-surface-variant);
+            margin-top: 0.35rem;
             line-height: 1.4;
         }
 
-        .description p {
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            line-height: 1.6;
-            color: #D9D9D9;
+        .project-heading h3:empty {
+            display: none;
+        }
+
+        .project-actions {
+            flex: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .project-text {
+            background: color-mix(in srgb, var(--m3-surface-lowest) 78%, transparent);
+            border-radius: 20px;
+            padding: 18px 22px;
+            max-width: 56em;
+        }
+
+        .project-text p {
+            font-family: var(--m3-font-sans);
+            font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+            line-height: 1.55;
+            color: var(--m3-on-surface);
+        }
+
+        /* Stack panel: same treatment as the body panel, slightly more
+           transparent. */
+        .project-stack {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            background: color-mix(in srgb, var(--m3-surface-lowest) 52%, transparent);
+            border-radius: 20px;
+            padding: 12px 22px;
+            max-width: 56em;
+        }
+
+        .project-stack .stack-label {
+            font-family: var(--m3-font-mono);
+            font-size: 12px;
+            color: var(--m3-on-surface-variant);
+            white-space: nowrap;
+        }
+
+        .project-stack .stack-items {
+            font-family: var(--m3-font-sans);
+            font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+            font-weight: 500;
+            line-height: 1.5;
+            color: var(--m3-on-surface);
+        }
+
+        /* Big tonal buttons in the /triage pill-pair language: the outer
+           side (top for View Project Page, bottom for View on GitHub) is
+           rounded, the inner side stays more rectangular. Each takes half
+           the actions column, so together they span the card's height. */
+        .project-page-link,
+        .github-project-link {
+            flex: 1 1 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            min-height: 54px;
+            padding: 0 30px;
+            font-family: var(--m3-font-sans);
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: filter 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .project-page-link {
+            background: var(--m3-primary-container);
+            color: var(--m3-on-primary-container);
+            border-radius: 28px 28px 12px 12px;
         }
 
         .github-project-link {
-            display: inline-flex;
-            align-items: center;
-            align-self: flex-start;
-            gap: 0.55rem;
-            margin-top: 1.5rem;
-            color: #58a6ff;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: color 0.2s ease, transform 0.2s ease;
+            background: var(--m3-secondary-container);
+            color: var(--m3-on-secondary-container);
+            border-radius: 12px 12px 28px 28px;
         }
 
-        .github-project-link img {
-            width: 1.25rem;
-            height: 1.25rem;
-            filter: invert(64%) sepia(85%) saturate(1577%) hue-rotate(183deg) brightness(105%) contrast(102%);
+        .github-project-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
         }
 
+        .project-page-link:hover,
         .github-project-link:hover {
-            color: #8cc8ff;
-            transform: translateX(3px);
+            filter: brightness(1.04);
+            box-shadow: var(--m3-shadow-rest);
         }
 
+        .project-page-link:focus-visible,
         .github-project-link:focus-visible {
-            outline: 2px solid currentColor;
-            outline-offset: 4px;
-            border-radius: 2px;
+            outline: 3px solid var(--m3-primary);
+            outline-offset: 2px;
         }
 
         /* Loading Animation */
@@ -342,20 +464,30 @@
 
             .project {
                 flex-direction: column;
-                gap: 1.5rem;
-                padding: 1.5rem;
+                align-items: stretch;
+                gap: 1rem;
+                padding: 1.25rem;
             }
 
             .projimg {
                 max-width: 100%;
             }
 
-            .description h2 {
-                text-align: center;
+            .project-main {
+                align-items: stretch;
             }
 
-            .description h3 {
-                text-align: center;
+            .project-text,
+            .project-stack {
+                max-width: none;
+            }
+
+            .project-page-link,
+            .github-project-link {
+                flex: none;
+                min-height: 50px;
+                padding: 0 20px;
+                white-space: normal;
             }
         }
 
@@ -375,18 +507,28 @@
 
             .project {
                 padding: 1rem;
-                gap: 1rem;
+                gap: 0.85rem;
             }
 
-            .description h2 {
+            .project-text {
+                padding: 14px 16px;
+            }
+
+            .project-stack {
+                padding: 10px 16px;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .project-heading h2 {
                 font-size: clamp(1.2rem, 6vw, 2rem);
             }
 
-            .description h3 {
+            .project-heading h3 {
                 font-size: clamp(0.8rem, 4vw, 1rem);
             }
 
-            .description p {
+            .project-text p {
                 font-size: clamp(0.85rem, 3.5vw, 1rem);
             }
         }

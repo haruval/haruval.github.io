@@ -3,10 +3,11 @@
         {
             "name": "private-triage-agent",
             "subtitle": "",
-            "abstract": "Email triage agent that keeps your inbox on your machine. A local LLM (gemma3:27b) handles every email; and when further reasoning is required, sensitive information is stripped through regex → transformer NER → neural coreference, sent to Claude as placeholders, and re-hydrated locally. Nothing sends without your approval.",
+            "abstract": "A privacy preserving email triage agent. A local model (gemma3:27b) handles every email; and when harder reasoning is required, sensitive information is stripped through regex → transformer NER → neural coreference, sent to Claude as placeholders, and re-hydrated locally. Nothing sends without your approval.",
+            "stack": ["Python", "spaCy (en_core_web_trf)", "fastcoref (biu-nlp)", "gemma3:27b via Ollama", "Claude API", "React", "TypeScript", "Vite"],
             "category": "nlp",
             "subdomain": "private-triage-agent",
-            "link": "https://github.com/haruval/private-triage-agent",
+            "link": "/triage",
             "github": "https://github.com/haruval/private-triage-agent",
             "image": false
         }
