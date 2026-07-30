@@ -3,7 +3,7 @@
         {
             "name": "private-triage-agent",
             "subtitle": "",
-            "abstract": "An open source privacy preserving email triage agent. A local model (gemma3:27b) handles every email; and when harder reasoning is required, sensitive information is stripped through regex → transformer NER → neural coreference, sent to Claude as placeholders, and re-hydrated locally. Nothing sends without your approval.",
+            "abstract": "An open source privacy preserving email triage agent. A local model (gemma3:27b) handles every email; and when harder reasoning is required, sensitive information is stripped through regex → transformer NER → neural coreference, sent to Claude as placeholders, and re-hydrated locally.",
             "stack": ["Python", "en_core_web_trf (spaCy)", "fastcoref (biu-nlp)", "gemma3:27b via Ollama", "Claude API", "React", "TypeScript", "Vite"],
             "category": "nlp",
             "subdomain": "private-triage-agent",

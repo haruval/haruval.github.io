@@ -489,9 +489,8 @@
         <header class="hero">
             <h1>private triage agent</h1>
             <p class="tagline">
-                An open source privacy-preserving email triage agent. A local model handles your whole
-                inbox on your machine; and when harder reasoning is needed, sensitive content is
-                anonymized before it is sent to Claude, then re-hydrated locally. Nothing is
+                An open source privacy preserving email triage agent. A local model handles every email; and when harder reasoning is needed, sensitive content is
+                anonymized before being sent to Claude, then re-hydrated locally. Nothing is
                 ever sent without your approval.
             </p>
             <div class="chip-row">
@@ -510,19 +509,19 @@
             <h2>what it does</h2>
             <p>
                 The local model triages every email: category, summary, action items, and a
-                reply draft. Anything uncertain or sensitive-looking (legal language,
-                negotiations, dollar figures) gets <strong>anonymized</strong>, sent to Claude
-                for a stronger draft, then <strong>re-hydrated</strong> locally, so Claude only
-                ever sees placeholder-substituted text. Approve, edit, or reject drafts right from the review queue; approved drafts go into your inbox's drafts folder and nothing's ever sent without you doing so yourself.
+                reply draft. When the local model is uncertain or the data is sensitive-looking (legal language,
+                negotiations, dollar figures) it gets <strong>anonymized</strong> before being sent to Claude
+                for stronger processing, then <strong>re-hydrated</strong> locally, so Claude only
+                ever sees placeholder-substituted text. Approved drafts go right into your inbox's Drafts folder.
             </p>
         </section>
 
         <section class="card triage-group">
             <h2>the anonymization stack</h2>
             <p>
-                Three layers run in sequence, each covering a failure mode the others
+                Three layers run in sequence, each covering a failure the others
                 would miss. Every entity maps to a stable, proper-noun-shaped
-                placeholder that Claude reads as normal text rather than an opaque redaction.
+                placeholder.
             </p>
             <ul class="layer-list">
                 <li class="layer">
@@ -589,7 +588,7 @@ Also - can we move our call to Thursday? Reach me at (415) 555-0182.</pre>
 action items:
   - Review the contract redlines
   - Confirm the $250,000 figure
-  - Reschedule the call</pre>
+  - Reschedule the call at (415) 555-0182</pre>
                 <p class="dim">The legal redlines and the dollar figure make this a candidate for escalation.</p>
             </div>
 
@@ -667,7 +666,7 @@ confirm timing.</pre>
                 </p>
                 <span class="k">imap</span>
                 <p>
-                    Reading is read-only twice over: folders open with
+                    Read-only: folders open with
                     <code>readonly=True</code> and bodies fetch via <code>BODY.PEEK[]</code>,
                     so nothing gets marked read, deleted, or sent. The one write is the
                     APPEND of an approved reply into your Drafts folder.
