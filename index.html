@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ari Gladstone</title>
     <link rel="icon" type="image/png" href="/favicon.png">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary-color: #263248;
-            --secondary-color: #000000;
-            --accent-color: #ff6b6b;
-            --text-primary: #263248;
-            --text-secondary: #263248;
-            --text-muted: #4a5870;
+            --ink: #263248;
+            --ink-deep: #1a2233;
+            --ink-soft: #4a5870;
+            --line: #303030;
+            --paper: #d9d9d9;
         }
 
         * {
@@ -29,30 +29,49 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--secondary-color);
-            color: var(--text-primary);
+            background: #000;
+            color: var(--ink);
             overflow-x: hidden;
         }
 
-        /* Dot Matrix Background */
-        .dot-matrix {
+        /* registration marks: faint plotter crosshairs pinning the sheet corners */
+        .reg-mark {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            width: 15px;
+            height: 15px;
+            z-index: 5;
             pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
+            opacity: 0;
+            animation: settleFaint 1.2s ease 1.5s forwards;
         }
 
-        .dot {
+        .reg-mark::before {
+            content: '';
             position: absolute;
-            width: 8px;
-            height: 8px;
-            background: rgba(100, 100, 100, 0.8);
-            border-radius: 50%;
-            transition: all 0.4s ease;
+            left: 0;
+            right: 0;
+            top: 7px;
+            height: 1px;
+            background: var(--line);
+        }
+
+        .reg-mark::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 7px;
+            width: 1px;
+            background: var(--line);
+        }
+
+        .reg-mark.tl { top: 1.2rem; left: 1.2rem; }
+        .reg-mark.tr { top: 1.2rem; right: 1.2rem; }
+        .reg-mark.bl { bottom: 1.2rem; left: 1.2rem; }
+        .reg-mark.br { bottom: 1.2rem; right: 1.2rem; }
+
+        @keyframes settleFaint {
+            to { opacity: 0.4; }
         }
 
         /* Main Content */
@@ -60,6 +79,7 @@
             position: relative;
             z-index: 10;
             min-height: 100vh;
+            min-height: 100svh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -69,140 +89,243 @@
 
         .hero-section {
             text-align: center;
-            margin-bottom: 4rem;
+            margin-bottom: 3.4rem;
         }
 
         .main-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(3rem, 10vw, 7rem);
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            margin-bottom: 1rem;
-            position: relative;
-            background: linear-gradient(135deg, #263248 0%, #4a5870 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.1;
-            word-break: normal;
-            overflow-wrap: normal;
-            -webkit-hyphens: none;
-            hyphens: none;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: clamp(2.7rem, 9.5vw, 6.6rem);
+            font-weight: 500;
+            color: var(--ink);
+            line-height: 1.04;
+            letter-spacing: 0.045em;
+            white-space: nowrap;
+            animation: trackIn 1.5s cubic-bezier(0.19, 1, 0.22, 1) 0.1s both;
+        }
+
+        @keyframes trackIn {
+            from { opacity: 0; letter-spacing: 0.28em; }
+            to { opacity: 1; letter-spacing: 0.045em; }
+        }
+
+        /* hairline rule with a survey diamond, drawn outward from center */
+        .title-rule {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: min(360px, 72%);
+            margin: 1.7rem auto 1.8rem;
+        }
+
+        .title-rule .rule-line {
+            flex: 1;
+            height: 1px;
+            background: var(--line);
+            opacity: 0.55;
+            transform: scaleX(0);
+            animation: ruleDraw 1s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
+        }
+
+        .title-rule .rule-line:first-child { transform-origin: right center; }
+        .title-rule .rule-line:last-child { transform-origin: left center; }
+
+        .title-rule .rule-gem {
+            width: 5px;
+            height: 5px;
+            border: 1px solid var(--line);
+            transform: rotate(45deg);
+            opacity: 0;
+            animation: settleGem 0.6s ease 0.7s forwards;
+        }
+
+        @keyframes ruleDraw {
+            to { transform: scaleX(1); }
+        }
+
+        @keyframes settleGem {
+            to { opacity: 0.7; }
         }
 
         .subtitle {
-            font-size: clamp(1.1rem, 3vw, 1.6rem);
-            font-weight: 300;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.05em;
-            line-height: 1.4;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(0.72rem, 1.9vw, 0.92rem);
+            font-weight: 400;
+            color: var(--ink-soft);
+            text-transform: lowercase;
+            letter-spacing: 0.24em;
+            line-height: 2;
+            opacity: 0;
+            animation: fadeInUp 0.9s ease 0.95s forwards;
         }
 
         .mobile-tagline-break {
             display: none;
         }
 
-        .location {
-            font-size: clamp(1.1rem, 3vw, 1.6rem);
-            font-weight: 300;
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            letter-spacing: 0.05em;
-            line-height: 1.4;
-        }
-
-        .description {
-            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
-            font-weight: 200;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 3rem;
-            line-height: 1.6;
-        }
-
-        /* Navigation */
+        /* Navigation: an indexed row of instrument labels; corner brackets
+           latch on like a viewfinder on hover */
         .nav-grid {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.75rem;
-            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+            column-gap: 1.15rem;
+            row-gap: 1rem;
+            max-width: 860px;
         }
 
         .nav-item {
-            text-decoration: none;
-            color: var(--text-secondary);
-            transition: color 0.3s ease, transform 0.3s ease;
             position: relative;
-            display: inline-block;
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 0.85em 1.05em;
+            text-decoration: none;
+            color: var(--ink);
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .nav-item:nth-child(1) { animation-delay: 1.1s; }
+        .nav-item:nth-child(2) { animation-delay: 1.18s; }
+        .nav-item:nth-child(3) { animation-delay: 1.26s; }
+        .nav-item:nth-child(4) { animation-delay: 1.34s; }
+        .nav-item:nth-child(5) { animation-delay: 1.42s; }
+        .nav-item:nth-child(6) { animation-delay: 1.5s; }
+
+        .nav-index {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.56rem;
+            font-weight: 500;
+            color: var(--ink-soft);
+            opacity: 0.55;
+            transform: translateY(-0.4em);
+            transition: opacity 0.3s ease;
         }
 
         .nav-item-title {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.5rem;
+            font-size: 0.84rem;
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.2em;
+            text-transform: lowercase;
+            transition: color 0.3s ease;
         }
 
+        .nav-item::before,
         .nav-item::after {
             content: '';
             position: absolute;
+            width: 9px;
+            height: 9px;
+            border: 0 solid var(--line);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .nav-item::before {
+            top: 0;
             left: 0;
-            bottom: -4px;
-            width: 100%;
-            height: 1px;
-            background: currentColor;
-            transform: scaleX(0);
-            transform-origin: left center;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top-width: 1px;
+            border-left-width: 1px;
+            transform: translate(6px, 6px);
         }
 
-        .nav-item:hover {
-            color: var(--text-primary);
-            transform: translateX(6px);
+        .nav-item::after {
+            bottom: 0;
+            right: 0;
+            border-bottom-width: 1px;
+            border-right-width: 1px;
+            transform: translate(-6px, -6px);
         }
 
-        .nav-item:hover::after {
-            transform: scaleX(1);
+        .nav-item:hover::before,
+        .nav-item:hover::after,
+        .nav-item:focus-visible::before,
+        .nav-item:focus-visible::after {
+            opacity: 0.9;
+            transform: translate(0, 0);
+        }
+
+        .nav-item:hover .nav-item-title,
+        .nav-item:focus-visible .nav-item-title {
+            color: var(--ink-deep);
+        }
+
+        .nav-item:hover .nav-index,
+        .nav-item:focus-visible .nav-index {
+            opacity: 0.95;
+        }
+
+        .nav-item:focus-visible {
+            outline: none;
+        }
+
+        /* the scene's own caption, like a margin note on a print */
+        .scene-caption {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 1.25rem;
+            text-align: center;
+            z-index: 5;
+            pointer-events: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 400;
+            letter-spacing: 0.28em;
+            text-transform: lowercase;
+            color: var(--ink-soft);
+            opacity: 0;
+            animation: settleCaption 1.4s ease 1.9s forwards;
+        }
+
+        @keyframes settleCaption {
+            to { opacity: 0.75; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 padding: 1.5rem 1rem;
-                min-height: 100vh;
             }
 
             .hero-section {
-                margin-bottom: 3rem;
-            }
-
-            .main-title {
-                font-size: clamp(2.5rem, 12vw, 4.5rem);
-                margin-bottom: 1.5rem;
-                line-height: 1.0;
+                margin-bottom: 2.8rem;
             }
 
             .subtitle {
-                font-size: clamp(1rem, 4vw, 1.4rem);
-                margin-bottom: 0.75rem;
-                padding: 0 1rem;
+                letter-spacing: 0.18em;
             }
 
-            .location {
-                font-size: clamp(1rem, 4vw, 1.4rem);
-                margin-bottom: 2.5rem;
-                padding: 0 1rem;
+            .mobile-tagline-break {
+                display: block;
             }
 
             .nav-grid {
-                gap: 1.5rem;
+                column-gap: 0.4rem;
+                row-gap: 0.55rem;
+                max-width: 420px;
             }
 
-            .nav-item-title {
-                font-size: 1.25rem;
+            .reg-mark {
+                display: none;
+            }
+
+            .scene-caption {
+                font-size: 0.54rem;
+                letter-spacing: 0.16em;
+                padding: 0 1rem;
             }
         }
 
@@ -211,130 +334,98 @@
                 padding: 1rem 0.75rem;
             }
 
-            .hero-section {
-                margin-bottom: 2.5rem;
-            }
-
-            .main-title {
-                font-size: clamp(2.2rem, 14vw, 3.8rem);
-                margin-bottom: 1.25rem;
-                word-break: normal;
-                overflow-wrap: normal;
-                -webkit-hyphens: none;
-                hyphens: none;
-            }
-
-            .subtitle {
-                font-size: clamp(0.95rem, 4.5vw, 1.2rem);
-                margin-bottom: 0.5rem;
-                padding: 0 0.5rem;
-            }
-
-            .location {
-                font-size: clamp(0.95rem, 4.5vw, 1.2rem);
-                margin-bottom: 2rem;
-                padding: 0 0.5rem;
-            }
-
-            .nav-grid {
-                gap: 1.35rem;
+            .nav-item {
+                padding: 0.75em 0.9em;
             }
 
             .nav-item-title {
-                font-size: 1.15rem;
-                letter-spacing: 0.12em;
+                font-size: 0.78rem;
+                letter-spacing: 0.16em;
             }
         }
 
-        @media (max-width: 320px) {
-            .main-title {
-                font-size: clamp(1.8rem, 16vw, 3rem);
-                letter-spacing: -0.01em;
-            }
-
-            .subtitle, .location {
-                font-size: clamp(0.85rem, 5vw, 1.1rem);
-            }
-
-            .nav-grid {
-                gap: 1.2rem;
-            }
-
-            .nav-item-title {
-                font-size: 1.05rem;
+        @media (max-height: 600px) {
+            .scene-caption {
+                display: none;
             }
         }
 
-        @media (max-width: 768px) {
-            .mobile-tagline-break {
-                display: block;
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
             }
-        }
 
-        /* Loading Animation */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 1s ease forwards;
-        }
+            .main-title,
+            .subtitle,
+            .nav-item,
+            .scene-caption,
+            .reg-mark,
+            .title-rule .rule-line,
+            .title-rule .rule-gem {
+                opacity: 1 !important;
+                transform: none !important;
+            }
 
-        .fade-in:nth-child(1) { animation-delay: 0.2s; }
-        .fade-in:nth-child(2) { animation-delay: 0.4s; }
-        .fade-in:nth-child(3) { animation-delay: 0.6s; }
-        .fade-in:nth-child(4) { animation-delay: 0.8s; }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .title-rule .rule-gem {
+                transform: rotate(45deg) !important;
             }
         }
     </style>
 </head>
 <body>
+    <div class="reg-mark tl" aria-hidden="true"></div>
+    <div class="reg-mark tr" aria-hidden="true"></div>
+    <div class="reg-mark bl" aria-hidden="true"></div>
+    <div class="reg-mark br" aria-hidden="true"></div>
+
     <!-- Main Content -->
     <div class="container">
-        <div class="hero-section">
-            <h1 class="main-title fade-in">ARI GLADSTONE</h1>
-            <p class="subtitle fade-in">cs + creative technology // <br class="mobile-tagline-break">CU Boulder spring '26</p>
-        </div>
+        <header class="hero-section">
+            <h1 class="main-title">Ari Gladstone</h1>
+            <div class="title-rule" aria-hidden="true">
+                <span class="rule-line"></span><span class="rule-gem"></span><span class="rule-line"></span>
+            </div>
+            <p class="subtitle">cs + creative technology // <br class="mobile-tagline-break">CU Boulder spring '26</p>
+        </header>
 
-        <div class="nav-grid fade-in">
+        <nav class="nav-grid" aria-label="site">
             <a href="/about/" class="nav-item">
-                <div class="nav-item-title">About</div>
+                <span class="nav-index">01</span><span class="nav-item-title">about</span>
             </a>
             <a href="/projects/" class="nav-item">
-                <div class="nav-item-title">Projects</div>
+                <span class="nav-index">02</span><span class="nav-item-title">projects</span>
             </a>
-            <a href="https://github.com/haruval" class="nav-item" target="_blank">
-                <div class="nav-item-title">GitHub</div>
+            <a href="https://github.com/haruval" class="nav-item" target="_blank" rel="noopener">
+                <span class="nav-index">03</span><span class="nav-item-title">github</span>
             </a>
-            <a href="https://x.com/haruval" class="nav-item" target="_blank">
-                <div class="nav-item-title">Twitter</div>
+            <a href="https://x.com/haruval" class="nav-item" target="_blank" rel="noopener">
+                <span class="nav-index">04</span><span class="nav-item-title">twitter</span>
             </a>
-            <a href="https://www.youtube.com/watch?v=VPymSJ36nC0" class="nav-item" target="_blank">
-                <div class="nav-item-title">YouTube</div>
+            <a href="https://www.youtube.com/watch?v=VPymSJ36nC0" class="nav-item" target="_blank" rel="noopener">
+                <span class="nav-index">05</span><span class="nav-item-title">youtube</span>
             </a>
-            <a href="https://www.twitch.tv/harumilktea" class="nav-item" target="_blank">
-                <div class="nav-item-title">Twitch</div>
+            <a href="https://www.twitch.tv/harumilktea" class="nav-item" target="_blank" rel="noopener">
+                <span class="nav-index">06</span><span class="nav-item-title">twitch</span>
             </a>
-        </div>
+        </nav>
     </div>
+
+    <p class="scene-caption" id="sceneCaption">procedural forest &middot; three.js</p>
 
     <script type="module">
         import { mountForestScene } from '/fun/forest/js/main.js';
 
-        mountForestScene({
+        const forest = mountForestScene({
             className: 'homepage-forest-scene',
             zIndex: 1,
             maxPixelRatio: 1.25,
         });
-    </script>
-    <script>
-        // Add loading animation
-        window.addEventListener('load', () => {
-            document.body.style.opacity = '1';
-        });
+
+        const caption = document.getElementById('sceneCaption');
+        if (caption && forest && Number.isFinite(forest.seed)) {
+            caption.textContent = `procedural forest · seed ${forest.seed} · three.js`;
+        }
     </script>
 </body>
 </html>

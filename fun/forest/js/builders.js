@@ -176,42 +176,134 @@ function deciduous(pen, rng) {
     }
 }
 
-function birch(pen, rng) {
-    const h = rng.range(4.5, 7.5);
-    const w = rng.range(0.05, 0.09);
-    const sway = rng.range(-0.4, 0.4);
-    const ctr = (y) => sway * (y / h) * (y / h);
-    // two edge pairs in perpendicular planes so the thin trunk reads from
-    // every angle instead of vanishing edge-on
+function oak(pen, rng) {
+    const h = rng.range(7, 10.5);
+    const trunkH = Math.max(h * rng.range(0.3, 0.38), 2.4);
+    const baseR = rng.range(0.2, 0.3);
+    const lean = rng.range(-0.05, 0.05);
+    // stout trunk: four edge lines with a flared root collar
     for (const [ox, oz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const points = [];
-        for (let i = 0; i <= 5; i += 1) {
-            const y = (i / 5) * h;
-            const e = w * (1 - (y / h) * 0.55);
-            points.push([ctr(y) + ox * e, y, oz * e]);
-        }
-        pen.polyline(points, 0.8);
+        pen.polyline([
+            [ox * baseR * 1.6, 0, oz * baseR * 1.6],
+            [ox * baseR * 1.05 + lean * trunkH * 0.35, trunkH * 0.35, oz * baseR * 1.05],
+            [ox * baseR * 0.85 + lean * trunkH, trunkH, oz * baseR * 0.85],
+        ], 0.55);
     }
-    let y = rng.range(0.3, 0.6);
-    while (y < h * 0.78) {
-        const tx = ctr(y);
-        const tw = w * rng.range(1.6, 2.6);
-        if (rng.chance(0.5)) pen.seg(tx - tw, y, 0, tx + tw, y + rng.range(-0.04, 0.04), 0);
-        else pen.seg(tx, y, -tw, tx, y + rng.range(-0.04, 0.04), tw);
-        y += rng.range(0.32, 0.6);
-    }
-    for (let i = rng.int(2, 4); i > 0; i -= 1) {
-        const by = h * rng.range(0.55, 0.9);
-        const az = rng.range(0, Math.PI * 2);
-        const bl = rng.range(0.8, 1.6);
-        const bx = ctr(by);
-        const ex = bx + Math.cos(az) * bl, ey = by + bl * rng.range(0.5, 0.9), ez = Math.sin(az) * bl;
-        pen.polyline([[bx, by, 0], [ex, ey, ez]], 0.5);
-        for (let k = rng.int(2, 4); k > 0; k -= 1) {
-            const f = rng.range(0.4, 1);
-            const lx = bx + (ex - bx) * f, ly = by + (ey - by) * f, lz = ez * f;
-            pen.seg(lx, ly, lz, lx + rng.range(-0.16, 0.16), ly + rng.range(0.05, 0.2), lz + rng.range(-0.16, 0.16));
+    const tx = lean * trunkH;
+    // gnarled limbs fan out and up from the crotch; tips carry leaf masses
+    const tips = [];
+    const nLimbs = rng.int(3, 5);
+    const az0 = rng.range(0, Math.PI * 2);
+    for (let i = 0; i < nLimbs; i += 1) {
+        const az = az0 + (i / nLimbs) * Math.PI * 2 + rng.range(-0.35, 0.35);
+        const reach = rng.range(1.7, 2.9) * (h / 9);
+        const rise = rng.range(1.4, 2.4);
+        const ex = Math.cos(az) * reach;
+        const ez = Math.sin(az) * reach;
+        const kx = ex * 0.45 + rng.range(-0.3, 0.3);
+        const kz = ez * 0.45 + rng.range(-0.3, 0.3);
+        const ky = trunkH + rise * rng.range(0.45, 0.7);
+        pen.polyline([
+            [tx, trunkH, 0],
+            [tx + kx, ky, kz],
+            [tx + ex, trunkH + rise, ez],
+        ], 0.5);
+        tips.push([tx + ex, trunkH + rise, ez, reach]);
+        if (rng.chance(0.7)) {
+            // an elbowed twig off the kink, reaching into the canopy
+            const twx = tx + kx + rng.range(-0.6, 0.6);
+            const twz = kz + rng.range(-0.6, 0.6);
+            const twy = ky + rng.range(0.7, 1.2);
+            pen.polyline([[tx + kx, ky, kz], [twx, twy, twz]], 0.5);
+            tips.push([twx, twy, twz, reach * 0.55]);
         }
+    }
+    // broad low dome of foliage: one wide central mass plus a lumpy cloud
+    // over each limb tip, kept high enough to clear the walker's head
+    function mass(cx, cy, cz, r) {
+        const tilt = rng.range(-0.35, 0.35);
+        const ring = [];
+        for (let i = 0; i < 8; i += 1) {
+            const a = (i / 8) * Math.PI * 2;
+            const rr = r * rng.range(0.78, 1.18);
+            ring.push([
+                cx + Math.cos(a) * rr,
+                cy + Math.sin(a) * rr * 0.55 + Math.cos(a) * rr * tilt * 0.25,
+                cz + Math.sin(a) * rr * rng.range(0.25, 0.55),
+            ]);
+        }
+        pen.loop(ring, 1.1);
+    }
+    const crownY = trunkH + rng.range(2.3, 3.1);
+    const crownR = Math.min(2.6, h * rng.range(0.28, 0.34));
+    mass(tx, crownY, 0, crownR);
+    for (const [cx, cy, cz, reach] of tips) {
+        mass(cx, cy + reach * 0.15, cz, Math.min(1.5, reach * rng.range(0.45, 0.65)));
+    }
+    // loose leaf strokes drifting inside the canopy
+    for (let i = rng.int(5, 8); i > 0; i -= 1) {
+        const a = rng.range(0, Math.PI * 2);
+        const rr = crownR * rng.range(0.25, 0.95);
+        const px = tx + Math.cos(a) * rr;
+        const pz = Math.sin(a) * rr * rng.range(0.4, 0.8);
+        const py = crownY + rng.range(-0.6, 0.7);
+        pen.seg(px, py, pz, px + rng.range(-0.2, 0.2), py - rng.range(0.18, 0.34), pz + rng.range(-0.2, 0.2));
+    }
+}
+
+function redwood(pen, rng) {
+    const h = rng.range(13, 19);
+    const baseR = rng.range(0.26, 0.4);
+    const lean = rng.range(-0.03, 0.03);
+    // trunk: four edge lines with a heavy buttressed flare and a long slow taper
+    for (const [ox, oz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const pts = [
+            [ox * baseR * 2.0, 0, oz * baseR * 2.0],
+            [ox * baseR * 1.25, h * 0.05, oz * baseR * 1.25],
+            [ox * baseR, h * 0.12, oz * baseR],
+        ];
+        for (let i = 1; i <= 4; i += 1) {
+            const y = h * (0.12 + (i / 4) * 0.88);
+            const e = baseR * (1 - 0.82 * (y / h));
+            pts.push([ox * e + lean * y, y, oz * e]);
+        }
+        pen.polyline(pts, 0.9);
+    }
+    // short tiered limbs high on the trunk: droop out, tip back up, and carry
+    // herringbone needle sprays; the lower trunk stays bare like a true redwood
+    let y = Math.max(h * rng.range(0.28, 0.38), 3.2);
+    while (y < h * 0.95) {
+        const rel = 1 - y / h;
+        const tierR = Math.min(2.2, (0.55 + rel * rng.range(1.1, 1.6)) * (h / 16));
+        const nBr = rng.int(2, 4);
+        const azt = rng.range(0, Math.PI * 2);
+        for (let i = 0; i < nBr; i += 1) {
+            const az = azt + (i / nBr) * Math.PI * 2 + rng.range(-0.5, 0.5);
+            const ux = Math.cos(az);
+            const uz = Math.sin(az);
+            const bx = lean * y;
+            const droop = tierR * rng.range(0.25, 0.45);
+            pen.polyline([
+                [bx, y, 0],
+                [bx + ux * tierR * 0.6, y - droop, uz * tierR * 0.6],
+                [bx + ux * tierR, y - droop * 0.35, uz * tierR],
+            ], 0.5);
+            for (const [f, py] of [[0.62, y - droop], [1, y - droop * 0.35]]) {
+                const px = bx + ux * tierR * f;
+                const pz = uz * tierR * f;
+                pen.seg(px, py, pz, px + ux * 0.28, py - rng.range(0.16, 0.3), pz + uz * 0.28);
+                pen.seg(px, py, pz, px - uz * 0.2, py - 0.12, pz + ux * 0.2);
+                if (rng.chance(0.6)) pen.seg(px, py, pz, px + uz * 0.2, py - 0.12, pz - ux * 0.2);
+            }
+        }
+        y += rng.range(0.55, 0.9) * (h / 16 + 0.3);
+    }
+    // wispy tuft closing the spire
+    for (let i = rng.int(4, 6); i > 0; i -= 1) {
+        const a = rng.range(0, Math.PI * 2);
+        const r0 = rng.range(0.12, 0.4);
+        const y0 = h - rng.range(0, 0.7);
+        pen.seg(lean * h, y0, 0, lean * h + Math.cos(a) * r0, y0 - rng.range(0.25, 0.9), Math.sin(a) * r0);
     }
 }
 
@@ -247,8 +339,9 @@ function snag(pen, rng) {
 
 const TREE_MAKERS = [
     { fn: conifer, w: 0.3 },
-    { fn: deciduous, w: 0.3 },
-    { fn: birch, w: 0.24 },
+    { fn: deciduous, w: 0.28 },
+    { fn: oak, w: 0.14 },
+    { fn: redwood, w: 0.12 },
     { fn: snag, w: 0.16 },
 ];
 
