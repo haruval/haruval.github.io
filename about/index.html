@@ -35,41 +35,45 @@
             line-height: 1.6;
         }
 
-        /* registration marks: faint plotter crosshairs pinning the sheet corners */
+        /* corner marks: hairline brackets framing the sheet */
         .reg-mark {
             position: fixed;
-            width: 15px;
-            height: 15px;
+            width: 30px;
+            height: 30px;
+            border: 0 solid var(--line);
             z-index: 5;
             pointer-events: none;
             opacity: 0;
             animation: settleFaint 1.2s ease 1.2s forwards;
         }
 
-        .reg-mark::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 7px;
-            height: 1px;
-            background: var(--line);
+        .reg-mark.tl {
+            top: 1.4rem;
+            left: 1.4rem;
+            border-top-width: 1px;
+            border-left-width: 1px;
         }
 
-        .reg-mark::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 7px;
-            width: 1px;
-            background: var(--line);
+        .reg-mark.tr {
+            top: 1.4rem;
+            right: 1.4rem;
+            border-top-width: 1px;
+            border-right-width: 1px;
         }
 
-        .reg-mark.tl { top: 1.2rem; left: 1.2rem; }
-        .reg-mark.tr { top: 1.2rem; right: 1.2rem; }
-        .reg-mark.bl { bottom: 1.2rem; left: 1.2rem; }
-        .reg-mark.br { bottom: 1.2rem; right: 1.2rem; }
+        .reg-mark.bl {
+            bottom: 1.4rem;
+            left: 1.4rem;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+        }
+
+        .reg-mark.br {
+            bottom: 1.4rem;
+            right: 1.4rem;
+            border-bottom-width: 1px;
+            border-right-width: 1px;
+        }
 
         @keyframes settleFaint {
             to { opacity: 0.4; }
@@ -450,6 +454,10 @@
             .title-rule .rule-gem {
                 transform: rotate(45deg) !important;
             }
+
+            .reg-mark {
+                opacity: 0.4 !important;
+            }
         }
     </style>
 </head>
@@ -478,7 +486,7 @@
 
         <div class="content-section reverse" data-scroll>
             <div class="content-text">
-                <span class="panel-tag">field note &middot; 01</span>
+                <span class="panel-tag">field note 01</span>
                 <p><img src="/portfolio/images/phflag.png" alt="Philippine flag" style="display: block; width: 60px; height: 60px;"></p>
                 <p>
                      filipino-american. cu boulder computer science major + creative technology minor, spring '26 grad. 3.64 gpa. cinnamoroll fan.
@@ -494,7 +502,7 @@
 
         <div class="content-section" data-scroll>
             <div class="content-text quote">
-                <span class="panel-tag">field note &middot; 02</span>
+                <span class="panel-tag">field note 02</span>
                 <p>
                     "Don't put your Valorant rank on your portfolio, that's weird and unprofessional" - some nerds
                 </p>

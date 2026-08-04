@@ -34,41 +34,45 @@
             overflow-x: hidden;
         }
 
-        /* registration marks: faint plotter crosshairs pinning the sheet corners */
+        /* corner marks: hairline brackets framing the sheet */
         .reg-mark {
             position: fixed;
-            width: 15px;
-            height: 15px;
+            width: 30px;
+            height: 30px;
+            border: 0 solid var(--line);
             z-index: 5;
             pointer-events: none;
             opacity: 0;
             animation: settleFaint 1.2s ease 1.5s forwards;
         }
 
-        .reg-mark::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 7px;
-            height: 1px;
-            background: var(--line);
+        .reg-mark.tl {
+            top: 1.4rem;
+            left: 1.4rem;
+            border-top-width: 1px;
+            border-left-width: 1px;
         }
 
-        .reg-mark::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 7px;
-            width: 1px;
-            background: var(--line);
+        .reg-mark.tr {
+            top: 1.4rem;
+            right: 1.4rem;
+            border-top-width: 1px;
+            border-right-width: 1px;
         }
 
-        .reg-mark.tl { top: 1.2rem; left: 1.2rem; }
-        .reg-mark.tr { top: 1.2rem; right: 1.2rem; }
-        .reg-mark.bl { bottom: 1.2rem; left: 1.2rem; }
-        .reg-mark.br { bottom: 1.2rem; right: 1.2rem; }
+        .reg-mark.bl {
+            bottom: 1.4rem;
+            left: 1.4rem;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+        }
+
+        .reg-mark.br {
+            bottom: 1.4rem;
+            right: 1.4rem;
+            border-bottom-width: 1px;
+            border-right-width: 1px;
+        }
 
         @keyframes settleFaint {
             to { opacity: 0.4; }
@@ -162,23 +166,22 @@
             display: none;
         }
 
-        /* Navigation: an indexed row of instrument labels; corner brackets
-           latch on like a viewfinder on hover */
+        /* Navigation: a row of instrument labels, each set in a diamond that
+           unfolds into viewfinder corner marks on hover */
         .nav-grid {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            column-gap: 1.15rem;
-            row-gap: 1rem;
-            max-width: 860px;
+            column-gap: 0.6rem;
+            row-gap: 0.9rem;
+            max-width: 980px;
         }
 
         .nav-item {
             position: relative;
             display: inline-flex;
-            align-items: baseline;
-            gap: 0.5rem;
-            padding: 0.85em 1.05em;
+            align-items: center;
+            padding: 1.1em 1.5em;
             text-decoration: none;
             color: var(--ink);
             opacity: 0;
@@ -192,34 +195,62 @@
         .nav-item:nth-child(5) { animation-delay: 1.42s; }
         .nav-item:nth-child(6) { animation-delay: 1.5s; }
 
-        .nav-index {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.56rem;
-            font-weight: 500;
-            color: var(--ink-soft);
-            opacity: 0.55;
-            transform: translateY(-0.4em);
-            transition: opacity 0.3s ease;
-        }
-
         .nav-item-title {
+            position: relative;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.84rem;
             font-weight: 500;
             letter-spacing: 0.2em;
+            /* cancel the trailing letter-space so the label sits true
+               between its brackets */
+            margin-right: -0.2em;
             text-transform: lowercase;
             transition: color 0.3s ease;
         }
 
+        /* idle: the label is held in a pair of hairline brackets. on hover
+           the brackets release outward and the crop marks travel out to pin
+           the button's corners — every piece moving on the same outward
+           vector, so the frame reads as opening up. */
+        .nav-item-title::before,
+        .nav-item-title::after,
         .nav-item::before,
         .nav-item::after {
             content: '';
             position: absolute;
-            width: 9px;
-            height: 9px;
             border: 0 solid var(--line);
+            transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .nav-item-title::before,
+        .nav-item-title::after {
+            top: 50%;
+            width: 6px;
+            height: 22px;
+            opacity: 0.45;
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+        }
+
+        .nav-item-title::before {
+            right: 100%;
+            margin-right: 8px;
+            border-left-width: 1px;
+            transform: translateY(-50%);
+        }
+
+        .nav-item-title::after {
+            left: 100%;
+            margin-left: 8px;
+            border-right-width: 1px;
+            transform: translateY(-50%);
+        }
+
+        .nav-item::before,
+        .nav-item::after {
+            width: 13px;
+            height: 13px;
             opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .nav-item::before {
@@ -227,7 +258,7 @@
             left: 0;
             border-top-width: 1px;
             border-left-width: 1px;
-            transform: translate(6px, 6px);
+            transform: translate(8px, 8px);
         }
 
         .nav-item::after {
@@ -235,25 +266,32 @@
             right: 0;
             border-bottom-width: 1px;
             border-right-width: 1px;
-            transform: translate(-6px, -6px);
+            transform: translate(-8px, -8px);
+        }
+
+        .nav-item:hover .nav-item-title::before,
+        .nav-item:focus-visible .nav-item-title::before {
+            opacity: 0;
+            transform: translate(-9px, -50%);
+        }
+
+        .nav-item:hover .nav-item-title::after,
+        .nav-item:focus-visible .nav-item-title::after {
+            opacity: 0;
+            transform: translate(9px, -50%);
         }
 
         .nav-item:hover::before,
         .nav-item:hover::after,
         .nav-item:focus-visible::before,
         .nav-item:focus-visible::after {
-            opacity: 0.9;
+            opacity: 1;
             transform: translate(0, 0);
         }
 
         .nav-item:hover .nav-item-title,
         .nav-item:focus-visible .nav-item-title {
             color: var(--ink-deep);
-        }
-
-        .nav-item:hover .nav-index,
-        .nav-item:focus-visible .nav-index {
-            opacity: 0.95;
         }
 
         .nav-item:focus-visible {
@@ -313,8 +351,8 @@
             }
 
             .nav-grid {
-                column-gap: 0.4rem;
-                row-gap: 0.55rem;
+                column-gap: 0.5rem;
+                row-gap: 0.6rem;
                 max-width: 420px;
             }
 
@@ -335,7 +373,7 @@
             }
 
             .nav-item {
-                padding: 0.75em 0.9em;
+                padding: 0.75em 1.05em;
             }
 
             .nav-item-title {
@@ -370,6 +408,10 @@
             .title-rule .rule-gem {
                 transform: rotate(45deg) !important;
             }
+
+            .reg-mark {
+                opacity: 0.4 !important;
+            }
         }
     </style>
 </head>
@@ -391,41 +433,36 @@
 
         <nav class="nav-grid" aria-label="site">
             <a href="/about/" class="nav-item">
-                <span class="nav-index">01</span><span class="nav-item-title">about</span>
+                <span class="nav-item-title">about</span>
             </a>
             <a href="/projects/" class="nav-item">
-                <span class="nav-index">02</span><span class="nav-item-title">projects</span>
+                <span class="nav-item-title">projects</span>
             </a>
             <a href="https://github.com/haruval" class="nav-item" target="_blank" rel="noopener">
-                <span class="nav-index">03</span><span class="nav-item-title">github</span>
+                <span class="nav-item-title">github</span>
             </a>
             <a href="https://x.com/haruval" class="nav-item" target="_blank" rel="noopener">
-                <span class="nav-index">04</span><span class="nav-item-title">twitter</span>
+                <span class="nav-item-title">twitter</span>
             </a>
             <a href="https://www.youtube.com/watch?v=VPymSJ36nC0" class="nav-item" target="_blank" rel="noopener">
-                <span class="nav-index">05</span><span class="nav-item-title">youtube</span>
+                <span class="nav-item-title">youtube</span>
             </a>
             <a href="https://www.twitch.tv/harumilktea" class="nav-item" target="_blank" rel="noopener">
-                <span class="nav-index">06</span><span class="nav-item-title">twitch</span>
+                <span class="nav-item-title">twitch</span>
             </a>
         </nav>
     </div>
 
-    <p class="scene-caption" id="sceneCaption">procedural forest &middot; three.js</p>
+    <p class="scene-caption">procedurally generated with threejs btw :3</p>
 
     <script type="module">
         import { mountForestScene } from '/fun/forest/js/main.js';
 
-        const forest = mountForestScene({
+        mountForestScene({
             className: 'homepage-forest-scene',
             zIndex: 1,
             maxPixelRatio: 1.25,
         });
-
-        const caption = document.getElementById('sceneCaption');
-        if (caption && forest && Number.isFinite(forest.seed)) {
-            caption.textContent = `procedural forest · seed ${forest.seed} · three.js`;
-        }
     </script>
 </body>
 </html>
