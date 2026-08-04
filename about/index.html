@@ -235,8 +235,7 @@
             animation: fadeInUp 0.9s ease 0.9s forwards;
         }
 
-        /* Content Sections: frosted paper panels with an ink hairline frame,
-           annotated like plates in a field notebook */
+        /* Content Sections: frosted paper panels with an ink hairline frame */
         .content-section {
             display: flex;
             align-items: center;
@@ -269,19 +268,6 @@
             box-shadow: 0 12px 32px rgba(48, 48, 48, 0.14);
         }
 
-        .panel-tag {
-            display: block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.58rem;
-            font-weight: 500;
-            letter-spacing: 0.26em;
-            text-transform: lowercase;
-            color: var(--ink-soft);
-            margin-bottom: 1.3rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 1px solid rgba(48, 48, 48, 0.25);
-        }
-
         .content-text p {
             font-size: clamp(0.95rem, 2.2vw, 1.04rem);
             font-weight: 400;
@@ -303,7 +289,7 @@
             letter-spacing: 0.01em;
         }
 
-        /* figures: images mounted on the same frosted paper, with plate captions */
+        /* figures: images mounted on the same frosted paper */
         .content-image {
             flex: 0 0 auto;
             width: min(420px, 100%);
@@ -324,18 +310,6 @@
             width: 100%;
             height: auto;
             border-radius: 1px;
-        }
-
-        .figure-caption {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 0.65rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.6rem;
-            font-weight: 500;
-            letter-spacing: 0.24em;
-            text-transform: lowercase;
-            color: var(--ink-soft);
         }
 
         @keyframes fadeInUp {
@@ -486,7 +460,6 @@
 
         <div class="content-section reverse" data-scroll>
             <div class="content-text">
-                <span class="panel-tag">field note 01</span>
                 <p><img src="/portfolio/images/phflag.png" alt="Philippine flag" style="display: block; width: 60px; height: 60px;"></p>
                 <p>
                      filipino-american. cu boulder computer science major + creative technology minor, spring '26 grad. 3.64 gpa. cinnamoroll fan.
@@ -496,13 +469,11 @@
                 <div class="figure-frame">
                     <img src="/portfolio/images/mbselfie.png" alt="selfie">
                 </div>
-                <p class="figure-caption"><span>fig. 01</span><span>selfie</span></p>
             </div>
         </div>
 
         <div class="content-section" data-scroll>
             <div class="content-text quote">
-                <span class="panel-tag">field note 02</span>
                 <p>
                     "Don't put your Valorant rank on your portfolio, that's weird and unprofessional" - some nerds
                 </p>
@@ -511,7 +482,6 @@
                 <div class="figure-frame">
                     <img src="/portfolio/images/radiant.png" alt="radiant">
                 </div>
-                <p class="figure-caption"><span>fig. 02</span><span>radiant</span></p>
             </div>
         </div>
     </div>
