@@ -85,6 +85,70 @@
             padding: 2rem;
         }
 
+        /* corner marks: a right angle broken open — two detached hairline
+           arms with the title rule's gem sitting where their vertex would
+           be. arms are drawn as background layers so one element carries
+           all three strokes. */
+        .reg-mark {
+            position: fixed;
+            width: 34px;
+            height: 34px;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0;
+            animation: settleFaint 1.2s ease 1.2s forwards;
+            background-image:
+                linear-gradient(var(--line), var(--line)),
+                linear-gradient(var(--line), var(--line));
+            background-size: 22px 1px, 1px 22px;
+            background-repeat: no-repeat;
+        }
+
+        .reg-mark::before {
+            content: '';
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border: 1px solid var(--line);
+            transform: rotate(45deg);
+        }
+
+        .reg-mark.tl {
+            top: 1.7rem;
+            left: 1.7rem;
+            background-position: right top, left bottom;
+        }
+
+        .reg-mark.tl::before { top: -2.5px; left: -2.5px; }
+
+        .reg-mark.tr {
+            top: 1.7rem;
+            right: 1.7rem;
+            background-position: left top, right bottom;
+        }
+
+        .reg-mark.tr::before { top: -2.5px; right: -2.5px; }
+
+        .reg-mark.bl {
+            bottom: 1.7rem;
+            left: 1.7rem;
+            background-position: right bottom, left top;
+        }
+
+        .reg-mark.bl::before { bottom: -2.5px; left: -2.5px; }
+
+        .reg-mark.br {
+            bottom: 1.7rem;
+            right: 1.7rem;
+            background-position: left bottom, right top;
+        }
+
+        .reg-mark.br::before { bottom: -2.5px; right: -2.5px; }
+
+        @keyframes settleFaint {
+            to { opacity: 0.4; }
+        }
+
         .back-button {
             position: relative;
             display: inline-flex;
@@ -536,6 +600,10 @@
                 padding: 1.5rem 1rem;
             }
 
+            .reg-mark {
+                display: none;
+            }
+
             .hero-section {
                 margin-bottom: 3rem;
             }
@@ -634,10 +702,19 @@
             .title-rule .rule-gem {
                 transform: rotate(45deg) !important;
             }
+
+            .reg-mark {
+                opacity: 0.4 !important;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="reg-mark tl" aria-hidden="true"></div>
+    <div class="reg-mark tr" aria-hidden="true"></div>
+    <div class="reg-mark bl" aria-hidden="true"></div>
+    <div class="reg-mark br" aria-hidden="true"></div>
+
     <!-- Navigation -->
     <div class="nav-container fade-in">
         <a href="/" class="back-button">
