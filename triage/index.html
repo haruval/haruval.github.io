@@ -490,8 +490,7 @@
             <h1>private triage agent</h1>
             <p class="tagline">
                 An open source privacy preserving email triage agent. A local model handles every email; and when harder reasoning is needed, sensitive content is
-                anonymized before being sent to Claude, then re-hydrated locally. Nothing is
-                ever sent without your approval.
+                anonymized before being sent to Claude, then re-hydrated locally.
             </p>
             <div class="chip-row">
                 <span class="chip chip-green">gemma3:27b via Ollama</span>
@@ -508,11 +507,11 @@
         <section class="card message-group">
             <h2>what it does</h2>
             <p>
-                The local model triages every email: category, summary, action items, and a
-                reply draft. When the local model is uncertain or the data is sensitive-looking (legal language,
-                negotiations, dollar figures) it gets <strong>anonymized</strong> before being sent to Claude
+                The local model triages every email: category, summary, action items, and startsa
+                reply draft. When the local model is uncertain or the data looks sensitive (legal,
+                financial, etc) it gets <strong>anonymized</strong> before being sent to Claude
                 for stronger processing, then <strong>re-hydrated</strong> locally, so Claude only
-                ever sees placeholder-substituted text. Approved drafts go right into your inbox's Drafts folder.
+                ever sees placeholder. Approved drafts are saved in your inbox's Drafts folder.
             </p>
         </section>
 
@@ -637,7 +636,7 @@ confirm timing.</pre>
             <p>
                 See the original message, triage
                 results, escalation decision, and an editable draft. Approve, edit, or
-                reject; approved drafts land in your inbox's drafts folder.
+                reject, and approved drafts land in your inbox's drafts folder.
             </p>
             <figure class="shot">
                 <img src="/triage/images/details.png" alt="Detail panel showing an email's original message, triage classification with confidence bar, routing decision, and draft." loading="lazy">
@@ -660,24 +659,19 @@ confirm timing.</pre>
             <div class="kv">
                 <span class="k">local api</span>
                 <p>
-                    Any web page can probe local ports, so every API request gets a per-run token the Vite proxy injects, plus
-                    strict <code>Host</code> and <code>Origin</code> checks; the browser never
-                    sees the token, the anonymization mapping, or the IMAP password.
+                    Any web page can probe local ports, so each run gets a fresh token the Vite proxy attaches to every request, and the server checks that the the <code>Host</code> and <code>Origin</code> headers match the expected values. 
+                    The page itself never holds the token or your IMAP password.
                 </p>
                 <span class="k">imap</span>
                 <p>
                     Read-only: folders open with
                     <code>readonly=True</code> and bodies fetch via <code>BODY.PEEK[]</code>,
-                    so nothing gets marked read, deleted, or sent. The one write is the
+                    so nothing gets marked as read, deleted, or sent. The one write is the
                     APPEND of an approved reply into your Drafts folder.
                 </p>
                 <span class="k">supply chain</span>
                 <p>
-                    Dependencies install from a lockfile with exact pins, the NER wheel is
-                    pinned to its SHA-256, and a package-age check fails anything published
-                    less than 14 days ago. The coref model is locked to an immutable commit
-                    with per-file hashes and hash-checked before every load; mail processing
-                    never downloads models.
+                    Everything is pinned. Dependencies come from a lockfile with specific versions. NER wheel is pinned to its SHA-256. Package-age check fails anything published less than 14 days ago. 
                 </p>
             </div>
         </section>
