@@ -1,7 +1,7 @@
 export const IS_MOBILE = window.innerWidth < 720;
 
-export const BG_COLOR = 0xd9d9d9;   // flat paper grey, no fog, no gradients
-export const INK_COLOR = 0x303030;  // single pen weight
+export const BG_COLOR = 0x0000ff;   // portfolio blue
+export const INK_COLOR = 0xffffff;  // white pen line
 
 export const DEFAULT_SEED = 20260711;
 

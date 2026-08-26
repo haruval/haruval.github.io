@@ -3,6 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Selected projects by Ari Gladstone across computer science and creative technology.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Ari Gladstone - Projects">
+    <meta property="og:description" content="Selected projects by Ari Gladstone across computer science and creative technology.">
+    <meta property="og:url" content="https://1haru.com/projects/">
+    <meta property="og:image" content="https://1haru.com/og.png">
+    <meta property="og:image:alt" content="Ari Gladstone — cs + creative technology">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ari Gladstone - Projects">
+    <meta name="twitter:description" content="Selected projects by Ari Gladstone across computer science and creative technology.">
+    <meta name="twitter:image" content="https://1haru.com/og.png">
     <title>Ari Gladstone - Projects</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
@@ -708,44 +719,26 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/portfolio/css/site.css">
 </head>
-<body>
-    <div class="reg-mark tl" aria-hidden="true"></div>
-    <div class="reg-mark tr" aria-hidden="true"></div>
-    <div class="reg-mark bl" aria-hidden="true"></div>
-    <div class="reg-mark br" aria-hidden="true"></div>
+<body class="site-page projects-page subpage-page">
+    <div class="site-border" aria-hidden="true"></div>
+    <div class="site-shell">
+        <header class="subpage-header">
+            <a class="back-link" href="/">&larr; back</a>
+        </header>
 
-    <!-- Navigation -->
-    <div class="nav-container fade-in">
-        <a href="/" class="back-button">
-            <span class="back-arrow">&larr;</span><span>back</span>
-        </a>
-    </div>
-
-    <!-- Main Content -->
-    <div class="container">
-        <div class="hero-section">
-            <h1 class="main-title">projects</h1>
-            <div class="title-rule" aria-hidden="true">
-                <span class="rule-line"></span><span class="rule-gem"></span><span class="rule-line"></span>
-            </div>
-        </div>
-
-        <section id="projects">
-            <!-- Projects will be populated by JavaScript -->
-        </section>
+        <main>
+            <section class="page-content projects-content">
+                <h2 class="page-title">projects</h2>
+                <div id="projects">
+                    <!-- Projects will be populated by JavaScript -->
+                </div>
+            </section>
+        </main>
     </div>
 
     <script src="/portfolio/js/portfolio.js"></script>
-    <script type="module">
-        import { mountForestScene } from '/fun/forest/js/main.js';
-
-        mountForestScene({
-            className: 'projects-forest-scene',
-            zIndex: 1,
-            maxPixelRatio: 1.25,
-        });
-    </script>
     <script>
         // Intersection Observer for scroll animations
         const observerOptions = {

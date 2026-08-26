@@ -28,7 +28,7 @@ let animationFrame = null;
 let isDestroyed = false;
 
 if (settings.className) {
-    canvas.className = settings.className;
+    canvas.classList.add(settings.className);
 }
 
 if (ownsCanvas) {
@@ -217,23 +217,19 @@ extendPath();
 
 // ---- input / resize -------------------------------------------------------
 
-const mouse = new THREE.Vector2();
-const targetMouse = new THREE.Vector2();
-
-function onPointerMove(event) {
-    targetMouse.set(
-        (event.clientX / window.innerWidth - 0.5) * 2,
-        (event.clientY / window.innerHeight - 0.5) * 2,
-    );
-}
-window.addEventListener('pointermove', onPointerMove, { passive: true });
-
 function onResize() {
-    camera.aspect = window.innerWidth / Math.max(window.innerHeight, 1);
+    const bounds = canvas.getBoundingClientRect();
+    const width = Math.max(Math.round(bounds.width), 1);
+    const height = Math.max(Math.round(bounds.height), 1);
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.setSize(width, height, false);
 }
 window.addEventListener('resize', onResize);
+const resizeObserver = typeof ResizeObserver === 'undefined'
+    ? null
+    : new ResizeObserver(onResize);
+if (resizeObserver) resizeObserver.observe(canvas);
 onResize();
 
 // ---- animation --------------------------------------------------------------
@@ -275,18 +271,15 @@ function animate() {
 
     // footstep bob and a slow lateral sway
     bobPhase += dt * 10.7;
-    const sway = Math.sin(bobPhase * 0.5) * 0.06 + mouse.x * 0.35;
+    const sway = Math.sin(bobPhase * 0.5) * 0.06;
     camera.position.copy(camPos).addScaledVector(camPerp, sway);
-    camera.position.y = EYE + Math.sin(bobPhase) * 0.035 - mouse.y * 0.18;
-    aheadPos.y = EYE - 0.12 - mouse.y * 0.8;
-    aheadPos.addScaledVector(camPerp, mouse.x * 2.2);
+    camera.position.y = EYE + Math.sin(bobPhase) * 0.035;
+    aheadPos.y = EYE - 0.12;
     camera.lookAt(aheadPos);
     // lean gently into turns
     const cross = camTan.z * aheadTan.x - camTan.x * aheadTan.z;
     roll += (THREE.MathUtils.clamp(cross * 0.35, -0.035, 0.035) - roll) * 0.05;
     camera.rotation.z += roll;
-
-    mouse.lerp(targetMouse, 0.04);
 
     renderer.render(scene, camera);
 }
@@ -303,8 +296,8 @@ function destroy() {
     }
 
     window.removeEventListener('resize', onResize);
-    window.removeEventListener('pointermove', onPointerMove);
     window.removeEventListener('pagehide', destroy);
+    if (resizeObserver) resizeObserver.disconnect();
 
     for (const p of pieces) {
         scene.remove(p.chunk.group);
