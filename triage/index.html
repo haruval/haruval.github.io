@@ -57,6 +57,7 @@
             --app-topbar: #f4effa;
             --app-detail: #fffefe;
             --app-group-message: #f7f0fa;
+            --app-group-inbox: #e2f3f7;
             --app-group-triage: #eaf6ee;
             --app-group-routing: #fff3df;
             --app-group-draft: #eaf3ff;
@@ -106,6 +107,7 @@
                 --app-topbar: #292437;
                 --app-detail: #1c202c;
                 --app-group-message: #30283a;
+                --app-group-inbox: #1b323a;
                 --app-group-triage: #203329;
                 --app-group-routing: #392f20;
                 --app-group-draft: #202d42;
@@ -271,6 +273,7 @@
         }
 
         .message-group  { background: var(--app-group-message); }
+        .inbox-group    { background: var(--app-group-inbox); }
         .triage-group   { background: var(--app-group-triage); }
         .routing-group  { background: var(--app-group-routing); }
         .draft-group    { background: var(--app-group-draft); }
@@ -314,6 +317,10 @@
 
         .shot-grid-uneven {
             grid-template-columns: 3fr 2fr;
+        }
+
+        .shot-tall {
+            max-width: 430px;
         }
 
         /* ---- anonymization layers ---------------------------------------- */
@@ -511,7 +518,7 @@
                 reply draft. When the local model is uncertain or the data looks sensitive (legal,
                 financial, etc) it gets <strong>anonymized</strong> before being sent to Claude
                 for stronger processing, then <strong>re-hydrated</strong> locally, so Claude only
-                ever sees placeholder. Approved drafts are saved in your inbox's Drafts folder.
+                ever sees placeholder text. Approved drafts are saved in your inbox's Drafts folder.
             </p>
         </section>
 
@@ -642,16 +649,18 @@ confirm timing.</pre>
                 <img src="/triage/images/details.png" alt="Detail panel showing an email's original message, triage classification with confidence bar, routing decision, and draft." loading="lazy">
                 <figcaption>triage, routing, and escalation detail</figcaption>
             </figure>
-            <div class="shot-grid shot-grid-uneven">
-                <figure class="shot">
-                    <img src="/triage/images/draft.png" alt="An editable Claude-drafted reply with Approve, Approve edit, and Reject buttons." loading="lazy">
-                    <figcaption>editable drafts: approve, edit, or reject</figcaption>
-                </figure>
-                <figure class="shot">
-                    <img src="/triage/images/imap2.png" alt="The Connect IMAP form for fetching unread mail read-only with an app-specific password." loading="lazy">
-                    <figcaption>connect an inbox over read-only IMAP, or upload an .mbox export</figcaption>
-                </figure>
-            </div>
+            <figure class="shot">
+                <img src="/triage/images/draft.png" alt="An editable Claude-drafted reply with Approve, Approve edit, and Reject buttons." loading="lazy">
+                <figcaption>editable drafts: approve, edit, or reject</figcaption>
+            </figure>
+        </section>
+
+        <section class="card inbox-group">
+            <h2>connect your inbox</h2>
+            <figure class="shot shot-tall">
+                <img src="/triage/images/imap2.png" alt="The Connect IMAP form for fetching unread mail read-only with an app-specific password." loading="lazy">
+                <figcaption>connect an inbox over read-only IMAP, or upload an .mbox export</figcaption>
+            </figure>
         </section>
 
         <section class="card panel-group">
