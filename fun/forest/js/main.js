@@ -1,6 +1,6 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
-import { IS_MOBILE, BG_COLOR, resolveSeed, makeRng, hashSeed } from './utils.js';
-import { makeChunk, makeStraightFrame, makeArcFrame } from './builders.js';
+import { IS_MOBILE, BG_COLOR, INK_COLOR, resolveSeed, makeRng, hashSeed } from './utils.js';
+import { makeChunk, makeStraightFrame, makeArcFrame, inkMat } from './builders.js';
 
 const SPEED = 1.4;                        // slow walking pace, units/sec
 const EYE = 1.7;
@@ -16,6 +16,11 @@ const DEFAULT_OPTIONS = {
     zIndex: 1,
     maxPixelRatio: undefined,
     seed: undefined,
+    // dual-tone mode: a transparent canvas whose line color flips inside a
+    // tracked DOM element — the page's own colors become the scene's palette
+    transparent: false,
+    inkColor: undefined,
+    insetPass: null,  // { element, inkColor }
 };
 
 export function mountForestScene(options = {}) {
@@ -51,6 +56,7 @@ try {
         canvas,
         antialias: true,
         powerPreference: 'high-performance',
+        alpha: settings.transparent,
     });
 } catch (error) {
     if (fallback) {
@@ -61,7 +67,14 @@ try {
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, settings.maxPixelRatio || (IS_MOBILE ? 1.5 : 2)));
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(BG_COLOR);
+if (!settings.transparent) {
+    scene.background = new THREE.Color(BG_COLOR);
+}
+
+const baseInk = new THREE.Color(settings.inkColor !== undefined ? settings.inkColor : INK_COLOR);
+const insetPass = settings.insetPass && settings.insetPass.element ? settings.insetPass : null;
+const insetInk = insetPass ? new THREE.Color(insetPass.inkColor !== undefined ? insetPass.inkColor : INK_COLOR) : null;
+inkMat.color.copy(baseInk);
 
 const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 150);
 
@@ -281,7 +294,29 @@ function animate() {
     roll += (THREE.MathUtils.clamp(cross * 0.35, -0.035, 0.035) - roll) * 0.05;
     camera.rotation.z += roll;
 
-    renderer.render(scene, camera);
+    if (!insetPass) {
+        renderer.render(scene, camera);
+    } else {
+        // pass one: the whole viewport in the base ink
+        inkMat.color.copy(baseInk);
+        renderer.setScissorTest(false);
+        renderer.render(scene, camera);
+
+        // pass two: re-render inside the tracked element in the inset ink;
+        // autoclear wipes the scissored region back to transparent first, so
+        // whatever the page paints behind it becomes the ground color
+        const win = insetPass.element.getBoundingClientRect();
+        const view = canvas.getBoundingClientRect();
+        const w = Math.max(0, Math.min(win.right, view.right) - Math.max(win.left, view.left));
+        const h = Math.max(0, Math.min(win.bottom, view.bottom) - Math.max(win.top, view.top));
+        if (w > 0 && h > 0) {
+            renderer.setScissorTest(true);
+            renderer.setScissor(win.left - view.left, view.bottom - win.bottom, win.width, win.height);
+            inkMat.color.copy(insetInk);
+            renderer.render(scene, camera);
+            renderer.setScissorTest(false);
+        }
+    }
 }
 
 animate();

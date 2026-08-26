@@ -724,8 +724,7 @@
 <body class="site-page projects-page subpage-page">
     <div class="site-border" aria-hidden="true"></div>
     <div class="site-shell">
-        <header class="subpage-forest-header">
-            <canvas class="forest-canvas" id="projects-forest-scene" aria-hidden="true"></canvas>
+        <header class="subpage-forest-header" id="projects-forest-window">
             <a class="back-link" href="/">&larr; back</a>
             <div class="subpage-heading">
                 <h1 class="page-title">projects</h1>
@@ -741,6 +740,8 @@
         </main>
     </div>
 
+    <canvas class="forest-canvas-page" id="projects-forest-scene" aria-hidden="true"></canvas>
+
     <script src="/portfolio/js/portfolio.js"></script>
     <script type="module">
         import { mountForestScene } from '/fun/forest/js/main.js';
@@ -748,6 +749,12 @@
         mountForestScene({
             canvas: document.getElementById('projects-forest-scene'),
             maxPixelRatio: 1.5,
+            transparent: true,
+            inkColor: 0x8c8cff,
+            insetPass: {
+                element: document.getElementById('projects-forest-window'),
+                inkColor: 0xffffff,
+            },
         });
     </script>
     <script>

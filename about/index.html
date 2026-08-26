@@ -24,8 +24,7 @@
 <body class="site-page about-page subpage-page">
     <div class="site-border" aria-hidden="true"></div>
     <div class="site-shell">
-        <header class="subpage-forest-header">
-            <canvas class="forest-canvas" id="about-forest-scene" aria-hidden="true"></canvas>
+        <header class="subpage-forest-header" id="about-forest-window">
             <a class="back-link" href="/">&larr; back</a>
             <div class="subpage-heading">
                 <h1 class="page-title">hi, i'm ari</h1>
@@ -58,12 +57,20 @@
         </main>
     </div>
 
+    <canvas class="forest-canvas-page" id="about-forest-scene" aria-hidden="true"></canvas>
+
     <script type="module">
         import { mountForestScene } from '/fun/forest/js/main.js';
 
         mountForestScene({
             canvas: document.getElementById('about-forest-scene'),
             maxPixelRatio: 1.5,
+            transparent: true,
+            inkColor: 0x8c8cff,
+            insetPass: {
+                element: document.getElementById('about-forest-window'),
+                inkColor: 0xffffff,
+            },
         });
     </script>
 </body>

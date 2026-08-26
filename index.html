@@ -42,12 +42,12 @@
                     </nav>
                 </div>
 
-                <figure class="forest-viewport" aria-label="Procedurally generated three.js forest">
-                    <canvas class="forest-canvas" id="forest-scene" aria-hidden="true"></canvas>
-                </figure>
+                <figure class="forest-viewport" id="forest-window" aria-label="Procedurally generated three.js forest"></figure>
             </section>
         </main>
     </div>
+
+    <canvas class="forest-canvas-page" id="forest-scene" aria-hidden="true"></canvas>
 
     <script type="module">
         import { mountForestScene } from '/fun/forest/js/main.js';
@@ -55,6 +55,12 @@
         mountForestScene({
             canvas: document.getElementById('forest-scene'),
             maxPixelRatio: 1.5,
+            transparent: true,
+            inkColor: 0x8c8cff,
+            insetPass: {
+                element: document.getElementById('forest-window'),
+                inkColor: 0xffffff,
+            },
         });
     </script>
 </body>
