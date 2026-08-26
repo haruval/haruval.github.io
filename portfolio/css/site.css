@@ -262,7 +262,7 @@ body.site-page {
 .about-section {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(260px, 0.78fr);
-    gap: clamp(2rem, 5vw, 5rem);
+    gap: clamp(1rem, 2.2vw, 2rem);
     align-items: center;
     margin-bottom: clamp(4.5rem, 9vw, 9rem);
 }
@@ -279,9 +279,40 @@ body.site-page {
     order: 1;
 }
 
+.about-page .page-content {
+    z-index: auto;
+}
+
+.about-tile,
+.about-valorant-banner {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--blue);
+}
+
+.about-tile {
+    aspect-ratio: 1;
+}
+
+/* The blue tile stays below the forest canvas so its lines invert to white;
+   the highlighted content itself remains crisp above the drawing. */
+.about-tile > *,
+.about-valorant-banner > * {
+    position: relative;
+    z-index: 600;
+}
+
+.about-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(1.5rem, 4.5vw, 4rem);
+}
+
 .about-copy p {
     margin: 0 0 1.5rem;
-    color: var(--blue);
+    color: var(--white);
     font-size: clamp(1.05rem, 2.2vw, 1.65rem);
     font-weight: 700;
     letter-spacing: -0.035em;
@@ -294,24 +325,44 @@ body.site-page {
 
 .about-flag {
     display: block;
-    width: 60px;
-    height: 60px;
+    width: clamp(52px, 7vw, 78px);
+    height: auto;
     margin-bottom: 1.5rem;
+}
+
+.about-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 3vw, 2.5rem);
 }
 
 .about-image img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: contain;
 }
 
-.about-image-pair {
+.about-section.about-valorant {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2.2vw, 2rem);
+}
+
+.about-valorant-banner {
+    width: 100%;
+    min-height: clamp(150px, 19vw, 230px);
+}
+
+.about-valorant-images {
     display: grid;
-    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 2.2vw, 2rem);
 }
 
 .projects-content {
+    z-index: 600;
     padding-bottom: clamp(4rem, 9vw, 9rem);
 }
 
@@ -364,6 +415,16 @@ body.site-page {
         width: min(100%, 540px);
         margin: 0 auto;
     }
+
+    .about-tile {
+        width: min(100%, 540px);
+        justify-self: center;
+    }
+
+    .about-valorant-images .about-image {
+        width: 100%;
+        margin: 0;
+    }
 }
 
 @media (max-width: 520px) {
@@ -390,6 +451,10 @@ body.site-page {
 
     .projects-page .subpage-forest-header {
         height: clamp(260px, 40svh, 360px);
+    }
+
+    .about-valorant-images {
+        grid-template-columns: 1fr;
     }
 }
 

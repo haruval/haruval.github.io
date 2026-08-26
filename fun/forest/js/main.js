@@ -20,7 +20,7 @@ const DEFAULT_OPTIONS = {
     // tracked DOM element — the page's own colors become the scene's palette
     transparent: false,
     inkColor: undefined,
-    insetPass: null,  // { element, inkColor }
+    insetPass: null,  // { element | elements, inkColor }
 };
 
 export function mountForestScene(options = {}) {
@@ -72,8 +72,12 @@ if (!settings.transparent) {
 }
 
 const baseInk = new THREE.Color(settings.inkColor !== undefined ? settings.inkColor : INK_COLOR);
-const insetPass = settings.insetPass && settings.insetPass.element ? settings.insetPass : null;
-const insetInk = insetPass ? new THREE.Color(insetPass.inkColor !== undefined ? insetPass.inkColor : INK_COLOR) : null;
+const insetElements = settings.insetPass
+    ? Array.from(settings.insetPass.elements || (settings.insetPass.element ? [settings.insetPass.element] : []))
+    : [];
+const insetInk = insetElements.length
+    ? new THREE.Color(settings.insetPass.inkColor !== undefined ? settings.insetPass.inkColor : INK_COLOR)
+    : null;
 inkMat.color.copy(baseInk);
 
 const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 150);
@@ -294,7 +298,7 @@ function animate() {
     roll += (THREE.MathUtils.clamp(cross * 0.35, -0.035, 0.035) - roll) * 0.05;
     camera.rotation.z += roll;
 
-    if (!insetPass) {
+    if (!insetElements.length) {
         renderer.render(scene, camera);
     } else {
         // pass one: the whole viewport in the base ink
@@ -302,20 +306,28 @@ function animate() {
         renderer.setScissorTest(false);
         renderer.render(scene, camera);
 
-        // pass two: re-render inside the tracked element in the inset ink;
-        // autoclear wipes the scissored region back to transparent first, so
+        // pass two: re-render inside each tracked element in the inset ink;
+        // autoclear wipes each scissored region back to transparent first, so
         // whatever the page paints behind it becomes the ground color
-        const win = insetPass.element.getBoundingClientRect();
         const view = canvas.getBoundingClientRect();
-        const w = Math.max(0, Math.min(win.right, view.right) - Math.max(win.left, view.left));
-        const h = Math.max(0, Math.min(win.bottom, view.bottom) - Math.max(win.top, view.top));
-        if (w > 0 && h > 0) {
+        for (const element of insetElements) {
+            if (!element.isConnected) continue;
+
+            const win = element.getBoundingClientRect();
+            const left = Math.max(win.left, view.left);
+            const right = Math.min(win.right, view.right);
+            const top = Math.max(win.top, view.top);
+            const bottom = Math.min(win.bottom, view.bottom);
+            const w = Math.max(0, right - left);
+            const h = Math.max(0, bottom - top);
+            if (w <= 0 || h <= 0) continue;
+
             renderer.setScissorTest(true);
-            renderer.setScissor(win.left - view.left, view.bottom - win.bottom, win.width, win.height);
+            renderer.setScissor(left - view.left, view.bottom - bottom, w, h);
             inkMat.color.copy(insetInk);
             renderer.render(scene, camera);
-            renderer.setScissorTest(false);
         }
+        renderer.setScissorTest(false);
     }
 }
 
