@@ -24,17 +24,17 @@
 <body class="site-page about-page subpage-page">
     <div class="site-border" aria-hidden="true"></div>
     <div class="site-shell">
-        <header class="subpage-header">
+        <header class="subpage-forest-header">
+            <canvas class="forest-canvas" id="about-forest-scene" aria-hidden="true"></canvas>
             <a class="back-link" href="/">&larr; back</a>
+            <div class="subpage-heading">
+                <h1 class="page-title">hi, i'm ari</h1>
+                <p class="about-subtitle">or "haru" on the internet</p>
+            </div>
         </header>
 
         <main>
             <section class="page-content about-content">
-                <div class="about-intro">
-                    <h2 class="page-title">hi, i'm ari</h2>
-                    <p class="about-subtitle">or "haru" on the internet</p>
-                </div>
-
                 <div class="about-section reverse">
                     <div class="about-copy">
                         <img class="about-flag" src="/portfolio/images/phflag.png" alt="Philippine flag">
@@ -46,16 +46,25 @@
                 </div>
 
                 <div class="about-section">
-                    <div class="about-copy quote">
-                        <p>"Don't put your Valorant rank on your portfolio, that's weird and unprofessional" - some nerds</p>
+                    <div class="about-copy">
+                        <p>Valorant: 5x radiant, #123 peak, 600rr peak.</p>
                     </div>
-                    <div class="about-image">
-                        <img src="/portfolio/images/radiant.png" alt="radiant">
+                    <div class="about-image about-image-pair">
+                        <img src="/portfolio/images/radiant.png" alt="Valorant Radiant rank">
+                        <img src="/portfolio/images/radiant2.png" alt="Valorant Radiant leaderboard peak">
                     </div>
                 </div>
             </section>
         </main>
     </div>
 
+    <script type="module">
+        import { mountForestScene } from '/fun/forest/js/main.js';
+
+        mountForestScene({
+            canvas: document.getElementById('about-forest-scene'),
+            maxPixelRatio: 1.5,
+        });
+    </script>
 </body>
 </html>

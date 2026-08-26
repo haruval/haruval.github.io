@@ -43,13 +43,6 @@ body.site-page {
     padding: var(--frame);
 }
 
-.subpage-header {
-    position: absolute;
-    top: calc(var(--frame) + var(--gutter));
-    left: calc(var(--frame) + var(--gutter));
-    z-index: 20;
-}
-
 .portfolio-masthead {
     position: relative;
     display: grid;
@@ -58,6 +51,10 @@ body.site-page {
     min-height: calc(100svh - (var(--frame) * 2));
     padding: var(--gutter);
     isolation: isolate;
+}
+
+.home-page .portfolio-masthead {
+    grid-template-columns: minmax(0, 1.05fr) minmax(440px, 1.45fr);
 }
 
 .identity-panel {
@@ -75,12 +72,20 @@ body.site-page {
     font-family: var(--sans);
     font-size: clamp(4.5rem, 10vw, 11rem);
     font-weight: 900;
-    letter-spacing: -0.095em;
-    line-height: 0.76;
+    letter-spacing: -0.055em;
+    line-height: 0.88;
 }
 
 .main-name span {
     display: block;
+}
+
+.main-name span + span {
+    margin-top: 0.05em;
+}
+
+.home-page .main-name {
+    font-size: clamp(4rem, 8vw, 9.5rem);
 }
 
 .tagline {
@@ -145,6 +150,11 @@ body.site-page {
     background: var(--blue);
 }
 
+.home-page .forest-viewport {
+    height: auto;
+    aspect-ratio: 4 / 3;
+}
+
 .forest-canvas {
     position: absolute;
     inset: 0;
@@ -161,10 +171,6 @@ body.site-page {
     padding: clamp(3.5rem, 8vw, 8rem) 0;
 }
 
-.subpage-page .page-content {
-    padding-top: clamp(7.5rem, 11vw, 10rem);
-}
-
 .page-title {
     margin: 0 0 clamp(2.5rem, 6vw, 6rem);
     color: var(--blue);
@@ -174,13 +180,66 @@ body.site-page {
     line-height: 0.8;
 }
 
-.about-intro {
-    margin-bottom: clamp(4rem, 8vw, 8rem);
-    text-align: center;
+.subpage-forest-header {
+    position: relative;
+    width: 100%;
+    height: clamp(360px, 54svh, 620px);
+    overflow: hidden;
+    background: var(--blue);
 }
 
-.about-intro .page-title {
-    margin-bottom: 1.1rem;
+.projects-page .subpage-forest-header {
+    height: clamp(310px, 44svh, 520px);
+}
+
+.subpage-forest-header .forest-canvas {
+    z-index: 1;
+}
+
+.subpage-forest-header .back-link {
+    position: absolute;
+    top: var(--gutter);
+    left: var(--gutter);
+    z-index: 3;
+    border-color: var(--white);
+    color: var(--white);
+}
+
+.subpage-forest-header .back-link:hover,
+.subpage-forest-header .back-link:focus-visible {
+    background: var(--white);
+    color: var(--blue);
+}
+
+.subpage-forest-header .back-link:focus-visible {
+    outline-color: var(--white);
+}
+
+.subpage-heading {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: clamp(5rem, 10vw, 8rem) var(--gutter) clamp(2.5rem, 6vw, 5rem);
+    color: var(--white);
+    text-align: center;
+    pointer-events: none;
+}
+
+.subpage-heading .page-title {
+    margin-bottom: 1rem;
+    color: var(--white);
+}
+
+.subpage-heading .about-subtitle {
+    color: var(--white);
+}
+
+.subpage-page .page-content {
+    padding-top: clamp(3.5rem, 7vw, 7rem);
 }
 
 .about-subtitle {
@@ -225,11 +284,6 @@ body.site-page {
     margin-bottom: 0;
 }
 
-.about-copy.quote p {
-    font-size: clamp(1.55rem, 3.5vw, 3.4rem);
-    line-height: 1.08;
-}
-
 .about-flag {
     display: block;
     width: 60px;
@@ -242,6 +296,11 @@ body.site-page {
     width: 100%;
     height: auto;
     object-fit: contain;
+}
+
+.about-image-pair {
+    display: grid;
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
 }
 
 .projects-content {
@@ -259,6 +318,10 @@ body.site-page {
         min-height: auto;
     }
 
+    .home-page .portfolio-masthead {
+        grid-template-columns: 1fr;
+    }
+
     .identity-panel {
         min-height: 62svh;
         padding: clamp(1rem, 5vw, 2rem);
@@ -273,6 +336,10 @@ body.site-page {
         height: auto;
         aspect-ratio: 4 / 3;
         justify-self: center;
+    }
+
+    .home-page .forest-viewport {
+        width: min(100%, 800px);
     }
 
     .about-section,
@@ -307,6 +374,14 @@ body.site-page {
 
     .site-nav a {
         padding: 0.6rem 0.75rem;
+    }
+
+    .subpage-forest-header {
+        height: clamp(300px, 48svh, 430px);
+    }
+
+    .projects-page .subpage-forest-header {
+        height: clamp(260px, 40svh, 360px);
     }
 }
 
