@@ -205,7 +205,7 @@ body.site-page {
     border: 0;
     background: var(--button-invert-source);
     color: var(--blue);
-    font-size: clamp(0.85rem, 1.35vw, 1.1rem);
+    font-size: clamp(1rem, 1.65vw, 1.35rem);
     transition:
         background-color 160ms ease,
         color 160ms ease,
