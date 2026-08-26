@@ -50,7 +50,6 @@ body.site-page {
     gap: var(--gutter);
     min-height: calc(100svh - (var(--frame) * 2));
     padding: var(--gutter);
-    isolation: isolate;
 }
 
 .home-page .portfolio-masthead {
@@ -65,6 +64,22 @@ body.site-page {
     justify-content: center;
     min-width: 0;
     padding: clamp(1rem, 4vw, 4rem);
+}
+
+.home-page .identity-panel {
+    z-index: 600;
+}
+
+.home-page .main-name,
+.home-page .tagline {
+    color: transparent;
+    background: linear-gradient(
+        to right,
+        var(--blue) 0 var(--forest-text-cut, 100%),
+        var(--white) var(--forest-text-cut, 100%) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
 }
 
 .main-name {
@@ -151,8 +166,65 @@ body.site-page {
 }
 
 .home-page .forest-viewport {
+    width: min(
+        93.75%,
+        calc(100svh - (var(--frame) * 2) - (var(--gutter) * 2))
+    );
     height: auto;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1;
+    justify-self: end;
+}
+
+.forest-nav {
+    /* Difference-blending this source over #0000ff resolves to #71e2f4. */
+    --button-invert-source: #71e20b;
+    /* Over #0000ff, these resolve to dark blue and white after blending. */
+    --button-hover-source: #000099;
+    --button-hover-source-soft: rgba(0, 0, 153, 0.45);
+    --button-hover-text-source: #ffff00;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 700;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, minmax(0, 1fr));
+    gap: 0;
+    width: 54%;
+    aspect-ratio: 1;
+    margin: 0;
+    mix-blend-mode: difference;
+    transform: translate(-50%, -50%);
+}
+
+.forest-nav a {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.85rem, 1.8vw, 1.25rem);
+    border: 0;
+    background: var(--button-invert-source);
+    color: var(--blue);
+    font-size: clamp(0.85rem, 1.35vw, 1.1rem);
+    transition:
+        background-color 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.forest-nav a:hover,
+.forest-nav a:focus-visible {
+    background: var(--button-hover-source);
+    color: var(--button-hover-text-source);
+    box-shadow:
+        4px 4px 0 var(--button-hover-source),
+        8px 8px 0 var(--button-hover-source-soft);
+    transform: translate(-4px, -4px);
+}
+
+.forest-nav a:focus-visible {
+    outline-color: var(--button-hover-source);
 }
 
 .forest-canvas {
@@ -361,6 +433,11 @@ body.site-page {
     gap: clamp(1rem, 2.2vw, 2rem);
 }
 
+.about-valorant-images .about-image-featured {
+    grid-column: 1 / -1;
+    aspect-ratio: 2 / 1;
+}
+
 .projects-content {
     z-index: 600;
     padding-bottom: clamp(4rem, 9vw, 9rem);
@@ -399,6 +476,10 @@ body.site-page {
 
     .home-page .forest-viewport {
         width: min(100%, 800px);
+    }
+
+    .forest-nav {
+        width: 72%;
     }
 
     .about-section,
@@ -445,16 +526,24 @@ body.site-page {
         padding: 0.6rem 0.75rem;
     }
 
+    .home-page .forest-viewport {
+        aspect-ratio: 1;
+    }
+
+    .forest-nav {
+        width: 84%;
+    }
+
+    .forest-nav a {
+        padding: 0.5rem 0.85rem;
+    }
+
     .subpage-forest-header {
         height: clamp(300px, 48svh, 430px);
     }
 
     .projects-page .subpage-forest-header {
         height: clamp(260px, 40svh, 360px);
-    }
-
-    .about-valorant-images {
-        grid-template-columns: 1fr;
     }
 }
 

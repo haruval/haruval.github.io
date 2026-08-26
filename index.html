@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/portfolio/css/site.css">
+    <link rel="stylesheet" href="/portfolio/css/site.css?v=20260826-11">
 </head>
 <body class="site-page home-page">
     <div class="site-border" aria-hidden="true"></div>
@@ -32,7 +32,10 @@
                         <span>Gladstone</span>
                     </h1>
                     <p class="tagline">cs + creative technology @ cu boulder spring 2026 grad</p>
-                    <nav class="site-nav" aria-label="site">
+                </div>
+
+                <figure class="forest-viewport" id="forest-window" aria-label="Procedurally generated three.js forest">
+                    <nav class="site-nav forest-nav" aria-label="site">
                         <a href="/about/">about</a>
                         <a href="/projects/">projects</a>
                         <a href="https://github.com/haruval" target="_blank" rel="noopener">github</a>
@@ -40,9 +43,7 @@
                         <a href="https://www.youtube.com/watch?v=VPymSJ36nC0" target="_blank" rel="noopener">youtube</a>
                         <a href="https://www.twitch.tv/harumilktea" target="_blank" rel="noopener">twitch</a>
                     </nav>
-                </div>
-
-                <figure class="forest-viewport" id="forest-window" aria-label="Procedurally generated three.js forest"></figure>
+                </figure>
             </section>
         </main>
     </div>
@@ -52,13 +53,36 @@
     <script type="module">
         import { mountForestScene } from '/fun/forest/js/main.js';
 
+        const forestWindow = document.getElementById('forest-window');
+        const overlapText = document.querySelectorAll('.main-name, .tagline');
+
+        function updateTextInversion() {
+            const forestRect = forestWindow.getBoundingClientRect();
+
+            for (const element of overlapText) {
+                const textRect = element.getBoundingClientRect();
+                const overlapsVertically = forestRect.bottom > textRect.top && forestRect.top < textRect.bottom;
+                const cut = overlapsVertically
+                    ? Math.min(Math.max(forestRect.left - textRect.left, 0), textRect.width)
+                    : textRect.width;
+
+                element.style.setProperty('--forest-text-cut', `${cut}px`);
+            }
+        }
+
+        const textInversionObserver = new ResizeObserver(updateTextInversion);
+        textInversionObserver.observe(forestWindow);
+        for (const element of overlapText) textInversionObserver.observe(element);
+        window.addEventListener('resize', updateTextInversion);
+        requestAnimationFrame(updateTextInversion);
+
         mountForestScene({
             canvas: document.getElementById('forest-scene'),
             maxPixelRatio: 1.5,
             transparent: true,
             inkColor: 0x8c8cff,
             insetPass: {
-                element: document.getElementById('forest-window'),
+                element: forestWindow,
                 inkColor: 0xffffff,
             },
         });
