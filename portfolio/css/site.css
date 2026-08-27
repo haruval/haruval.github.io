@@ -411,7 +411,7 @@ body.site-page {
     margin: 0 0 1.5rem;
     color: var(--white);
     font-family: var(--serif);
-    font-size: clamp(0.95rem, 1.7vw, 1.3rem);
+    font-size: clamp(1.15rem, 2.1vw, 1.6rem);
     font-weight: 400;
     letter-spacing: 0.08em;
     line-height: 1.9;
@@ -464,6 +464,11 @@ body.site-page {
     aspect-ratio: 2 / 1;
     /* keep the screenshot clear of the tile's inner hairline */
     padding: clamp(2rem, 4vw, 3.5rem);
+}
+
+.about-valorant-images .about-image-featured img {
+    width: 88%;
+    height: 88%;
 }
 
 .projects-content {
