@@ -492,7 +492,7 @@ body.site-page {
     }
 
     .identity-panel {
-        min-height: 62svh;
+        min-height: 44svh;
         padding: clamp(1rem, 5vw, 2rem);
     }
 
@@ -548,7 +548,7 @@ body.site-page {
     }
 
     .identity-panel {
-        min-height: 56svh;
+        min-height: 38svh;
     }
 
     .main-name {
