@@ -1,9 +1,10 @@
 :root {
     --blue: #0000ff;
     --white: #ffffff;
-    --frame: 10px;
+    --frame: 14px;
     --gutter: clamp(1rem, 2.5vw, 2.75rem);
     --sans: Arial, Helvetica, sans-serif;
+    --serif: "Zen Old Mincho", "Cormorant Garamond", Georgia, serif;
     --mono: "JetBrains Mono", "Courier New", monospace;
 }
 
@@ -20,7 +21,7 @@ body.site-page {
     margin: 0;
     background: var(--white);
     color: var(--blue);
-    font-family: var(--sans);
+    font-family: var(--serif);
     overflow-x: hidden;
 }
 
@@ -29,18 +30,35 @@ body.site-page {
     color: var(--white);
 }
 
+/* hairline frame — a fine surveyor's border instead of a heavy band */
 .site-border {
     position: fixed;
-    inset: 0;
+    inset: var(--frame);
     z-index: 1000;
-    border: var(--frame) solid var(--blue);
+    border: 1px solid var(--blue);
     pointer-events: none;
 }
+
+/* tiny survey diamonds pinned to the frame's top corners */
+.site-border::before,
+.site-border::after {
+    content: '';
+    position: absolute;
+    top: -3.5px;
+    width: 5px;
+    height: 5px;
+    border: 1px solid var(--blue);
+    background: var(--white);
+    transform: rotate(45deg);
+}
+
+.site-border::before { left: -3.5px; }
+.site-border::after { right: -3.5px; }
 
 .site-shell {
     position: relative;
     min-height: 100svh;
-    padding: var(--frame);
+    padding: calc(var(--frame) * 2);
 }
 
 .portfolio-masthead {
@@ -48,7 +66,7 @@ body.site-page {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
     gap: var(--gutter);
-    min-height: calc(100svh - (var(--frame) * 2));
+    min-height: calc(100svh - (var(--frame) * 4));
     padding: var(--gutter);
 }
 
@@ -84,33 +102,30 @@ body.site-page {
 
 .main-name {
     margin: 0;
-    font-family: var(--sans);
-    font-size: clamp(4.5rem, 10vw, 11rem);
-    font-weight: 900;
-    letter-spacing: -0.055em;
-    line-height: 0.88;
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 4.6vw, 4.6rem);
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    line-height: 1.3;
+    text-transform: lowercase;
 }
 
 .main-name span {
     display: block;
 }
 
-.main-name span + span {
-    margin-top: 0.05em;
-}
-
 .home-page .main-name {
-    font-size: clamp(4rem, 8vw, 9.5rem);
+    font-size: clamp(2.2rem, 4vw, 4.2rem);
 }
 
 .tagline {
     max-width: 42rem;
     margin: clamp(1.5rem, 3vw, 2.75rem) 0 0;
     font-family: var(--mono);
-    font-size: clamp(0.72rem, 1.25vw, 1rem);
-    font-weight: 600;
-    letter-spacing: -0.035em;
-    line-height: 1.4;
+    font-size: clamp(0.78rem, 1.25vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    line-height: 1.8;
     text-transform: lowercase;
 }
 
@@ -127,13 +142,13 @@ body.site-page {
     align-items: center;
     justify-content: center;
     min-height: 2.65rem;
-    padding: 0.65rem 0.95rem;
-    border: 2px solid var(--blue);
+    padding: 0.65rem 1.1rem;
+    border: 1px solid var(--blue);
     color: var(--blue);
     font-family: var(--mono);
-    font-size: clamp(0.66rem, 0.95vw, 0.78rem);
-    font-weight: 600;
-    letter-spacing: 0.03em;
+    font-size: clamp(0.6rem, 0.9vw, 0.72rem);
+    font-weight: 400;
+    letter-spacing: 0.22em;
     line-height: 1;
     text-decoration: none;
     text-transform: lowercase;
@@ -151,7 +166,7 @@ body.site-page {
 
 .site-nav a:focus-visible,
 .back-link:focus-visible {
-    outline: 3px solid var(--blue);
+    outline: 1px solid var(--blue);
     outline-offset: 4px;
 }
 
@@ -168,7 +183,7 @@ body.site-page {
 .home-page .forest-viewport {
     width: min(
         93.75%,
-        calc(100svh - (var(--frame) * 2) - (var(--gutter) * 2))
+        calc(100svh - (var(--frame) * 4) - (var(--gutter) * 2))
     );
     height: auto;
     aspect-ratio: 1;
@@ -176,12 +191,9 @@ body.site-page {
 }
 
 .forest-nav {
-    /* Difference-blending this source over #0000ff resolves to #71e2f4. */
-    --button-invert-source: #71e20b;
-    /* Over #0000ff, these resolve to dark blue and white after blending. */
-    --button-hover-source: #000099;
-    --button-hover-source-soft: rgba(0, 0, 153, 0.45);
-    --button-hover-text-source: #ffff00;
+    /* pale cyan ink over the blue viewport — the same hue the old
+       difference-blend resolved to, now stated directly */
+    --button-ink: #71e2f4;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -189,42 +201,40 @@ body.site-page {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(6, minmax(0, 1fr));
-    gap: 0;
+    gap: clamp(0.45rem, 1vw, 0.8rem);
     width: 54%;
     aspect-ratio: 1;
     margin: 0;
-    mix-blend-mode: difference;
     transform: translate(-50%, -50%);
 }
 
+/* delicate open tiles: a hairline box + tracked serif text over the blue
+   viewport. hover inverts the tile — cyan fill, blue text. */
 .forest-nav a {
     position: relative;
     min-width: 0;
     min-height: 0;
-    padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.85rem, 1.8vw, 1.25rem);
-    border: 0;
-    background: var(--button-invert-source);
-    color: var(--blue);
-    font-size: clamp(1rem, 1.65vw, 1.35rem);
-    transition:
-        background-color 160ms ease,
-        color 160ms ease,
-        box-shadow 160ms ease,
-        transform 160ms ease;
+    padding: clamp(0.4rem, 1vw, 0.7rem) clamp(0.85rem, 1.8vw, 1.25rem);
+    border: 1px solid var(--button-ink);
+    background: transparent;
+    color: var(--button-ink);
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(0.85rem, 1.35vw, 1.1rem);
+    letter-spacing: 0.42em;
+    text-indent: 0.42em;
+    transition: background-color 160ms ease, color 160ms ease;
 }
 
 .forest-nav a:hover,
 .forest-nav a:focus-visible {
-    background: var(--button-hover-source);
-    color: var(--button-hover-text-source);
-    box-shadow:
-        4px 4px 0 var(--button-hover-source),
-        8px 8px 0 var(--button-hover-source-soft);
-    transform: translate(-4px, -4px);
+    background: var(--button-ink);
+    color: var(--blue);
 }
 
 .forest-nav a:focus-visible {
-    outline-color: var(--button-hover-source);
+    outline: 1px solid var(--button-ink);
+    outline-offset: 3px;
 }
 
 .forest-canvas {
@@ -258,10 +268,12 @@ body.site-page {
 .page-title {
     margin: 0 0 clamp(2.5rem, 6vw, 6rem);
     color: var(--blue);
-    font-size: clamp(4rem, 11vw, 10rem);
-    font-weight: 900;
-    letter-spacing: -0.085em;
-    line-height: 0.8;
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 5vw, 4.4rem);
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    line-height: 1.2;
+    text-transform: lowercase;
 }
 
 .subpage-forest-header {
@@ -325,9 +337,9 @@ body.site-page {
 .about-subtitle {
     margin: 0;
     font-family: var(--mono);
-    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
-    font-weight: 600;
-    letter-spacing: 0.035em;
+    font-size: clamp(0.78rem, 1.25vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.22em;
     text-transform: lowercase;
 }
 
@@ -375,6 +387,19 @@ body.site-page {
     z-index: 600;
 }
 
+/* fine inner hairline on every inverted panel — the framed-photo margin
+   from the album cover, drawn at 1px */
+.about-tile::after,
+.about-valorant-banner::after,
+.home-page .forest-viewport::after {
+    content: '';
+    position: absolute;
+    inset: 9px;
+    z-index: 650;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
 .about-copy {
     display: flex;
     flex-direction: column;
@@ -385,10 +410,11 @@ body.site-page {
 .about-copy p {
     margin: 0 0 1.5rem;
     color: var(--white);
-    font-size: clamp(1.05rem, 2.2vw, 1.65rem);
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1.3;
+    font-family: var(--serif);
+    font-size: clamp(0.95rem, 1.7vw, 1.3rem);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    line-height: 1.9;
 }
 
 .about-copy p:last-child {
@@ -436,6 +462,8 @@ body.site-page {
 .about-valorant-images .about-image-featured {
     grid-column: 1 / -1;
     aspect-ratio: 2 / 1;
+    /* keep the screenshot clear of the tile's inner hairline */
+    padding: clamp(2rem, 4vw, 3.5rem);
 }
 
 .projects-content {
@@ -464,7 +492,7 @@ body.site-page {
     }
 
     .main-name {
-        font-size: clamp(4rem, 20vw, 8rem);
+        font-size: clamp(1.9rem, 7.5vw, 3.2rem);
     }
 
     .forest-viewport {
@@ -519,7 +547,7 @@ body.site-page {
     }
 
     .main-name {
-        font-size: clamp(3.7rem, 19vw, 6.2rem);
+        font-size: clamp(1.6rem, 7vw, 2.4rem);
     }
 
     .site-nav a {
