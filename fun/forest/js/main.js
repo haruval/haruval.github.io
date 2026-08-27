@@ -1,5 +1,5 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
-import { IS_MOBILE, BG_COLOR, INK_COLOR, resolveSeed, makeRng, hashSeed } from './utils.js';
+import { IS_MOBILE, BG_COLOR, INK_COLOR, resolveSeed, makeRng, hashSeed } from './utils.js?v=20260826-17';
 import { makeChunk, makeStraightFrame, makeArcFrame, inkMat } from './builders.js';
 
 const SPEED = 1.4;                        // slow walking pace, units/sec

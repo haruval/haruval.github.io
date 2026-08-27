@@ -1,5 +1,5 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
-import { INK_COLOR } from './utils.js';
+import { INK_COLOR } from './utils.js?v=20260826-17';
 
 export const PATH_HALF = 1.35;  // walkable corridor half-width
 
