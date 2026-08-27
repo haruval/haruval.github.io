@@ -1,6 +1,6 @@
 import * as THREE from '/portfolio/vendor/three/three.module.js';
-import { IS_MOBILE, BG_COLOR, resolveSeed, makeRng, hashSeed } from './utils.js';
-import { makeChunk, makeStraightFrame, makeArcFrame } from './builders.js';
+import { IS_MOBILE, BG_COLOR, INK_COLOR, resolveSeed, makeRng, hashSeed } from './utils.js?v=20260826-17';
+import { makeChunk, makeStraightFrame, makeArcFrame, inkMat } from './builders.js';
 
 const SPEED = 1.4;                        // slow walking pace, units/sec
 const EYE = 1.7;
@@ -16,6 +16,11 @@ const DEFAULT_OPTIONS = {
     zIndex: 1,
     maxPixelRatio: undefined,
     seed: undefined,
+    // dual-tone mode: a transparent canvas whose line color flips inside a
+    // tracked DOM element — the page's own colors become the scene's palette
+    transparent: false,
+    inkColor: undefined,
+    insetPass: null,  // { element | elements, inkColor }
 };
 
 export function mountForestScene(options = {}) {
@@ -28,7 +33,7 @@ let animationFrame = null;
 let isDestroyed = false;
 
 if (settings.className) {
-    canvas.className = settings.className;
+    canvas.classList.add(settings.className);
 }
 
 if (ownsCanvas) {
@@ -51,6 +56,7 @@ try {
         canvas,
         antialias: true,
         powerPreference: 'high-performance',
+        alpha: settings.transparent,
     });
 } catch (error) {
     if (fallback) {
@@ -61,7 +67,18 @@ try {
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, settings.maxPixelRatio || (IS_MOBILE ? 1.5 : 2)));
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(BG_COLOR);
+if (!settings.transparent) {
+    scene.background = new THREE.Color(BG_COLOR);
+}
+
+const baseInk = new THREE.Color(settings.inkColor !== undefined ? settings.inkColor : INK_COLOR);
+const insetElements = settings.insetPass
+    ? Array.from(settings.insetPass.elements || (settings.insetPass.element ? [settings.insetPass.element] : []))
+    : [];
+const insetInk = insetElements.length
+    ? new THREE.Color(settings.insetPass.inkColor !== undefined ? settings.insetPass.inkColor : INK_COLOR)
+    : null;
+inkMat.color.copy(baseInk);
 
 const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 150);
 
@@ -217,23 +234,19 @@ extendPath();
 
 // ---- input / resize -------------------------------------------------------
 
-const mouse = new THREE.Vector2();
-const targetMouse = new THREE.Vector2();
-
-function onPointerMove(event) {
-    targetMouse.set(
-        (event.clientX / window.innerWidth - 0.5) * 2,
-        (event.clientY / window.innerHeight - 0.5) * 2,
-    );
-}
-window.addEventListener('pointermove', onPointerMove, { passive: true });
-
 function onResize() {
-    camera.aspect = window.innerWidth / Math.max(window.innerHeight, 1);
+    const bounds = canvas.getBoundingClientRect();
+    const width = Math.max(Math.round(bounds.width), 1);
+    const height = Math.max(Math.round(bounds.height), 1);
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.setSize(width, height, false);
 }
 window.addEventListener('resize', onResize);
+const resizeObserver = typeof ResizeObserver === 'undefined'
+    ? null
+    : new ResizeObserver(onResize);
+if (resizeObserver) resizeObserver.observe(canvas);
 onResize();
 
 // ---- animation --------------------------------------------------------------
@@ -275,20 +288,47 @@ function animate() {
 
     // footstep bob and a slow lateral sway
     bobPhase += dt * 10.7;
-    const sway = Math.sin(bobPhase * 0.5) * 0.06 + mouse.x * 0.35;
+    const sway = Math.sin(bobPhase * 0.5) * 0.06;
     camera.position.copy(camPos).addScaledVector(camPerp, sway);
-    camera.position.y = EYE + Math.sin(bobPhase) * 0.035 - mouse.y * 0.18;
-    aheadPos.y = EYE - 0.12 - mouse.y * 0.8;
-    aheadPos.addScaledVector(camPerp, mouse.x * 2.2);
+    camera.position.y = EYE + Math.sin(bobPhase) * 0.035;
+    aheadPos.y = EYE - 0.12;
     camera.lookAt(aheadPos);
     // lean gently into turns
     const cross = camTan.z * aheadTan.x - camTan.x * aheadTan.z;
     roll += (THREE.MathUtils.clamp(cross * 0.35, -0.035, 0.035) - roll) * 0.05;
     camera.rotation.z += roll;
 
-    mouse.lerp(targetMouse, 0.04);
+    if (!insetElements.length) {
+        renderer.render(scene, camera);
+    } else {
+        // pass one: the whole viewport in the base ink
+        inkMat.color.copy(baseInk);
+        renderer.setScissorTest(false);
+        renderer.render(scene, camera);
 
-    renderer.render(scene, camera);
+        // pass two: re-render inside each tracked element in the inset ink;
+        // autoclear wipes each scissored region back to transparent first, so
+        // whatever the page paints behind it becomes the ground color
+        const view = canvas.getBoundingClientRect();
+        for (const element of insetElements) {
+            if (!element.isConnected) continue;
+
+            const win = element.getBoundingClientRect();
+            const left = Math.max(win.left, view.left);
+            const right = Math.min(win.right, view.right);
+            const top = Math.max(win.top, view.top);
+            const bottom = Math.min(win.bottom, view.bottom);
+            const w = Math.max(0, right - left);
+            const h = Math.max(0, bottom - top);
+            if (w <= 0 || h <= 0) continue;
+
+            renderer.setScissorTest(true);
+            renderer.setScissor(left - view.left, view.bottom - bottom, w, h);
+            inkMat.color.copy(insetInk);
+            renderer.render(scene, camera);
+        }
+        renderer.setScissorTest(false);
+    }
 }
 
 animate();
@@ -303,8 +343,8 @@ function destroy() {
     }
 
     window.removeEventListener('resize', onResize);
-    window.removeEventListener('pointermove', onPointerMove);
     window.removeEventListener('pagehide', destroy);
+    if (resizeObserver) resizeObserver.disconnect();
 
     for (const p of pieces) {
         scene.remove(p.chunk.group);

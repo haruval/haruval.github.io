@@ -1,12 +1,10 @@
 export const IS_MOBILE = window.innerWidth < 720;
 
-export const BG_COLOR = 0xd9d9d9;   // flat paper grey, no fog, no gradients
-export const INK_COLOR = 0x303030;  // single pen weight
-
-export const DEFAULT_SEED = 20260711;
+export const BG_COLOR = 0x0000ff;   // portfolio blue
+export const INK_COLOR = 0xffffff;  // white pen line
 
 // seed comes from ?seed=… (number or any string) so a forest is shareable;
-// change DEFAULT_SEED to regrow the default walk
+// without one, every load grows a fresh random forest
 export function resolveSeed() {
     try {
         const raw = new URLSearchParams(window.location.search).get('seed');
@@ -21,7 +19,11 @@ export function resolveSeed() {
             return h >>> 0;
         }
     } catch { /* embedded without a URL — fall through */ }
-    return DEFAULT_SEED;
+    try {
+        return crypto.getRandomValues(new Uint32Array(1))[0];
+    } catch {
+        return Date.now() >>> 0;
+    }
 }
 
 // mulberry32: tiny deterministic PRNG, one 32-bit word of state

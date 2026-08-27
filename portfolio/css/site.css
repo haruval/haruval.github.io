@@ -1,0 +1,591 @@
+:root {
+    --blue: #0000ff;
+    --white: #ffffff;
+    --frame: 14px;
+    --gutter: clamp(1rem, 2.5vw, 2.75rem);
+    --sans: Arial, Helvetica, sans-serif;
+    --serif: "Zen Old Mincho", "Cormorant Garamond", Georgia, serif;
+    --mono: "JetBrains Mono", "Courier New", monospace;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--blue);
+}
+
+body.site-page {
+    min-width: 320px;
+    margin: 0;
+    background: var(--white);
+    color: var(--blue);
+    font-family: var(--serif);
+    overflow-x: hidden;
+}
+
+::selection {
+    background: var(--blue);
+    color: var(--white);
+}
+
+/* hairline frame — a fine surveyor's border instead of a heavy band */
+.site-border {
+    position: fixed;
+    inset: var(--frame);
+    z-index: 1000;
+    border: 1px solid var(--blue);
+    pointer-events: none;
+}
+
+/* tiny survey diamonds pinned to the frame's top corners */
+.site-border::before,
+.site-border::after {
+    content: '';
+    position: absolute;
+    top: -3.5px;
+    width: 5px;
+    height: 5px;
+    border: 1px solid var(--blue);
+    background: var(--white);
+    transform: rotate(45deg);
+}
+
+.site-border::before { left: -3.5px; }
+.site-border::after { right: -3.5px; }
+
+.site-shell {
+    position: relative;
+    min-height: 100svh;
+    padding: calc(var(--frame) * 2);
+}
+
+.portfolio-masthead {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    gap: var(--gutter);
+    min-height: calc(100svh - (var(--frame) * 4));
+    padding: var(--gutter);
+}
+
+.home-page .portfolio-masthead {
+    grid-template-columns: minmax(0, 1.05fr) minmax(440px, 1.45fr);
+}
+
+.identity-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+    padding: clamp(1rem, 4vw, 4rem);
+}
+
+.home-page .identity-panel {
+    z-index: 600;
+}
+
+.home-page .main-name,
+.home-page .tagline {
+    color: transparent;
+    background: linear-gradient(
+        to right,
+        var(--blue) 0 var(--forest-text-cut, 100%),
+        var(--white) var(--forest-text-cut, 100%) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+.main-name {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 4.6vw, 4.6rem);
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    line-height: 1.3;
+    text-transform: lowercase;
+}
+
+.main-name span {
+    display: block;
+}
+
+.home-page .main-name {
+    font-size: clamp(2.2rem, 4vw, 4.2rem);
+}
+
+.tagline {
+    max-width: 42rem;
+    margin: clamp(1.5rem, 3vw, 2.75rem) 0 0;
+    font-family: var(--mono);
+    font-size: clamp(0.78rem, 1.25vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    line-height: 1.8;
+    text-transform: lowercase;
+}
+
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: clamp(1.3rem, 2.5vw, 2.25rem);
+}
+
+.site-nav a,
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.65rem;
+    padding: 0.65rem 1.1rem;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    font-family: var(--mono);
+    font-size: clamp(0.6rem, 0.9vw, 0.72rem);
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: lowercase;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible,
+.back-link:hover,
+.back-link:focus-visible,
+.site-nav a[aria-current="page"] {
+    background: var(--blue);
+    color: var(--white);
+}
+
+.site-nav a:focus-visible,
+.back-link:focus-visible {
+    outline: 1px solid var(--blue);
+    outline-offset: 4px;
+}
+
+.forest-viewport {
+    position: relative;
+    align-self: center;
+    width: 100%;
+    height: clamp(280px, 46svh, 460px);
+    margin: 0;
+    overflow: hidden;
+    background: var(--blue);
+}
+
+.home-page .forest-viewport {
+    width: min(
+        93.75%,
+        calc(100svh - (var(--frame) * 4) - (var(--gutter) * 2))
+    );
+    height: auto;
+    aspect-ratio: 1;
+    justify-self: end;
+}
+
+.forest-nav {
+    /* pale cyan ink over the blue viewport — the same hue the old
+       difference-blend resolved to, now stated directly */
+    --button-ink: #71e2f4;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 700;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.45rem, 1vw, 0.8rem);
+    width: 54%;
+    aspect-ratio: 1;
+    margin: 0;
+    transform: translate(-50%, -50%);
+}
+
+/* delicate open tiles: a hairline box + tracked serif text over the blue
+   viewport. hover inverts the tile — cyan fill, blue text. */
+.forest-nav a {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    padding: clamp(0.4rem, 1vw, 0.7rem) clamp(0.85rem, 1.8vw, 1.25rem);
+    border: 1px solid var(--button-ink);
+    background: transparent;
+    color: var(--button-ink);
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(0.85rem, 1.35vw, 1.1rem);
+    letter-spacing: 0.42em;
+    text-indent: 0.42em;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.forest-nav a:hover,
+.forest-nav a:focus-visible {
+    background: var(--button-ink);
+    color: var(--blue);
+}
+
+.forest-nav a:focus-visible {
+    outline: 1px solid var(--button-ink);
+    outline-offset: 3px;
+}
+
+.forest-canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* one forest drawn across each page, above everything but the frame — light
+   blue ink over white, white ink inside each blue viewport */
+.forest-canvas-page {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.page-content {
+    position: relative;
+    z-index: 2;
+    width: min(1120px, calc(100% - (var(--gutter) * 2)));
+    margin: 0 auto;
+    padding: clamp(3.5rem, 8vw, 8rem) 0;
+}
+
+.page-title {
+    margin: 0 0 clamp(2.5rem, 6vw, 6rem);
+    color: var(--blue);
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 5vw, 4.4rem);
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    line-height: 1.2;
+    text-transform: lowercase;
+}
+
+.subpage-forest-header {
+    position: relative;
+    width: 100%;
+    height: clamp(360px, 54svh, 620px);
+    overflow: hidden;
+    background: var(--blue);
+}
+
+.projects-page .subpage-forest-header {
+    height: clamp(310px, 44svh, 520px);
+}
+
+.subpage-forest-header .back-link {
+    position: absolute;
+    top: var(--gutter);
+    left: var(--gutter);
+    z-index: 3;
+    border-color: var(--white);
+    color: var(--white);
+}
+
+.subpage-forest-header .back-link:hover,
+.subpage-forest-header .back-link:focus-visible {
+    background: var(--white);
+    color: var(--blue);
+}
+
+.subpage-forest-header .back-link:focus-visible {
+    outline-color: var(--white);
+}
+
+.subpage-heading {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: clamp(5rem, 10vw, 8rem) var(--gutter) clamp(2.5rem, 6vw, 5rem);
+    color: var(--white);
+    text-align: center;
+    pointer-events: none;
+}
+
+.subpage-heading .page-title {
+    margin-bottom: 1rem;
+    color: var(--white);
+}
+
+.subpage-heading .about-subtitle {
+    color: var(--white);
+}
+
+.subpage-page .page-content {
+    padding-top: clamp(3.5rem, 7vw, 7rem);
+}
+
+.about-subtitle {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: clamp(0.78rem, 1.25vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: lowercase;
+}
+
+.about-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.78fr);
+    gap: clamp(1rem, 2.2vw, 2rem);
+    align-items: center;
+    margin-bottom: clamp(4.5rem, 9vw, 9rem);
+}
+
+.about-section.reverse {
+    grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1fr);
+}
+
+.about-section.reverse .about-copy {
+    order: 2;
+}
+
+.about-section.reverse .about-image {
+    order: 1;
+}
+
+.about-page .page-content {
+    z-index: auto;
+}
+
+.about-tile,
+.about-valorant-banner {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--blue);
+}
+
+.about-tile {
+    aspect-ratio: 1;
+}
+
+/* The blue tile stays below the forest canvas so its lines invert to white;
+   the highlighted content itself remains crisp above the drawing. */
+.about-tile > *,
+.about-valorant-banner > * {
+    position: relative;
+    z-index: 600;
+}
+
+/* fine inner hairline on every inverted panel — the framed-photo margin
+   from the album cover, drawn at 1px */
+.about-tile::after,
+.about-valorant-banner::after,
+.home-page .forest-viewport::after {
+    content: '';
+    position: absolute;
+    inset: 9px;
+    z-index: 650;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
+.about-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(1.5rem, 4.5vw, 4rem);
+}
+
+.about-copy p {
+    margin: 0 0 1.5rem;
+    color: var(--white);
+    font-family: var(--serif);
+    font-size: clamp(1.15rem, 2.1vw, 1.6rem);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+}
+
+.about-copy p:last-child {
+    margin-bottom: 0;
+}
+
+.about-flag {
+    display: block;
+    width: clamp(52px, 7vw, 78px);
+    height: auto;
+    margin-bottom: 1.5rem;
+}
+
+.about-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 3vw, 2.5rem);
+}
+
+.about-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.about-section.about-valorant {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2.2vw, 2rem);
+}
+
+.about-valorant-banner {
+    width: 100%;
+    min-height: clamp(150px, 19vw, 230px);
+}
+
+.about-valorant-images {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 2.2vw, 2rem);
+}
+
+.about-valorant-images .about-image-featured {
+    grid-column: 1 / -1;
+    aspect-ratio: 2 / 1;
+    /* keep the screenshot clear of the tile's inner hairline */
+    padding: clamp(2rem, 4vw, 3.5rem);
+}
+
+.about-valorant-images .about-image-featured img {
+    width: 88%;
+    height: 88%;
+}
+
+.projects-content {
+    z-index: 600;
+    padding-bottom: clamp(4rem, 9vw, 9rem);
+}
+
+.projects-page #projects {
+    position: relative;
+    z-index: 2;
+}
+
+@media (max-width: 820px) {
+    .portfolio-masthead {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+
+    .home-page .portfolio-masthead {
+        grid-template-columns: 1fr;
+    }
+
+    .identity-panel {
+        min-height: 44svh;
+        padding: clamp(1rem, 5vw, 2rem);
+    }
+
+    .main-name {
+        font-size: clamp(1.9rem, 7.5vw, 3.2rem);
+    }
+
+    .forest-viewport {
+        width: min(100%, 540px);
+        height: auto;
+        aspect-ratio: 4 / 3;
+        justify-self: center;
+    }
+
+    .home-page .forest-viewport {
+        width: min(100%, 800px);
+    }
+
+    .forest-nav {
+        width: 72%;
+    }
+
+    .about-section,
+    .about-section.reverse {
+        grid-template-columns: 1fr;
+    }
+
+    .about-section.reverse .about-copy,
+    .about-section.reverse .about-image {
+        order: initial;
+    }
+
+    .about-image {
+        width: min(100%, 540px);
+        margin: 0 auto;
+    }
+
+    .about-tile {
+        width: min(100%, 540px);
+        justify-self: center;
+    }
+
+    .about-valorant-images .about-image {
+        width: 100%;
+        margin: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    :root {
+        --frame: 8px;
+        --gutter: 1rem;
+    }
+
+    .identity-panel {
+        min-height: 38svh;
+    }
+
+    .main-name {
+        font-size: clamp(1.6rem, 7vw, 2.4rem);
+    }
+
+    .site-nav a {
+        padding: 0.6rem 0.75rem;
+    }
+
+    .home-page .forest-viewport {
+        aspect-ratio: 1;
+    }
+
+    .forest-nav {
+        width: 84%;
+    }
+
+    .forest-nav a {
+        padding: 0.5rem 0.85rem;
+    }
+
+    .subpage-forest-header {
+        height: clamp(300px, 48svh, 430px);
+    }
+
+    .projects-page .subpage-forest-header {
+        height: clamp(260px, 40svh, 360px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
