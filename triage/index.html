@@ -226,13 +226,6 @@
         .hero .tagline {
             font-size: clamp(1rem, 2.4vw, 1.2rem);
             max-width: 46em;
-            margin-bottom: 16px;
-        }
-
-        .chip-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
         }
 
         .chip {
@@ -496,14 +489,9 @@
         <header class="hero">
             <h1>private triage agent</h1>
             <p class="tagline">
-                An open source privacy preserving email triage agent. A local model handles every email; and when harder reasoning is needed, sensitive content is
+                An open source privacy preserving email triage agent. A local model (gemma3:27b) handles every email; and when harder reasoning is needed, sensitive content is
                 anonymized before being sent to Claude, then re-hydrated locally.
             </p>
-            <div class="chip-row">
-                <span class="chip chip-green">gemma3:27b via Ollama</span>
-                <span class="chip chip-teal">regex + NER + coref anonymization</span>
-                <span class="chip chip-orange">Claude escalation</span>
-            </div>
         </header>
 
         <figure class="shot">
@@ -514,7 +502,7 @@
         <section class="card message-group">
             <h2>what it does</h2>
             <p>
-                The local model triages every email: category, summary, action items, and startsa
+                The local model triages every email: category, summary, action items, and starts a
                 reply draft. When the local model is uncertain or the data looks sensitive (legal,
                 financial, etc) it gets <strong>anonymized</strong> before being sent to Claude
                 for stronger processing, then <strong>re-hydrated</strong> locally, so Claude only
@@ -525,8 +513,7 @@
         <section class="card triage-group">
             <h2>the anonymization stack</h2>
             <p>
-                Three layers run in sequence, each covering a failure the others
-                would miss. Every entity maps to a stable, proper-noun-shaped
+                Three layers run in sequence ensuring every entity maps to a consistent, proper-noun-shaped
                 placeholder.
             </p>
             <ul class="layer-list">
@@ -543,8 +530,7 @@
                     <div>
                         <strong>Transformer NER</strong>
                         A spaCy RoBERTa pipeline (<code>en_core_web_trf</code>) tags the open-ended
-                        proper nouns: people, organizations, locations, facilities. This is what
-                        turns <code>Sarah</code> into <code>Alex_P1</code> and <code>Northwind</code>
+                        proper nouns: people, organizations, locations, facilities. This turns <code>Sarah</code> into <code>Alex_P1</code> and <code>Northwind</code>
                         into <code>Acme_O1</code>.
                     </div>
                 </li>
