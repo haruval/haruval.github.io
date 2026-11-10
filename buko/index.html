@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fafaf8">
+<meta name="description" content="On-device RAG powered by Apple Foundation Models in a notebook">
+<title>Buko</title>
+<link rel="icon" type="image/png" sizes="64x64" href="./assets/favicon.png?v=b1c0222780af">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="./styles.css?v=c2c2ce5a25">
+<script src="./script.js?v=1edb230739" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
+<section class="hero shell" aria-labelledby="hero-title">
+  <p class="wordmark">Buko</p>
+  <h1 id="hero-title"> <span>On-device RAG powered by Apple Foundation Models</span> in a notebook</h1>
+  <div class="hero-actions">
+    <button class="hero-action" type="button" disabled><span aria-hidden="true"></span> Under review</button>
+    <a class="hero-action" href="https://github.com/haruval/Buko">View GitHub</a>
+  </div>
+  <figure class="hero-recording">
+    <div class="device device-ipad ipad-landscape">
+      <video class="device-screen" id="clip-hero" muted playsinline preload="none" poster="./assets/demos/ipad-landscape.jpg?v=590f4a6724" aria-label="Circling an attention question, filling the selection, and proposing cited handwriting on iPad in landscape. Processing wait shortened."><source data-src="./assets/demos/ipad-landscape.mp4?v=3c6336a217" type="video/mp4"></video>
+      <img class="device-frame" src="./assets/tablet5-landscape-frame.png" alt="" aria-hidden="true">
+    </div>
+    <figcaption><button type="button" class="demo-replay" aria-controls="clip-hero" aria-label="Replay iPad autofill demo" title="Replay iPad autofill demo" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 4v5h-5"/><path d="M19.6 9A8 8 0 1 0 20 15"/></svg></button></figcaption>
+  </figure>
+</section>
+<section class="section shell gallery-section" id="gallery" aria-labelledby="gallery-title">
+  <div class="section-head gallery-head"><h2 id="gallery-title">Local RAG supplies source content to Apple Foundation Models to complete notes in your handwriting</h2></div>
+  <div class="demo-story" data-book-src="./assets/scroll-demos/native-book-fold.mp4?v=e1a90320eb" data-fold-src="./assets/scroll-demos/native-fold.mp4?v=fcb77eb712">
+    <div class="demo-steps">
+      <article class="demo-step" id="demo-xss" data-topic="xss" aria-labelledby="xss-title">
+        <div class="demo-inline">
+          <div class="device device-duo">
+            <video class="device-screen" id="clip-xss" data-demo="xss" muted playsinline preload="none" poster="./assets/scroll-demos/xss.jpg?v=aa8a9d4754" aria-label="XSS prevention autofill on the closed iPhone Duo"><source data-src="./assets/scroll-demos/xss.mp4?v=65f42beedc" type="video/mp4"></video>
+            <img class="device-frame" src="./assets/scroll-demos/native-cover-bezel.webp?v=ecfd9727f9" alt="" aria-hidden="true">
+          </div>
+          <button type="button" class="demo-replay" aria-controls="clip-xss" aria-label="Replay XSS prevention demo" title="Replay XSS prevention demo" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 4v5h-5"/><path d="M19.6 9A8 8 0 1 0 20 15"/></svg></button>
+        </div>
+        <div class="demo-copy"><h3 id="xss-title">Answer Questions</h3>
+          <!--<blockquote>Cybersecurity lecture example</blockquote> -->
+        </div>
+      </article>
+      <article class="demo-step" id="demo-transformer" data-topic="transformer" aria-labelledby="transformer-title">
+        <div class="demo-inline">
+          <div class="device device-duo-inner">
+            <video class="device-screen" id="clip-transformer" data-demo="transformer" muted playsinline preload="none" poster="./assets/scroll-demos/transformer.jpg?v=1792c44f29" aria-label="Transformer architecture autofill on the open iPhone Duo"><source data-src="./assets/scroll-demos/transformer.mp4?v=c4de15007b" type="video/mp4"></video>
+            <img class="device-frame" src="./assets/scroll-demos/native-inner-bezel.webp?v=3538005c60" alt="" aria-hidden="true">
+          </div>
+          <button type="button" class="demo-replay" aria-controls="clip-transformer" aria-label="Replay Transformer architecture demo" title="Replay Transformer architecture demo" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 4v5h-5"/><path d="M19.6 9A8 8 0 1 0 20 15"/></svg></button>
+        </div>
+        <div class="demo-copy"><h3 id="transformer-title">Answer (more) Questions</h3>
+          <!--<blockquote>NLP lecture example</blockquote>-->
+        </div>
+      </article>
+      <article class="demo-step" id="demo-mdp" data-topic="mdp" aria-labelledby="mdp-title">
+        <div class="demo-inline">
+          <div class="device device-duo-inner">
+            <video class="device-screen" id="clip-mdp" data-demo="mdp" muted playsinline preload="none" poster="./assets/scroll-demos/mdp.jpg?v=931aca84c2" aria-label="Q-learning autofill on the open iPhone Duo"><source data-src="./assets/scroll-demos/mdp.mp4?v=d439823bb0" type="video/mp4"></video>
+            <img class="device-frame" src="./assets/scroll-demos/native-inner-bezel.webp?v=3538005c60" alt="" aria-hidden="true">
+          </div>
+          <button type="button" class="demo-replay" aria-controls="clip-mdp" aria-label="Replay Q-learning demo" title="Replay Q-learning demo" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 4v5h-5"/><path d="M19.6 9A8 8 0 1 0 20 15"/></svg></button>
+        </div>
+        <div class="demo-copy"><h3 id="mdp-title">Work through problems</h3>
+          <!--<blockquote>ML lecture example</blockquote>-->
+        </div>
+      </article>
+      <article class="demo-step" id="demo-nlp" data-topic="nlp" aria-labelledby="nlp-title">
+        <div class="demo-inline">
+          <div class="device device-book">
+            <video class="device-screen" id="clip-nlp" data-demo="nlp" muted playsinline preload="none" poster="./assets/scroll-demos/nlp.jpg?v=fc947e3fe3" aria-label="Tokenization definition filled on the left with Q-learning on the right in Book mode"><source data-src="./assets/scroll-demos/nlp.mp4?v=57e8f17900" type="video/mp4"></video>
+
+          </div>
+          <button type="button" class="demo-replay" aria-controls="clip-nlp" aria-label="Replay NLP definitions demo" title="Replay NLP definitions demo" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 4v5h-5"/><path d="M19.6 9A8 8 0 1 0 20 15"/></svg></button>
+        </div>
+        <div class="demo-copy"><h3 id="nlp-title">Complete definitions</h3>
+          <blockquote>(And check out that multitasking!)</blockquote>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<section class="section shell" id="rag" aria-labelledby="rag-title">
+  <div class="section-head">
+    <h2 id="rag-title">RAG over the notebook’s PDFs</h2>
+    <p class="prose">When a PDF is added to a notebook, PDFKit extracts the text from each page and Vision reads text in images. Buko indexes each passage with its source PDF and page number.</p>
+    <p class="prose">When you circle something in your notes, Buko searches that index for both the circled text and the content the planner identifies as missing.</p>
+  </div>
+  <div class="rag-methods">
+    <section>
+      <h3>BM25 ranks word matches</h3>
+      <p>Terms count for more if they only appear in a few passages. BM25 also accounts for passage length and gives each repeated mention of a term less weight. In the original query, terms in the circled text have 4 times the weight of terms the planner adds.</p>
+    </section>
+    <section>
+      <h3>Cosine similarity ranks meaning</h3>
+      <p>Apple’s Natural Language framework splits passages into sentences with <code>NLTokenizer</code>. Its English sentence embedding maps the search query and up to 16 sentences per passage to vectors. Buko then takes the highest cosine similarity across those sentences. A short heading like “Tokenization:” can imply a request for a definition. When the query has only one or two distinct keywords, each must match.</p>
+    </section>
+    <section>
+      <h3>Reciprocal-rank fusion</h3>
+      <p>Buko sorts eligible passages once by BM25 and once by cosine similarity. Each positive score contributes <code>1 / (60 + rank)</code> from its list. Adding these together rewards passages that rank well in both searches. BM25 can still retrieve passages if an English embedding is unavailable.</p>
+    </section>
+  </div>
+  <section class="model-stage" aria-labelledby="planner-search-title">
+    <h3 id="planner-search-title">How the planner searches for missing information</h3>
+    <p class="prose">In the attention heads demo, Buko searches the passages twice. The first query uses the circled text and the planner’s intent, and the second query uses the target subject (<code>gap.retrievalText</code>) and the detail the planner says is missing (<code>gap.expansion</code>).</p>
+    <div class="code-panel">
+      <div class="code-heading"><span>Run both searches</span><span>GapRetrieval.swift</span></div>
+      <pre tabindex="0"><code>let original = LectureRetrieval.search(
+    passages: passages, selected: selected, intent: intent,
+    queryVector: originalVector, method: method)
+let targeted = LectureRetrieval.search(
+    passages: passages, selected: gap.retrievalText, intent: gap.expansion,
+    queryVector: targetVector, method: method)</code></pre>
+    </div>
+    <div class="planner-example">
+      <p class="planner-example-title">Attention heads demo</p>
+      <dl class="planner-queries">
+        <dt>Circled question</dt>
+        <dd>“How are attention heads combined?”</dd>
+        <dt>Original search: 1×</dt>
+        <dd>Embed the full question.</dd>
+        <dt>Targeted search: 2×</dt>
+        <dd>Embed “attention heads”. Keep “combined” for keyword matching.</dd>
+      </dl>
+    </div>
+    <p class="prose">The targeted search gets twice the weight of the original.</p>
+  </section>
+</section>
+<section class="section shell" id="spatial" aria-labelledby="spatial-title">
+  <div class="section-head">
+    <h2 id="spatial-title">What the model sees</h2>
+    <p class="prose">In the NLP lecture notes demo, the student circles “How are attention heads combined?”</p>
+  </div>
+  <section class="model-stage" aria-labelledby="plan-title">
+    <h3 id="plan-title">Plan the fill</h3>
+    <div class="code-pair">
+      <div class="code-panel">
+        <div class="code-heading"><span>Planning input</span><span>Prompt from the demo</span></div>
+        <pre tabindex="0"><code>Plan an action for selected_handwriting in this notebook data:
+{
+  <span class="token">"nearby_handwriting_context_only"</span>: <span class="token">"Add position to each token embedding. self-attention mixes values across tokens. One query gives one weighted sum.\n"</span>,
+  <span class="token">"selected_handwriting"</span>: <span class="token">"How are attention heads combined?"</span>
+}</code></pre>
+      </div>
+      <div class="code-panel">
+        <div class="code-heading"><span>Planner output</span><span>Recorded response fields</span></div>
+        <pre tabindex="0"><code>{
+  <span class="token">"intent"</span>: <span class="token">"The user wants to understand how attention heads combine."</span>,
+  <span class="token">"action"</span>: <span class="token">"Add a short explanation of attention head merging beneath Attention Heads."</span>
+}</code></pre>
+      </div>
+    </div>
+  </section>
+  <section class="model-stage" aria-labelledby="evidence-title">
+    <h3 id="evidence-title">Find supporting evidence</h3>
+    <div class="code-pair">
+      <div class="code-panel">
+        <div class="code-heading"><span>Retrieval plan</span><span>Recorded fields</span></div>
+        <pre tabindex="0"><code>{
+    <span class="token">"targets"</span>: [{"blockID": "S1", "quote": "How are attention heads combined?"}],
+    <span class="token">"subjectQuotes"</span>: ["attention heads"],
+    <span class="token">"informationNeeds"</span>: ["How are attention heads combined?"],
+    <span class="token">"alreadyCovered"</span>: []
+}</code></pre>
+      </div>
+      <div class="code-panel">
+        <div class="code-heading"><span>Evidence decision</span><span>Recorded fields</span></div>
+        <pre tabindex="0"><code>{
+    <span class="token">"status"</span>: "directAnswer",
+    <span class="token">"sourceIDs"</span>: ["P1"]
+}</code></pre>
+      </div>
+    </div>
+  </section>
+  <section class="model-stage" aria-labelledby="writer-title">
+    <h3 id="writer-title">Write the cited answer</h3>
+    <div class="code-pair">
+      <div class="code-panel">
+        <div class="code-heading"><span>Writer input</span><span>Writer input from the demo</span></div>
+        <pre tabindex="0"><code>{
+  <span class="token">"selected_handwriting"</span>: <span class="token">"How are attention heads combined?"</span>,
+  <span class="token">"approved_source_ids"</span>: [<span class="token">"P1"</span>],
+  <span class="token">"approved_lecture_passages"</span>: [{
+    <span class="token">"id"</span>: <span class="token">"P1"</span>,
+    <span class="token">"text"</span>: <span class="token">"Heads can represent different relationships between tokens. <strong>Concatenate their outputs and project back to the model dimension.</strong>"</span>
+  }]
+}</code></pre>
+      </div>
+      <div class="code-panel">
+        <div class="code-heading"><span>Writer output</span><span>Final answer in the demo</span></div>
+        <pre tabindex="0"><code>{
+  <span class="token">"sourceIDs"</span>: [<span class="token">"P1"</span>],
+  <span class="token">"text"</span>: <span class="token">"Attention heads are combined by concatenating their outputs and projecting back to the model dimension."</span>
+}</code></pre>
+      </div>
+    </div>
+  </section>
+  <section class="model-stage" aria-labelledby="spatial-intent">
+    <h3 id="spatial-intent">How the planner uses handwriting layout and spacing to find gaps</h3>
+    <p class="prose">Vertical spacing and horizontal overlap group circled content into regions, and the planner groups each region’s text together to work out which details are part of each topic.</p>
+    <div class="code-pair layout-example">
+      <div class="code-panel">
+      <div class="code-heading"><span>What the planner receives</span><span></span></div>
+      <pre tabindex="0"><code>{
+  <span class="token">"selected_regions"</span>: [
+    {"regionID": "G1", "content": [
+      {"id": "S1", "text": "Tokenization: splitting text into tokens."},
+      {"id": "S3", "text": "Example: splitting a sentence into words."}
+    ]},
+    {"regionID": "G2", "content": [
+      {"id": "S2", "text": "Embedding: a vector representation of a token."}
+    ]}
+  ]
+}</code></pre>
+      </div>
+      <img class="layout-note" src="./assets/nlp-circled-columns.png" loading="lazy" alt="One circle surrounds the Tokenization and Embedding notes. Both have definitions. Only Tokenization has an example.">
+    </div>
+    <p class="prose">The planner sees that the example is for tokenization, while embedding is missing an example and needs one supplied.</p>
+  </section>
+</section>
+<section class="section shell experiments-section" id="experiments" aria-labelledby="experiments-title">
+  <div class="section-head"><h2 id="experiments-title">Other cool stuff I tried</h2></div>
+  <div class="experiment-grid">
+    <article>
+      <h3>Custom LoRA adapters</h3>
+      <p>I started with training custom LoRA adapters for Apple’s system model. But Apple ended support for this toolkit with the release of iOS27 so I moved on to trying open weight models through Core AI.</p>
+      
+    </article>
+    <article>
+      <h3>Qwen through Core AI</h3>
+      <p>I converted Qwen3 models through Core AI, Apple's framework to run third party models on Apple silicon, and tested them locally.</p>
+      <p>The 4-bit 4B version of Qwen3 passed 9/12 difficult cases versus Apple’s 7/12, but 22/34 across the full suite versus Apple’s 29/34. I kept Apple’s system model.</p>
+    </article>
+  </div>
+</section>
+</main>
+<footer class="shell"><a href="https://1haru.com">1haru.com <span aria-hidden="true">↗</span></a></footer>
+</body>
+</html>

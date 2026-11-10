@@ -381,10 +381,7 @@
             background: var(--paper);
             border: 1px solid var(--hairline-faint);
             border-radius: 0;
-            opacity: 0;
-            transform: translateY(60px);
-            transition: opacity 0.6s ease,
-                transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+            transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
                 border-color 0.45s ease;
         }
 
@@ -412,11 +409,6 @@
         .project > * {
             position: relative;
             z-index: 1;
-        }
-
-        .project.visible {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .projimg {
@@ -713,7 +705,7 @@
     <link rel="stylesheet" href="/portfolio/css/site.css?v=20260904-01">
 </head>
 <body class="site-page projects-page subpage-page">
-    <div class="site-border" aria-hidden="true"></div>
+    <div class="site-border" aria-hidden="true"><span class="bottom-corners"></span></div>
     <div class="site-shell">
         <header class="subpage-forest-header" id="projects-forest-window">
             <a class="back-link" href="/">&larr; back</a>
@@ -746,44 +738,6 @@
                 element: document.getElementById('projects-forest-window'),
                 inkColor: 0xffffff,
             },
-        });
-    </script>
-    <script>
-        // Intersection Observer for scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        // Observe projects when they're added to the DOM
-        function observeNewProjects() {
-            const projects = document.querySelectorAll('.project:not(.visible)');
-            projects.forEach(project => observer.observe(project));
-        }
-
-        // Override the parseData function to add scroll animations
-        const originalParseData = window.parseData;
-        window.parseData = function(data) {
-            if (originalParseData) {
-                originalParseData(data);
-                // Add a small delay to ensure DOM is updated
-                setTimeout(observeNewProjects, 100);
-            }
-        };
-
-        // Add loading animation
-        window.addEventListener('load', () => {
-            document.body.style.opacity = '1';
-            // Observe any projects that might already be loaded
-            setTimeout(observeNewProjects, 100);
         });
     </script>
 </body>

@@ -39,9 +39,11 @@ body.site-page {
     pointer-events: none;
 }
 
-/* tiny survey diamonds pinned to the frame's top corners */
+/* tiny survey diamonds pinned to all four frame corners */
 .site-border::before,
-.site-border::after {
+.site-border::after,
+.site-border .bottom-corners::before,
+.site-border .bottom-corners::after {
     content: '';
     position: absolute;
     top: -3.5px;
@@ -54,6 +56,20 @@ body.site-page {
 
 .site-border::before { left: -3.5px; }
 .site-border::after { right: -3.5px; }
+
+.site-border .bottom-corners {
+    position: absolute;
+    inset: 0;
+}
+
+.site-border .bottom-corners::before,
+.site-border .bottom-corners::after {
+    top: auto;
+    bottom: -3.5px;
+}
+
+.site-border .bottom-corners::before { left: -3.5px; }
+.site-border .bottom-corners::after { right: -3.5px; }
 
 .site-shell {
     position: relative;
