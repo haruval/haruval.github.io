@@ -34,12 +34,12 @@
 
         <main>
             <section class="page-content about-content">
-                <div class="about-section reverse">
-                    <div class="about-copy about-tile about-card">
+                <div class="about-section reverse about-card">
+                    <div class="about-copy">
                         <img class="about-flag" src="/portfolio/images/phflag.png" alt="Philippine flag">
                         <p>filipino-american. cu boulder computer science major + creative technology minor, spring '26 grad. 3.64 gpa. cinnamoroll fan.</p>
                     </div>
-                    <div class="about-image about-tile forest-invert">
+                    <div class="about-image">
                         <img src="/portfolio/images/mbselfie3.png" alt="selfie">
                     </div>
                 </div>
@@ -47,17 +47,19 @@
                 <div class="about-section about-valorant">
                     <div class="about-copy about-valorant-banner about-card">
                         <p>Esports: Valorant - 5x radiant, #123 peak, 600rr peak.</p>
-                    </div>
-                    <div class="about-valorant-images">
-                        <div class="about-image about-tile about-image-featured forest-invert">
-                            <img src="/portfolio/images/radiant2.png" alt="Valorant Radiant leaderboard peak">
+                        <div id="valorant-gallery" class="about-valorant-images" role="region" aria-label="Valorant screenshots" tabindex="0">
+                            <div class="about-image">
+                                <img src="/portfolio/images/radiant2.png" alt="Valorant Radiant leaderboard peak">
+                            </div>
+                            <div class="about-image">
+                                <img src="/portfolio/images/radiant.png" alt="Valorant Radiant rank">
+                            </div>
+                            <div class="about-image">
+                                <img src="/portfolio/images/600rr.jpeg" alt="Valorant 600 RR peak">
+                            </div>
                         </div>
-                        <div class="about-image about-tile forest-invert">
-                            <img src="/portfolio/images/radiant.png" alt="Valorant Radiant rank">
-                        </div>
-                        <div class="about-image about-tile forest-invert">
-                            <img src="/portfolio/images/600rr.jpeg" alt="Valorant 600 RR peak">
-                        </div>
+                        <input class="gallery-scrollbar" type="range" min="0" max="100" value="0" step="any"
+                               aria-label="Scroll Valorant screenshots" aria-controls="valorant-gallery" hidden>
                     </div>
                 </div>
             </section>
@@ -66,6 +68,30 @@
 
     <canvas class="forest-canvas-page" id="about-forest-scene" aria-hidden="true"></canvas>
 
+    <script>
+        const gallery = document.getElementById('valorant-gallery');
+        const scrollbar = document.querySelector('.gallery-scrollbar');
+
+        function syncPosition() {
+            scrollbar.value = gallery.scrollLeft;
+        }
+
+        function updateScrollbar() {
+            scrollbar.max = Math.max(0, gallery.scrollWidth - gallery.clientWidth);
+            scrollbar.disabled = Number(scrollbar.max) === 0;
+            scrollbar.style.setProperty('--thumb-width', (100 * gallery.clientWidth / gallery.scrollWidth) + '%');
+            syncPosition();
+        }
+
+        scrollbar.addEventListener('input', () => { gallery.scrollLeft = Number(scrollbar.value); });
+        gallery.addEventListener('scroll', syncPosition, { passive: true });
+        const galleryResize = new ResizeObserver(updateScrollbar);
+        galleryResize.observe(gallery);
+        gallery.querySelectorAll('img').forEach(image => galleryResize.observe(image));
+        gallery.classList.add('has-scrollbar');
+        scrollbar.hidden = false;
+        updateScrollbar();
+    </script>
     <script type="module">
         import { mountForestScene } from '/fun/forest/js/main.js?v=20260826-17';
 
