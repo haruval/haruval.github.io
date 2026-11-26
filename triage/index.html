@@ -654,7 +654,7 @@ confirm timing.</pre>
             <div class="kv">
                 <span class="k">local api</span>
                 <p>
-                    Any web page can probe local ports, so each run gets a fresh token the Vite proxy attaches to every request, and the server checks that the the <code>Host</code> and <code>Origin</code> headers match the expected values. 
+                    Each run gets a fresh token the Vite proxy attaches to every request, and the server checks that the the <code>Host</code> and <code>Origin</code> headers match the expected values. 
                     The page itself never holds the token or your IMAP password.
                 </p>
                 <span class="k">imap</span>
@@ -666,7 +666,7 @@ confirm timing.</pre>
                 </p>
                 <span class="k">supply chain</span>
                 <p>
-                    Everything is pinned. Dependencies come from a lockfile with specific versions. NER wheel is pinned to its SHA-256. Package-age check fails anything published less than 14 days ago. 
+                    Every dependency is pinned. NER wheel is pinned to its SHA-256. Package-age check denies anything published less than 14 days ago. 
                 </p>
             </div>
         </section>
