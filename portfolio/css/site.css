@@ -13,7 +13,7 @@
 }
 
 html {
-    background: var(--blue);
+    background: var(--white);
 }
 
 body.site-page {
@@ -30,51 +30,18 @@ body.site-page {
     color: var(--white);
 }
 
-/* hairline frame — a fine surveyor's border instead of a heavy band */
-.site-border {
-    position: fixed;
-    inset: var(--frame);
-    z-index: 1000;
-    border: 1px solid var(--blue);
-    pointer-events: none;
-}
-
-/* tiny survey diamonds pinned to all four frame corners */
-.site-border::before,
-.site-border::after,
-.site-border .bottom-corners::before,
-.site-border .bottom-corners::after {
-    content: '';
-    position: absolute;
-    top: -3.5px;
-    width: 5px;
-    height: 5px;
-    border: 1px solid var(--blue);
-    background: var(--white);
-    transform: rotate(45deg);
-}
-
-.site-border::before { left: -3.5px; }
-.site-border::after { right: -3.5px; }
-
-.site-border .bottom-corners {
-    position: absolute;
-    inset: 0;
-}
-
-.site-border .bottom-corners::before,
-.site-border .bottom-corners::after {
-    top: auto;
-    bottom: -3.5px;
-}
-
-.site-border .bottom-corners::before { left: -3.5px; }
-.site-border .bottom-corners::after { right: -3.5px; }
-
 .site-shell {
     position: relative;
     min-height: 100svh;
     padding: calc(var(--frame) * 2);
+}
+
+.subpage-page .site-shell {
+    padding: 0;
+}
+
+.subpage-page .site-shell > main {
+    padding: 0 calc(var(--frame) * 2) calc(var(--frame) * 2);
 }
 
 .portfolio-masthead {
@@ -368,11 +335,12 @@ body.site-page {
 }
 
 .about-section.reverse {
-    grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1fr);
+    grid-template-columns: minmax(260px, 1fr) minmax(0, 0.85fr);
 }
 
 .about-section.reverse .about-copy {
     order: 2;
+    padding-inline: 0;
 }
 
 .about-section.reverse .about-image {
@@ -403,11 +371,9 @@ body.site-page {
     z-index: 600;
 }
 
-/* fine inner hairline on every inverted panel — the framed-photo margin
-   from the album cover, drawn at 1px */
+/* fine inner hairline on the About panels */
 .about-tile::after,
-.about-valorant-banner::after,
-.home-page .forest-viewport::after {
+.about-valorant-banner:not(.about-card)::after {
     content: '';
     position: absolute;
     inset: 9px;
@@ -445,19 +411,13 @@ body.site-page {
 }
 
 .about-image {
-    display: flex;
     min-width: 0;
-    aspect-ratio: 1;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(1rem, 3vw, 2.5rem);
 }
 
 .about-image img {
     display: block;
     width: 100%;
-    height: 100%;
-    object-fit: contain;
+    height: auto;
 }
 
 .about-section.about-valorant {
@@ -473,74 +433,20 @@ body.site-page {
 
 .about-valorant-images {
     display: flex;
+    flex-direction: column;
     gap: clamp(1rem, 2.2vw, 2rem);
-    overflow-x: scroll;
-    padding-bottom: 1rem;
-    scroll-snap-type: x proximity;
-    scrollbar-width: auto;
-    scrollbar-color: var(--blue) #e6e6ff;
-}
-
-.about-valorant-images.has-scrollbar {
-    scrollbar-width: none;
-    scroll-snap-type: none;
-}
-
-.about-valorant-images.has-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-.gallery-scrollbar {
-    appearance: none;
-    width: 100%;
-    height: 14px;
-    margin: 0;
-    border: 1px solid #aaaaff;
-    border-radius: 7px;
-    background: #e6e6ff;
-    cursor: pointer;
-}
-
-.gallery-scrollbar::-webkit-slider-thumb {
-    appearance: none;
-    width: var(--thumb-width);
-    height: 12px;
-    border-radius: 6px;
-    background: var(--blue);
-}
-
-.gallery-scrollbar::-moz-range-thumb {
-    width: var(--thumb-width);
-    height: 12px;
-    border: 0;
-    border-radius: 6px;
-    background: var(--blue);
-}
-
-.about-valorant-images:focus-visible {
-    outline: 1px solid var(--blue);
-    outline-offset: 5px;
-}
-
-.about-valorant-images .about-image {
-    flex: 0 0 auto;
-    width: auto;
-    height: clamp(220px, 28vw, 340px);
-    aspect-ratio: auto;
     margin: 0;
     padding: 0;
-    scroll-snap-align: start;
+    list-style: none;
 }
 
-.about-valorant-images .about-image img {
-    width: auto;
-    max-width: none;
-    height: 100%;
+.about-valorant-images img {
+    display: block;
+    max-width: 100%;
+    height: auto;
 }
 
-/* the two copy blocks are dressed as the project cards on /projects:
-   paper, one hairline, survey diamonds at opposite corners. they sit above
-   the forest canvas so the drawing passes behind them instead of through. */
+/* opaque cards sit above the forest so its lines pass behind them */
 .about-card {
     position: relative;
     z-index: 600;
@@ -548,22 +454,6 @@ body.site-page {
     background: var(--white);
     border: 1px solid rgba(0, 0, 255, 0.28);
 }
-
-.about-card::before,
-.about-card::after {
-    content: '';
-    position: absolute;
-    inset: auto;
-    z-index: 2;
-    width: 5px;
-    height: 5px;
-    border: 1px solid var(--blue);
-    background: var(--white);
-    transform: rotate(45deg);
-}
-
-.about-card::before { top: -3.5px; left: -3.5px; }
-.about-card::after { bottom: -3.5px; right: -3.5px; }
 
 .about-card p {
     color: var(--blue);

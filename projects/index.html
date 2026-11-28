@@ -370,8 +370,7 @@
             outline-offset: 4px;
         }
 
-        /* an open specimen sheet: paper, one hairline, survey diamonds at
-           opposite corners — no fills, no shadows */
+        /* an open specimen sheet with a single hairline border */
         .project {
             position: relative;
             display: flex;
@@ -384,21 +383,6 @@
             transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
                 border-color 0.45s ease;
         }
-
-        .project::before,
-        .project::after {
-            content: '';
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            border: 1px solid var(--card-ink);
-            background: var(--paper);
-            transform: rotate(45deg);
-            z-index: 2;
-        }
-
-        .project::before { top: -3.5px; left: -3.5px; }
-        .project::after { bottom: -3.5px; right: -3.5px; }
 
         .project-link:hover .project,
         .project-link:focus-visible .project {
@@ -702,10 +686,9 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="/portfolio/css/site.css?v=20260904-01">
+    <link rel="stylesheet" href="/portfolio/css/site.css?v=20261127-03">
 </head>
 <body class="site-page projects-page subpage-page">
-    <div class="site-border" aria-hidden="true"><span class="bottom-corners"></span></div>
     <div class="site-shell">
         <header class="subpage-forest-header" id="projects-forest-window">
             <a class="back-link" href="/">&larr; back</a>
